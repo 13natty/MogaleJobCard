@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nattySoft.mogalejobcard.AppConstants;
@@ -18,9 +22,11 @@ import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
+import android.R.integer;
 import android.os.Bundle;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -42,22 +48,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements RequestResponseListener, PushListener {
 
 	private String TAG = MainActivity.class.getSimpleName();
-	
+
 	private boolean registered = false;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-	
+
 	private static final String REGISTRATION_SUCCESS = "0";
 	private static final String NEW_INCIDENT = "1";
 	private static final String INCIDENT_UPDATE = "2";
 	private static final String CHAT_MESSAGE = "3";
 	private static final String INCIDENT_ACCEPT = "4";
-	
+
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -67,13 +75,15 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	CustomDrawerAdapter adapter;
 
 	List<DrawerItem> dataList;
+
+	Fragment prevFrag;
+	private int prevPos;
 	static Action action;
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		String regStr = Preferences.getPreference(this, AppConstants.PreferenceKeys.KEY_REGISTERED);
 		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true : false;
 		if (registered) {
@@ -88,7 +98,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			Intent intent = new Intent(this, RegistrationActivity.class);
 			startActivityForResult(intent, 0);
 		}
-		
+
 	}
 
 	private void startApp(Bundle savedInstanceState) {
@@ -109,29 +119,34 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
 		// Add Drawer Item to dataList
-//		dataList.add(new DrawerItem(true)); // adding a spinner to the list
+		// dataList.add(new DrawerItem(true)); // adding a spinner to the list
 
-//		dataList.add(new DrawerItem("My Favorites")); // adding a header to the
-														// list
+		// dataList.add(new DrawerItem("My Favorites")); // adding a header to
+		// the
+		// list
 		dataList.add(new DrawerItem("Incidents", R.drawable.ic_action_incident));
 		dataList.add(new DrawerItem("Chat", R.drawable.ic_action_chat));
-//		dataList.add(new DrawerItem("Games", R.drawable.ic_action_gamepad));
-//		dataList.add(new DrawerItem("Lables", R.drawable.ic_action_labels));
+		// dataList.add(new DrawerItem("Games", R.drawable.ic_action_gamepad));
+		// dataList.add(new DrawerItem("Lables", R.drawable.ic_action_labels));
 
-//		dataList.add(new DrawerItem("Main Options"));// adding a header to the
-														// list
-//		dataList.add(new DrawerItem("Search", R.drawable.ic_action_search));
-//		dataList.add(new DrawerItem("Cloud", R.drawable.ic_action_cloud));
-//		dataList.add(new DrawerItem("Camara", R.drawable.ic_action_camera));
-//		dataList.add(new DrawerItem("Video", R.drawable.ic_action_video));
-//		dataList.add(new DrawerItem("Groups", R.drawable.ic_action_group));
-//		dataList.add(new DrawerItem("Import & Export", R.drawable.ic_action_import_export));
+		// dataList.add(new DrawerItem("Main Options"));// adding a header to
+		// the
+		// list
+		// dataList.add(new DrawerItem("Search", R.drawable.ic_action_search));
+		// dataList.add(new DrawerItem("Cloud", R.drawable.ic_action_cloud));
+		// dataList.add(new DrawerItem("Camara", R.drawable.ic_action_camera));
+		// dataList.add(new DrawerItem("Video", R.drawable.ic_action_video));
+		// dataList.add(new DrawerItem("Groups", R.drawable.ic_action_group));
+		// dataList.add(new DrawerItem("Import & Export",
+		// R.drawable.ic_action_import_export));
 
-//		dataList.add(new DrawerItem("Other Option")); // adding a header to the
-														// list
-//		dataList.add(new DrawerItem("About", R.drawable.ic_action_about));
-//		dataList.add(new DrawerItem("Settings", R.drawable.ic_action_settings));
-//		dataList.add(new DrawerItem("Help", R.drawable.ic_action_help));
+		// dataList.add(new DrawerItem("Other Option")); // adding a header to
+		// the
+		// list
+		// dataList.add(new DrawerItem("About", R.drawable.ic_action_about));
+		// dataList.add(new DrawerItem("Settings",
+		// R.drawable.ic_action_settings));
+		// dataList.add(new DrawerItem("Help", R.drawable.ic_action_help));
 		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
 
 		mDrawerList.setAdapter(adapter);
@@ -156,22 +171,43 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			}
 		};
 
-		mDrawerLayout.setDrawerListener(mDrawerToggle); 
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//		if (savedInstanceState == null) {
-//
-//			if (dataList.get(0).isSpinner() & dataList.get(1).getTitle() != null) {
-//				SelectItem(2);
-//			} else if (dataList.get(0).getTitle() != null) {
-//				SelectItem(1);
-//			} else {
-//				SelectItem(0);
-//			}
-//		}
-		
+		// if (savedInstanceState == null) {
+		//
+		// if (dataList.get(0).isSpinner() & dataList.get(1).getTitle() != null)
+		// {
+		// SelectItem(2);
+		// } else if (dataList.get(0).getTitle() != null) {
+		// SelectItem(1);
+		// } else {
+		// SelectItem(0);
+		// }
+		// }
+
 		action = Action.GET_ALL_OPEN_INCIDENCES;
 		CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 
+	}
+
+	public void addMoreToDrawer(String header, List<DrawerItem> items) {
+		if (dataList.size() > 2) {
+			for (int i = (dataList.size() - 1); i > 1; i--) {
+				dataList.remove(i);
+			}
+		}
+		dataList.add(new DrawerItem(header));// adding a header to the
+		// list
+		for (int i = 0; i < items.size(); i++) {
+			dataList.add(items.get(i));
+		}
+
+		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
+		mDrawerList.setAdapter(adapter);
+
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
 	/**
@@ -202,6 +238,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	public void SelectItem(int possition) {
 
+		prevFrag = getFragmentManager().findFragmentById(R.id.content_frame);
+		prevPos = possition;
 		Fragment fragment = null;
 		Bundle args = new Bundle();
 		switch (possition) {
@@ -215,71 +253,97 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
 			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
 			break;
-//		case 2:
-//			fragment = new FragmentThree();
-//			args.putString(FragmentThree.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 3:
-//			fragment = new FragmentOne();
-//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 4:
-//			fragment = new FragmentTwo();
-//			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 5:
-//			fragment = new FragmentThree();
-//			args.putString(FragmentThree.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 7:
-//			fragment = new FragmentTwo();
-//			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 8:
-//			fragment = new FragmentThree();
-//			args.putString(FragmentThree.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 9:
-//			fragment = new FragmentOne();
-//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 10:
-//			fragment = new FragmentTwo();
-//			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 11:
-//			fragment = new FragmentThree();
-//			args.putString(FragmentThree.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 12:
-//			fragment = new FragmentOne();
-//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 14:
-//			fragment = new FragmentThree();
-//			args.putString(FragmentThree.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 15:
-//			fragment = new FragmentOne();
-//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
-//		case 16:
-//			fragment = new FragmentTwo();
-//			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-//			break;
+		// case 2:
+		// fragment = new FragmentThree();
+		// args.putString(FragmentThree.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentThree.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 3:
+		// fragment = new FragmentOne();
+		// args.putString(FragmentOne.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentOne.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 4:
+		// fragment = new FragmentTwo();
+		// args.putString(FragmentTwo.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentTwo.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 5:
+		// fragment = new FragmentThree();
+		// args.putString(FragmentThree.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentThree.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 7:
+		// fragment = new FragmentTwo();
+		// args.putString(FragmentTwo.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentTwo.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 8:
+		// fragment = new FragmentThree();
+		// args.putString(FragmentThree.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentThree.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 9:
+		// fragment = new FragmentOne();
+		// args.putString(FragmentOne.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentOne.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 10:
+		// fragment = new FragmentTwo();
+		// args.putString(FragmentTwo.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentTwo.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 11:
+		// fragment = new FragmentThree();
+		// args.putString(FragmentThree.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentThree.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 12:
+		// fragment = new FragmentOne();
+		// args.putString(FragmentOne.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentOne.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 14:
+		// fragment = new FragmentThree();
+		// args.putString(FragmentThree.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentThree.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 15:
+		// fragment = new FragmentOne();
+		// args.putString(FragmentOne.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentOne.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
+		// case 16:
+		// fragment = new FragmentTwo();
+		// args.putString(FragmentTwo.ITEM_NAME,
+		// dataList.get(possition).getItemName());
+		// args.putInt(FragmentTwo.IMAGE_RESOURCE_ID,
+		// dataList.get(possition).getImgResID());
+		// break;
 		default:
 			break;
 		}
@@ -304,7 +368,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
-		if(mDrawerToggle != null)
+		if (mDrawerToggle != null)
 			mDrawerToggle.syncState();
 		GCMBroadcastReceiver.pushListener = this;
 	}
@@ -330,8 +394,40 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			if (dataList.get(position).getTitle() == null) {
+			DrawerItem item = (DrawerItem) mDrawerList.getItemAtPosition(position);
+			String tittle = item.getTitle();
+			String itemName = item.getItemName();
+			String type = item.type;
+			if (type == null && dataList.get(position).getTitle() == null) {
 				SelectItem(position);
+			} else if (type != null) {
+				switch (type) {
+				case "accepted":
+
+					break;
+				case "not_accepted":
+					Log.d(TAG, "tittle " + tittle);
+					Log.d(TAG, "itemName " + itemName);
+//					if (itemName.equalsIgnoreCase("Accept")) {
+//						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+//						if (frag instanceof FragmentIncident) {
+//							MainActivity.action = Action.ACCEPT_INCIDENT;
+//							CommunicationHandler.acceptIncident(MainActivity.this, (RequestResponseListener) MainActivity.this, ProgressDialog.show(MainActivity.this, "Please wait", "Accepting Incidents..."), Preferences.getPreference(MainActivity.this, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), ((FragmentIncident) frag).incidentID);
+//						}
+//					} else if (itemName.equalsIgnoreCase("Decline")) {
+//						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+//						if (frag instanceof FragmentIncident) {
+//							DialogClass cdd = new DialogClass(MainActivity.this, ((FragmentIncident) frag).incidentID);
+//							cdd.show();
+//						}
+//					}
+					break;
+				default:
+					break;
+				}
+				mDrawerList.setItemChecked(position, true);
+				setTitle(dataList.get(position).getItemName());
+				mDrawerLayout.closeDrawer(mDrawerList);
 			}
 
 		}
@@ -339,65 +435,68 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	@Override
 	public void hasResponse(String responce) {
-		Log.d(TAG, " response "+responce);
-		if(action == Action.GET_ALL_OPEN_INCIDENCES)
-		{
+		Log.d(TAG, " response " + responce);
+		if (action == Action.GET_ALL_OPEN_INCIDENCES) {
 			Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
 			SelectItem(0);
-		}
-		else if(action == Action.DECLINE_INCIDENT)
-		{
+		} else if (action == Action.DECLINE_INCIDENT) {
 			action = Action.GET_ALL_OPEN_INCIDENCES;
 			CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
-		}
-		else if(action == Action.ACCEPT_INCIDENT)
-		{
-			if(responce.contains("success"))
-			{
-//				DialogClass cdd=new DialogClass(getActivity(), incidentID);
-//				 cdd.show();
+		} else if (action == Action.ACCEPT_INCIDENT) {
+			if (responce.contains("success")) {
+				// DialogClass cdd=new DialogClass(getActivity(), incidentID);
+				// cdd.show();
 			}
+		}else if(action == Action.GET_COMMENTS) {
+			Log.d(TAG, "responce " + responce);
+			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			if (frag instanceof FragmentIncident) {
+				((FragmentIncident)frag).showComments(responce);
+			}			
 		}
-		
+
 	}
 
 	@Override
 	public void pushReceived(Context context, Intent intent) {
 		final Bundle extras = intent.getExtras();
-		if(extras.containsKey("type"))
-		{
-			
-			
-			if(extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS))
-			{
-				
-			}
-			else if(extras.getString("type").equalsIgnoreCase(NEW_INCIDENT))
-			{
-				
-			}
-			else if(extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE))
-			{
-				
-			}
-			else if(extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE))
-			{
-				
-			}
-			else if(extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT))
-			{				
+		if (extras.containsKey("type")) {
+
+			if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
+
+			} else if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+
+			} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
+
+			} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
+
+			} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
 				Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-				if(frag instanceof FragmentIncident)
-				{
-					String incidentId_local = ((FragmentIncident)frag).incidentID;
-					DialogClass cdd=new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("message"));
-					cdd.show(); 
+				if (frag instanceof FragmentIncident) {
+					String incidentId_local = ((FragmentIncident) frag).incidentID;
+					DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("message"));
+					cdd.show();
 				}
-				
+
 			}
-		
-			String message = extras.getString("description")+" : "+extras.getString("message");					
-			
+
+			String message = extras.getString("description") + " : " + extras.getString("message");
+
+		}
+	}
+
+	// Defined in Activity class, so override
+	@Override
+	public void onBackPressed() {
+		if (prevFrag != null) {
+			if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
+				FragmentManager frgManager = getFragmentManager();
+				frgManager.beginTransaction().replace(R.id.content_frame, prevFrag).commit();
+			} else {
+				mDrawerList.setItemChecked(prevPos, true);
+				setTitle(dataList.get(prevPos).getItemName());
+				mDrawerLayout.closeDrawer(mDrawerList);
+			}
 		}
 	}
 

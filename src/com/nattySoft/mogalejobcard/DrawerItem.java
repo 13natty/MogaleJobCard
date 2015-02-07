@@ -7,6 +7,8 @@ public class DrawerItem {
 
 	String title;
 	boolean isSpinner;
+	
+	String type = null;
 
 	public DrawerItem(String itemName, int imgResID) {
 		super();
@@ -22,6 +24,11 @@ public class DrawerItem {
 	public DrawerItem(String title) {
 		this(null, 0);
 		this.title = title;
+	}
+
+	public DrawerItem(String itemName, int imgResID, String type) {
+		this(itemName, imgResID);
+		this.type = type;
 	}
 
 	public String getItemName() {

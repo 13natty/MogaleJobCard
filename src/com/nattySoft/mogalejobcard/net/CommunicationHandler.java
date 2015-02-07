@@ -9,6 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
@@ -110,7 +111,7 @@ public class CommunicationHandler {
 
 	}
 
-	public static void addComment(FragmentActivity context, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String message) {
+	public static void addComment(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String message) {
 		JSONObject json = new JSONObject();
 		try {
 			json.accumulate("nav", "addincidentcomment.mobi");
@@ -124,11 +125,11 @@ public class CommunicationHandler {
 
 		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
-	public static void getComments(FragmentActivity context, RequestResponseListener listener, ProgressDialog dialog, String incidentId) {
+	public static void getComments(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String incidentId) {
 		JSONObject json = new JSONObject();
 		try {
 			json.accumulate("nav", "getincidentcomments.mobi");
@@ -140,10 +141,11 @@ public class CommunicationHandler {
 
 		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
+	
 	public static void sendChat(Context context, RequestResponseListener listener, ProgressDialog dialog, String message, String employeeNum) {
 		JSONObject json = new JSONObject();
 		try {

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/singleCommentContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+            android:background="@drawable/bubble_b" >
+
+        <TextView
+            android:id="@+id/commentor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:paddingLeft="1dip"
+            android:text="Mzwa"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray" />
+        
+        <TextView
+            android:id="@+id/commentDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:paddingLeft="1dip"
+            android:text="2015/01/16"
+            android:textSize="10sp"
+            android:textColor="@android:color/holo_orange_dark" />
+        
+        <TextView
+            android:id="@+id/singleComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dip"
+            android:paddingLeft="10dip"
+            android:text="Hello bubbles!, Do you knw Suzzan Bathi Ndithetha nawe"
+            android:textColor="@android:color/primary_text_light" />
+    </LinearLayout>
+
+</LinearLayout>

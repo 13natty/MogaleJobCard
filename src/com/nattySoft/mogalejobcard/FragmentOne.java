@@ -196,6 +196,7 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 		Log.d("FragmentOne", "clicked incident " + item);
 		Bundle args = new Bundle();
 		args.putSerializable("HashMap", item);
+		((MainActivity)getActivity()).prevFrag = getFragmentManager().findFragmentById(R.id.content_frame);
 		Fragment fragment = new FragmentIncident();
 		fragment.setArguments(args);
 		FragmentManager frgManager = getFragmentManager();
