@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TableLayout
+            android:id="@+id/below_above"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" >
+
+            <TableRow
+                android:id="@+id/above_row"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/hydrant_above_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Hydrant above ground" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/below_row"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/hydrant_below_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Hydrant below ground" />
+            </TableRow>
+        </TableLayout>
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/below_above"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <EditText
+            android:id="@+id/hydrant_number"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider1"
+            android:hint="Hydrant number :" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/hydrant_pressure"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hydrant_number"
+            android:hint="Hydrant pressure :" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/hydrant_time"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hydrant_pressure"
+            android:hint="Hydrant time :" >
+        </EditText>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/hydrant_time"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <TextView
+            android:id="@+id/corners_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider2"
+            android:layout_marginLeft="10dp"
+            android:hint="Distance from stand corners :" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/hydrant_left_corner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/corners_label"
+            android:hint="Left :" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/hydrant_right_corner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/left_corner"
+            android:hint="Right :" >
+        </EditText>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/right_corner"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+        
+        <TableLayout
+            android:id="@+id/hydrant_type_of_repair"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/divider3" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type Of Repair :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/hydrant_type_of_repair_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/hydrant_type_of_repair" />
+            </TableRow>
+        </TableLayout>
+        
+        <EditText
+            android:id="@+id/hydrant_code"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hydrant_type_of_repair"
+            android:hint="Code :"
+            android:visibility="gone" >
+        </EditText>
+    </RelativeLayout>
+
+</ScrollView>

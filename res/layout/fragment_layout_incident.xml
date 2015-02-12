@@ -53,6 +53,7 @@
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="400dp"
+        android:layout_above="@+id/table_acc_decl"
         android:layout_below="@+id/top_container"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -329,6 +330,7 @@
     </ScrollView>
 
     <TableLayout
+        android:id="@+id/table_acc_decl"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" >
@@ -341,15 +343,15 @@
                 android:id="@+id/button_accept"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Accept"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Accept" />
 
             <Button
                 android:id="@+id/button_decline"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Decline"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Decline" />
         </TableRow>
     </TableLayout>
 
@@ -383,16 +385,16 @@
                 android:id="@+id/comment_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Comment"
                 android:layout_weight="1"
+                android:text="Comment"
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/view_comments"
+                android:id="@+id/job_card"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="View Comments"
                 android:layout_weight="1"
+                android:text="Job Card"
                 android:visibility="gone" />
         </TableRow>
     </TableLayout>

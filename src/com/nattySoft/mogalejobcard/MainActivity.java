@@ -76,9 +76,11 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	List<DrawerItem> dataList;
 
-	Fragment prevFrag;
+	ArrayList<Fragment> prevFrag;
 	private int prevPos;
 	static Action action;
+
+	protected static String incidentStatus;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		String regStr = Preferences.getPreference(this, AppConstants.PreferenceKeys.KEY_REGISTERED);
 		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true : false;
+		prevFrag = new ArrayList<Fragment>();
 		if (registered) {
 			// Check device for Play Services APK.
 			if (checkPlayServices()) {
@@ -238,12 +241,16 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	public void SelectItem(int possition) {
 
-		prevFrag = getFragmentManager().findFragmentById(R.id.content_frame);
+		prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
 		prevPos = possition;
 		Fragment fragment = null;
 		Bundle args = new Bundle();
 		switch (possition) {
 		case 0:
+//			fragment = new FragmentJobCard();
+//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
+//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
+			
 			fragment = new FragmentOne();
 			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
 			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
@@ -370,7 +377,21 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		if (mDrawerToggle != null)
 			mDrawerToggle.syncState();
-		GCMBroadcastReceiver.pushListener = this;
+		GCMBroadcastReceiver.pushListener = this;	
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		Bundle intent_extras = getIntent().getExtras();
+		if (intent_extras != null && intent_extras.containsKey("action")) {
+			if(intent_extras.get("action") == "newIncident")
+			{
+				action = Action.GET_ALL_OPEN_INCIDENCES;
+				CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+			}
+		}
 	}
 
 	@Override
@@ -408,19 +429,28 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				case "not_accepted":
 					Log.d(TAG, "tittle " + tittle);
 					Log.d(TAG, "itemName " + itemName);
-//					if (itemName.equalsIgnoreCase("Accept")) {
-//						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-//						if (frag instanceof FragmentIncident) {
-//							MainActivity.action = Action.ACCEPT_INCIDENT;
-//							CommunicationHandler.acceptIncident(MainActivity.this, (RequestResponseListener) MainActivity.this, ProgressDialog.show(MainActivity.this, "Please wait", "Accepting Incidents..."), Preferences.getPreference(MainActivity.this, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), ((FragmentIncident) frag).incidentID);
-//						}
-//					} else if (itemName.equalsIgnoreCase("Decline")) {
-//						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-//						if (frag instanceof FragmentIncident) {
-//							DialogClass cdd = new DialogClass(MainActivity.this, ((FragmentIncident) frag).incidentID);
-//							cdd.show();
-//						}
-//					}
+					// if (itemName.equalsIgnoreCase("Accept")) {
+					// Fragment frag =
+					// getFragmentManager().findFragmentById(R.id.content_frame);
+					// if (frag instanceof FragmentIncident) {
+					// MainActivity.action = Action.ACCEPT_INCIDENT;
+					// CommunicationHandler.acceptIncident(MainActivity.this,
+					// (RequestResponseListener) MainActivity.this,
+					// ProgressDialog.show(MainActivity.this, "Please wait",
+					// "Accepting Incidents..."),
+					// Preferences.getPreference(MainActivity.this,
+					// AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM),
+					// ((FragmentIncident) frag).incidentID);
+					// }
+					// } else if (itemName.equalsIgnoreCase("Decline")) {
+					// Fragment frag =
+					// getFragmentManager().findFragmentById(R.id.content_frame);
+					// if (frag instanceof FragmentIncident) {
+					// DialogClass cdd = new DialogClass(MainActivity.this,
+					// ((FragmentIncident) frag).incidentID);
+					// cdd.show();
+					// }
+					// }
 					break;
 				default:
 					break;
@@ -447,12 +477,17 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				// DialogClass cdd=new DialogClass(getActivity(), incidentID);
 				// cdd.show();
 			}
-		}else if(action == Action.GET_COMMENTS) {
+		} else if (action == Action.GET_COMMENTS) {
 			Log.d(TAG, "responce " + responce);
 			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 			if (frag instanceof FragmentIncident) {
-				((FragmentIncident)frag).showComments(responce);
-			}			
+				((FragmentIncident) frag).showComments(responce);
+			}
+		}
+		else if(action == Action.SAVE_JOB_CARD)
+		{
+			action = Action.INCIDENT_STATUS;
+			CommunicationHandler.updateIncident(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Updating incident..."), incidentStatus);
 		}
 
 	}
@@ -488,15 +523,50 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	// Defined in Activity class, so override
 	@Override
 	public void onBackPressed() {
-		if (prevFrag != null) {
+		if (prevFrag != null && prevFrag.size()>1) {
 			if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
+				if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof PipeLineInfo)
+				{
+					((PipeLineInfo)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof ExistingMeterInformation)
+				{
+					((ExistingMeterInformation)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof NewMeterInformation)
+				{
+					((NewMeterInformation)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof ConnectionInfo)
+				{
+					((ConnectionInfo)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof Hydrant)
+				{
+					((Hydrant)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof Valve)
+				{
+					((Valve)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				}
+				int index = prevFrag.size()-1;
 				FragmentManager frgManager = getFragmentManager();
-				frgManager.beginTransaction().replace(R.id.content_frame, prevFrag).commit();
+				frgManager.beginTransaction().replace(R.id.content_frame, prevFrag.get(index)).commit();
+				prevFrag.remove(index);
 			} else {
 				mDrawerList.setItemChecked(prevPos, true);
 				setTitle(dataList.get(prevPos).getItemName());
 				mDrawerLayout.closeDrawer(mDrawerList);
 			}
+		}
+		else if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+			mDrawerList.setItemChecked(prevPos, true);
+			setTitle(dataList.get(prevPos).getItemName());
+			mDrawerLayout.closeDrawer(mDrawerList);
+		}
+		else
+		{
+			super.onBackPressed();
 		}
 	}
 

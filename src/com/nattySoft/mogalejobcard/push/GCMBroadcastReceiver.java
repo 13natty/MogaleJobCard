@@ -9,7 +9,10 @@ import org.junit.Test;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Fragment;
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +28,7 @@ import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult;
 import com.nattySoft.mogalejobcard.DialogClass;
 import com.nattySoft.mogalejobcard.FragmentIncident;
 import com.nattySoft.mogalejobcard.MainActivity;
+import com.nattySoft.mogalejobcard.R;
 import com.nattySoft.mogalejobcard.listener.PushListener;
 //import com.nattySoft.mogale.ChatActivity;
 //import com.nattySoft.mogale.MainActivity;
@@ -34,6 +38,11 @@ import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 public final class GCMBroadcastReceiver extends WakefulBroadcastReceiver {
 
 	private static final String LOG_TAG = GCMBroadcastReceiver.class.getSimpleName();
+	private static final String REGISTRATION_SUCCESS = "0";
+	private static final String NEW_INCIDENT = "1";
+	private static final String INCIDENT_UPDATE = "2";
+	private static final String CHAT_MESSAGE = "3";
+	private static final String INCIDENT_ACCEPT = "4";
 	public static PushListener pushListener = null;
 
 	public static void setListener(PushListener pushListener)
@@ -70,14 +79,46 @@ public final class GCMBroadcastReceiver extends WakefulBroadcastReceiver {
 					if(className.equalsIgnoreCase(".MainActivity"))
 					{	
 						if(pushListener != null)
-							pushListener.pushReceived(context, intent);
+							pushListener.pushReceived(context, intent);						
 					}
 				}
-				else
-				{
-					//dislay a push notification
-					startNotification(context, extras.getString("message")+"\nID : "+extras.getString("incidentId"));
-				}				
+
+				NotificationManager notificationManager = (NotificationManager) context
+			            .getSystemService(Context.NOTIFICATION_SERVICE);
+				String message = extras.getString("message");
+			    Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
+
+			    Intent notificationIntent = new Intent(context, MainActivity.class);
+			    
+			    if (extras.containsKey("type")) {
+
+					if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
+
+					} else if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+						notificationIntent.putExtra("action", "newIncident");
+
+					} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
+
+					} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
+
+					} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
+					
+
+					}
+			    }
+			    
+			    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+			            | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+			    PendingIntent pIntent = PendingIntent.getActivity(context, 0,
+			            notificationIntent, 0);
+
+			    notification.setLatestEventInfo(context, "", message, pIntent);
+			    notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			    notification.defaults |= Notification.DEFAULT_SOUND;
+			    notification.defaults |= Notification.DEFAULT_VIBRATE;
+			    
+			    notificationManager.notify(0, notification);
 			}
 		}
 	}

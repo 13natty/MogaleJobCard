@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TableLayout
+            android:id="@+id/checkBoxes"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" >
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_above_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter above ground on sidewalk" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_below_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter below ground on sidewalk" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_onstand_above_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter on stand above ground" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_onstand_below_ground"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter on stand below ground" />
+            </TableRow>
+
+            <EditText
+                android:id="@+id/new_existing_meter_no"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="EXISTING METER No :" >
+            </EditText>
+        </TableLayout>
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/checkBoxes"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <TableLayout
+            android:id="@+id/table2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/divider1"
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:id="@+id/tableRow7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/new_scaling_factor"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Scaling Factor :" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/new_make"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Make :" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/new_dia"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Dia :" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/new_meter_no"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter No:" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/new_meter_reading"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter Reading :" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/new_no_digits"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="No. Digits :" >
+                </EditText>
+            </TableRow>            
+        </TableLayout>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/table2"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <TableLayout
+            android:id="@+id/table3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/divider2"
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Com. M" >
+                </TextView>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+                </TextView>
+            </TableRow>
+            
+            <TableRow
+                android:id="@+id/tableRow10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/new_type"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type :" >
+                </EditText>
+            </TableRow>
+            <TableRow
+                android:id="@+id/tableRow11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/new_dia2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Dia :" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/new_meter_no_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter No :" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <EditText
+                    android:id="@+id/new_meter_reading_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Meter Reading :" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/new_no_digits_2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="No. Digits :" >
+                </EditText>
+            </TableRow>
+
+            <TableLayout>
+            </TableLayout>
+        </TableLayout>
+    </RelativeLayout>
+
+</ScrollView>

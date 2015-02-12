@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TableLayout
+            android:id="@+id/service"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type Of Service :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/type_of_service_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/type_of_service" />
+            </TableRow>
+        </TableLayout>
+
+        <EditText
+            android:id="@+id/connection_length"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/service"
+            android:hint="Length Of Connection :" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/connection_diameter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/connection_length"
+            android:hint="Diameter :" >
+        </EditText>
+
+        <TableLayout
+            android:id="@+id/road_crossing"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/diameter" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Road Crossing :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/connection_road_crossing_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/yes_no" />
+            </TableRow>
+        </TableLayout>
+
+        <EditText
+            android:id="@+id/connection_depth"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/road_crossing"
+            android:hint="Depth :" >
+        </EditText>
+
+        <TableLayout
+            android:id="@+id/type_of_material"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/depth_input" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type Of Material :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/type_of_material_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/type_of_material" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout
+            android:id="@+id/type_of_connection"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/type_of_material" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type Of Connection :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/type_of_connection_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/type_of_connection" />
+            </TableRow>
+        </TableLayout>
+    </RelativeLayout>
+
+</ScrollView>

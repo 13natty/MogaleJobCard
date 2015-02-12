@@ -14,4 +14,109 @@
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
 
+    <string-array name="type_of_service">
+        <item>Type Of Service ...</item>
+        <item>Domestic</item>
+        <item>Fire</item>
+        <item>Fire and Domestic</item>
+    </string-array>
+    
+    <string-array name="yes_no">
+        <item>Road Crossing ...</item>
+        <item>yes</item>
+        <item>no</item>
+    </string-array>
+    
+    <string-array name="left_right">
+        <item>R/H or L/H...</item>
+        <item>R/H</item>
+        <item>L/H</item>
+    </string-array>
+    
+    <string-array name="location">
+        <item>Location ...</item>
+        <item>Mid-block</item>
+        <item>Sidewalk</item>
+    </string-array>
+    
+    <string-array name="type_of_material">
+        <item>Type Of Material ...</item>
+        <item>Poly-propylene(Red)</item>
+        <item>Steel</item>
+        <item>H.D.P.E(Black)</item>
+        <item>uPVC(Blue)</item>
+        <item>Copper</item>
+    </string-array>
+    
+    <string-array name="pipe_material">
+        <item>Pipe Material ...</item>
+        <item>Poly-propylene</item>
+        <item>Steel</item>
+        <item>HDPE</item>
+        <item>AC</item>
+        <item>uPVC</item>
+        <item>Copper</item>
+        <item>Other</item>
+    </string-array>
+    
+    <string-array name="type_of_repair">
+        <item>Type of Repair ...</item>
+        <item>300:Cut out </item>
+        <item>301:Fix burst pipe clamp</item>
+        <item>302:Replace</item>
+        <item>205:Flush hydrant</item>
+        <item>Code</item>
+    </string-array>
+    
+    <string-array name="hydrant_type_of_repair">
+        <item>Type of Repair ...</item>
+        <item>203:Replace hydrant </item>
+        <item>200:Replace Lid</item>
+        <item>201:Close leaking hydrant</item>
+        <item>202:Repair hydrant</item>
+        <item>203:Replace box</item>
+        <item>Code</item>
+    </string-array>
+    
+    <string-array name="valve_type_of_repair">
+        <item>Repair Code...</item>
+        <item>100:Repack gland </item>
+        <item>101:Tighten gland</item>
+        <item>103:Replace lid</item>
+        <item>115:Replace RSV valve</item>
+        <item>114:Replace cast iron valve</item>
+    </string-array>
+    
+    <string-array name="approx_hole_size">
+        <item>approximately hole size ...</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+    </string-array>
+    
+    <string-array name="pipe_diameter">
+        <item>Pipe diameter ...</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
+        <item>375</item>
+        <item>450</item>
+        <item>525</item>
+        <item>575</item>
+        <item>600</item>
+        <item>Other size</item>
+    </string-array>
+    
+    <string-array name="type_of_connection">
+        <item>Type Of Connection ...</item>
+        <item>One-pipe</item>
+        <item>Double</item>
+        <item>Branch</item>
+    </string-array>
+
 </resources>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TableLayout
+            android:id="@+id/location"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Location :" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/location_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/location" />
+            </TableRow>
+        </TableLayout>
+
+        <EditText
+            android:id="@+id/distance"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/location"
+            android:hint="Distance :" >
+        </EditText>
+        
+        <View
+            android:id="@+id/divider"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/distance"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <EditText
+            android:id="@+id/distance_from_stand_corner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider"
+            android:hint="Distance from stand corners :" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/left"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/distance_from_stand_corner"
+            android:hint="Left :" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/right"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/left"
+            android:hint="Right :" >
+        </EditText>
+
+        <TableLayout
+            android:id="@+id/road_crossing"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/right" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Road Crossing :" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/road_crossing_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/yes_no" />
+            </TableRow>
+        </TableLayout>
+        
+        <TableLayout
+            android:id="@+id/pipe_diameter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/road_crossing" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Pipe diameter :" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/pipe_diameter_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/pipe_diameter" />
+            </TableRow>
+        </TableLayout>
+
+        <EditText
+            android:id="@+id/other_size"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pipe_diameter"
+            android:hint="Other Size :"
+            android:visibility="gone" >
+        </EditText>
+
+        <TableLayout
+            android:id="@+id/pipe_material"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/other_size" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="Pipe Material :" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/pipe_material_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/pipe_material" />
+            </TableRow>
+        </TableLayout>
+        
+        <EditText
+            android:id="@+id/other_material"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pipe_material"
+            android:hint="Other :"
+            android:visibility="gone" >
+        </EditText>
+
+        <TableLayout
+            android:id="@+id/type_of_repair"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/other_material" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Type Of Repair :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/type_of_repair_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/type_of_repair" />
+            </TableRow>
+        </TableLayout>
+        
+        <EditText
+            android:id="@+id/cut_out_length"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/type_of_repair"
+            android:hint="Cut out length :"
+            android:visibility="gone" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/replace_length"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cut_out_length"
+            android:hint="Replace length :"
+            android:visibility="gone" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/flush_hydrant_time"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/replace_length"
+            android:hint="Flush Hydrant Time :"
+            android:visibility="gone" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/code"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/flush_hydrant_time"
+            android:hint="Code :"
+            android:visibility="gone" >
+        </EditText>
+        
+        <TableLayout
+            android:id="@+id/approximately_hole_size"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/code" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Approximately hole size :"
+                    android:layout_marginLeft="10dp" >
+                </TextView>
+
+                <Spinner
+                    android:id="@+id/hole_size_spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:drawSelectorOnTop="false"
+                    android:entries="@array/approx_hole_size" />
+            </TableRow>
+        </TableLayout>
+        
+    </RelativeLayout>
+
+</ScrollView>

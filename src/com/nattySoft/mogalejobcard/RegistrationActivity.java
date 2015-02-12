@@ -15,6 +15,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -140,7 +141,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 					dialog.cancel();
 					RegistrationActivity.this.finish();
 					//now display main app
-					//the funcition callback called onActivityResult is called to display main app.
+					startActivityForResult(new Intent(RegistrationActivity.this, MainActivity.class), 0);
 				}
 			  });
 

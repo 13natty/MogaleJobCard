@@ -1,6 +1,8 @@
 package com.nattySoft.mogalejobcard;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -60,11 +63,11 @@ public class FragmentIncident extends Fragment {
 
 	Button acceptButton;
 	Button commentButton;
-	Button viewCommentsButton;
+	Button jobCardButton;
 	Button declineButton;
 	private ArrayList<HashMap<String, String>> assigneeAList;
 	private ArrayList<HashMap<String, String>> accepteeAList;
-	public String incidentID = null;
+	public static String incidentID = null;
 	private LayoutInflater inflater;
 	private TableRow.LayoutParams params;
 
@@ -132,46 +135,60 @@ public class FragmentIncident extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// custom dialog
-				final Dialog dialog = new Dialog(getActivity());
-				dialog.setContentView(R.layout.add_comment);
-				dialog.setTitle("Comment on " + title.getText());
 
-				Button sendButton = (Button) dialog.findViewById(R.id.comment_send);
-				// if button is clicked, close the custom dialog
-				sendButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						EditText message = (EditText) dialog.findViewById(R.id.comment_message);
-						MainActivity.action = Action.ADD_COMMENT;
-						CommunicationHandler.addComment(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Sending your comment..."), Preferences.getPreference(FragmentIncident.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), incidentID, message.getText().toString());
-						dialog.dismiss();
-					}
-				});
+				new AlertDialog.Builder(getActivity()).setTitle("Comments").setMessage("Choose a button below").setPositiveButton("Add Comment", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						// custom dialog
+						final Dialog dialogAdd = new Dialog(getActivity());
+						dialogAdd.setContentView(R.layout.add_comment);
+						String concated = (String) (title.getText().length() > 13 ? title.getText().subSequence(0, 10) + "..." : title.getText());
+						dialogAdd.setTitle("Comment on " + concated);
 
-				Button cancelButton = (Button) dialog.findViewById(R.id.comment_cancel);
-				cancelButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						dialog.dismiss();
+						Button sendButton = (Button) dialogAdd.findViewById(R.id.comment_send);
+						// if button is clicked, close the custom dialog
+						sendButton.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								EditText message = (EditText) dialogAdd.findViewById(R.id.comment_message);
+								MainActivity.action = Action.ADD_COMMENT;
+								CommunicationHandler.addComment(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Sending your comment..."), Preferences.getPreference(FragmentIncident.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), incidentID, message.getText().toString());
+								dialogAdd.dismiss();
+							}
+						});
+
+						Button cancelButton = (Button) dialogAdd.findViewById(R.id.comment_cancel);
+						cancelButton.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								dialogAdd.dismiss();
+							}
+						});
+						dialogAdd.show();
 					}
-				});
-				dialog.show();
+				}).setNegativeButton("View Comment", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						MainActivity.action = Action.GET_COMMENTS;
+						CommunicationHandler.getComments(getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Retrieving comments..."), incidentID);
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert).show();
+
+				/*
+				
+				*/
 			}
 		});
 
-		viewCommentsButton = (Button) getActivity().findViewById(R.id.view_comments);
-		 viewCommentsButton.setOnClickListener(new OnClickListener() {
-		
-		 @Override
-		 public void onClick(View v) {
-		 MainActivity.action = Action.GET_COMMENTS;
-		 CommunicationHandler.getComments(getActivity(),
-		 (RequestResponseListener) getActivity(),
-		 ProgressDialog.show(getActivity(), "Please wait",
-		 "Retrieving comments..."), incidentID);
-		 }
-		 });
+		jobCardButton = (Button) getActivity().findViewById(R.id.job_card);
+		jobCardButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				((MainActivity) getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+				Fragment fragment = new FragmentJobCard();
+				FragmentManager frgManager = getFragmentManager();
+				frgManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+			}
+		});
 
 		declineButton = (Button) getActivity().findViewById(R.id.button_decline);
 		declineButton.setOnClickListener(new OnClickListener() {
@@ -211,7 +228,7 @@ public class FragmentIncident extends Fragment {
 					acceptButton.setVisibility(View.GONE);
 					declineButton.setVisibility(View.GONE);
 					commentButton.setVisibility(View.VISIBLE);
-					viewCommentsButton.setVisibility(View.VISIBLE);
+					jobCardButton.setVisibility(View.VISIBLE);
 					List<DrawerItem> dataList = new ArrayList<DrawerItem>();
 					dataList.add(new DrawerItem("Add Comment", R.drawable.ic_action_add_comment, "accepted"));
 					dataList.add(new DrawerItem("View Comments", R.drawable.ic_action_view_comments, "accepted"));
@@ -228,7 +245,7 @@ public class FragmentIncident extends Fragment {
 					acceptButton.setVisibility(View.VISIBLE);
 					declineButton.setVisibility(View.VISIBLE);
 					commentButton.setVisibility(View.GONE);
-					viewCommentsButton.setVisibility(View.GONE);
+					jobCardButton.setVisibility(View.GONE);
 				}
 			}
 			statusText.setText("Status : " + item.get("status"));
@@ -319,7 +336,7 @@ public class FragmentIncident extends Fragment {
 		} catch (JSONException e) {
 			Log.e("JSON Parser", "Error parsing data " + e.toString());
 		}
-		
+
 		JSONArray data = null;
 		try {
 			data = responceJSON.getJSONArray("data");
@@ -327,54 +344,77 @@ public class FragmentIncident extends Fragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		View dialogView = inflater.inflate(R.layout.incident_comments, null, false);
-		
+
 		LinearLayout commentsList = (LinearLayout) dialogView.findViewById(R.id.commentsLayout);
-		
+
 		// Create custom dialog object
-		 final Dialog dialog = new Dialog(getActivity());
-		 // Include dialog.xml file
-		 dialog.setContentView(dialogView);
-		 // Set dialog title
-		 dialog.setTitle("Comments "+title.getText());
+		final Dialog dialog = new Dialog(getActivity());
+		// Include dialog.xml file
+		dialog.setContentView(dialogView);
+		// Set dialog title
+		dialog.setTitle("Comments " + title.getText());
 		if (data != null) {
-			for (int i = 0; i < data.length(); i++) {
-//				comment = (LinearLayout )inflater.inflate(R.layout.single_comment, container, false);
+			if (data.length() > 0) {
+				for (int i = 0; i < data.length(); i++) {
+					// comment = (LinearLayout
+					// )inflater.inflate(R.layout.single_comment, container,
+					// false);
+					LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
+					TextView name = (TextView) comment.findViewById(R.id.commentor);
+					TextView time = (TextView) comment.findViewById(R.id.commentDate);
+					TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
+
+					try {
+						String strComment = ((JSONObject) data.getJSONObject(i)).getString("comment");
+						String timestamp = ((JSONObject) data.getJSONObject(i)).getString("timestamp");
+						String strName = ((JSONObject) data.getJSONObject(i)).getJSONObject("commentor").getString("name");
+						strName += " " + ((JSONObject) data.getJSONObject(i)).getJSONObject("commentor").getString("surname");
+
+						name.setText(strName);
+						time.setText(timestamp.substring(0, timestamp.indexOf(".")));
+						singleComment.setText(strComment);
+
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					commentsList.addView(comment);
+
+				}
+				final ScrollView scroll = (ScrollView) dialogView.findViewById(R.id.commentsScroll);
+
+				scroll.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						scroll.fullScroll(ScrollView.FOCUS_DOWN);
+					}
+				}, 1000);
+			} else {
 				LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
 				TextView name = (TextView) comment.findViewById(R.id.commentor);
 				TextView time = (TextView) comment.findViewById(R.id.commentDate);
 				TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
-				
-				try {
-					String strComment = ((JSONObject)data.getJSONObject(i)).getString("comment");
-					String timestamp = ((JSONObject)data.getJSONObject(i)).getString("timestamp");
-					String strName = ((JSONObject)data.getJSONObject(i)).getJSONObject("commentor").getString("name");
-					strName += " "+((JSONObject)data.getJSONObject(i)).getJSONObject("commentor").getString("surname");
-					
-					name.setText(strName);
-					time.setText(timestamp.substring(0, timestamp.indexOf(".")));
-					singleComment.setText(strComment);
-					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+
+				String strComment = "There are no comments on this incident";
+				Calendar c = Calendar.getInstance();
+				System.out.println("Current time => " + c.getTime());
+
+				SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+				String formattedDate = df.format(c.getTime());
+				String strName = "None";
+				strName += " ";
+
+				name.setText(strName);
+				time.setText(formattedDate);
+				singleComment.setText(strComment);
+
 				commentsList.addView(comment);
-				
 			}
-			final ScrollView scroll = (ScrollView) dialogView.findViewById(R.id.commentsScroll);
-			
-			scroll.postDelayed(new Runnable() {
-			    @Override
-			    public void run() {
-			        scroll.fullScroll(ScrollView.FOCUS_DOWN);
-			    }
-			}, 1000);
 		}
-		 
-					
-		 dialog.show();		
+
+		dialog.show();
 	}
 }

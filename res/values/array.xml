@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sections">
+        <item >EXISTING METER INFORMATION</item>
+        <item >NEW METER INFORMATION</item>
+        <item >CONNECTION INFORMATION</item>
+        <item >PIPE LINE INFORMATION</item>
+        <item >HYDRANT</item>
+        <item >VALVE</item>
+    </string-array>
+</resources>
