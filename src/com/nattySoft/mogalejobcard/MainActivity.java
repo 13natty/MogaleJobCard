@@ -23,13 +23,23 @@ import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.R.integer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +47,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -59,6 +70,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	private boolean registered = false;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	public static String employeeNUM = null;
 
 	private static final String REGISTRATION_SUCCESS = "0";
 	private static final String NEW_INCIDENT = "1";
@@ -78,10 +90,11 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	ArrayList<Fragment> prevFrag;
 	private int prevPos;
-	static Action action;
+
+	public static Action action;
 
 	protected static String incidentStatus;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,14 +105,14 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		if (registered) {
 			// Check device for Play Services APK.
 			if (checkPlayServices()) {
-
+				employeeNUM = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM);
 				startApp(savedInstanceState);
 
 			}
 		} else {
 			action = Action.REGISTER;
-			Intent intent = new Intent(this, RegistrationActivity.class);
-			startActivityForResult(intent, 0);
+			Intent intentREG = new Intent(this, RegistrationActivity.class);
+			startActivityForResult(intentREG, 0);
 		}
 
 	}
@@ -212,6 +225,25 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
+	
+	public void setCount(int count) {
+		DrawerItem dItem0 = dataList.get(0);
+		DrawerItem dItem1 = dataList.get(1);
+		dataList.clear();
+		
+		dItem0.setimgCountBG(R.drawable.messagecount);
+		dItem0.setCount(""+count);
+		
+		dataList.add(dItem0);
+		dataList.add(dItem1);
+		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
+		mDrawerList.setAdapter(adapter);
+
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		
+	}
 
 	/**
 	 * Check the device to make sure it has the Google Play Services APK. If it
@@ -241,16 +273,17 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	public void SelectItem(int possition) {
 
-		prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
-		prevPos = possition;
+		
 		Fragment fragment = null;
 		Bundle args = new Bundle();
 		switch (possition) {
 		case 0:
-//			fragment = new FragmentJobCard();
-//			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-//			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
-			
+			// fragment = new FragmentJobCard();
+			// args.putString(FragmentOne.ITEM_NAME,
+			// dataList.get(possition).getItemName());
+			// args.putInt(FragmentOne.IMAGE_RESOURCE_ID,
+			// dataList.get(possition).getImgResID());
+
 			fragment = new FragmentOne();
 			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
 			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
@@ -362,6 +395,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		mDrawerList.setItemChecked(possition, true);
 		setTitle(dataList.get(possition).getItemName());
 		mDrawerLayout.closeDrawer(mDrawerList);
+		
+		prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+		prevPos = possition;
 
 	}
 
@@ -377,17 +413,16 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		if (mDrawerToggle != null)
 			mDrawerToggle.syncState();
-		GCMBroadcastReceiver.pushListener = this;	
+		GCMBroadcastReceiver.pushListener = this;
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		Bundle intent_extras = getIntent().getExtras();
 		if (intent_extras != null && intent_extras.containsKey("action")) {
-			if(intent_extras.get("action") == "newIncident")
-			{
+			if (intent_extras.get("action") == "newIncident") {
 				action = Action.GET_ALL_OPEN_INCIDENCES;
 				CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 			}
@@ -466,16 +501,46 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	@Override
 	public void hasResponse(String responce) {
 		Log.d(TAG, " response " + responce);
+		Log.d(TAG, " action " + action);
 		if (action == Action.GET_ALL_OPEN_INCIDENCES) {
-			Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
+			if (!responce.equalsIgnoreCase("Did not work!"))
+				Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
 			SelectItem(0);
-		} else if (action == Action.DECLINE_INCIDENT) {
+		}else if(action == Action.GET_ALL_OPEN_INCIDENCES_BG){
+			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			if (frag instanceof FragmentOne) {
+				((FragmentOne) frag).setMenus(responce);
+			}else
+			{
+				for (int i = 0; i < prevFrag.size(); i++) {
+					if(prevFrag.get(i) instanceof FragmentOne)
+					{
+						((FragmentOne)prevFrag.get(i)).setMenus(responce);
+					}
+				}
+				
+				setCount(1);
+				//vibrate and make sound
+				Vibrator vibrator;
+				vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+				vibrator.vibrate(500);
+				
+				try {
+				    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+				    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+				    r.play();
+				} catch (Exception e) {
+				    e.printStackTrace();
+				}
+			}
+		}
+		else if (action == Action.DECLINE_INCIDENT) {
 			action = Action.GET_ALL_OPEN_INCIDENCES;
 			CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 		} else if (action == Action.ACCEPT_INCIDENT) {
 			if (responce.contains("success")) {
-				// DialogClass cdd=new DialogClass(getActivity(), incidentID);
-				// cdd.show();
+				action = Action.GET_ALL_OPEN_INCIDENCES;
+				CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 			}
 		} else if (action == Action.GET_COMMENTS) {
 			Log.d(TAG, "responce " + responce);
@@ -483,11 +548,34 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			if (frag instanceof FragmentIncident) {
 				((FragmentIncident) frag).showComments(responce);
 			}
-		}
-		else if(action == Action.SAVE_JOB_CARD)
-		{
-			action = Action.INCIDENT_STATUS;
-			CommunicationHandler.updateIncident(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Updating incident..."), incidentStatus);
+		} else if (action == Action.SAVE_JOB_CARD) {
+			String jobCardId = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
+			if (jobCardId == null) {
+				String id = null;
+				try {
+					JSONObject ob = new JSONObject(responce);
+					id = ob.getString("jobCardId");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID, id);
+			}
+			// action = Action.INCIDENT_STATUS;
+			// CommunicationHandler.updateIncident(this, this,
+			// ProgressDialog.show(MainActivity.this, "Please wait",
+			// "Updating incident..."), incidentStatus);
+			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			DialogClass cdd = new DialogClass(this, "", "", "JOB CARD SAVED");
+			cdd.show();
+		} else if (action == Action.UPDATE_JOB_CARD) {
+			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			DialogClass cdd = new DialogClass(this, "", "", "JOB CARD UPDATED");
+			cdd.show();
+			// action = Action.INCIDENT_STATUS;
+			// CommunicationHandler.updateIncident(this, this,
+			// ProgressDialog.show(MainActivity.this, "Please wait",
+			// "Updating incident..."), incidentStatus);
 		}
 
 	}
@@ -497,22 +585,111 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		final Bundle extras = intent.getExtras();
 		if (extras.containsKey("type")) {
 
-			if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
+			if (isAppRunning(context)) {
 
-			} else if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+				if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
+					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+					String message = extras.getString("body");
+					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
 
-			} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
+					Intent notificationIntent = new Intent(context, MainActivity.class);
 
-			} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-			} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
-				Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-				if (frag instanceof FragmentIncident) {
-					String incidentId_local = ((FragmentIncident) frag).incidentID;
-					DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("message"));
-					cdd.show();
+					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+					notification.setLatestEventInfo(context, "", message, pIntent);
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					notification.defaults |= Notification.DEFAULT_SOUND;
+					notification.defaults |= Notification.DEFAULT_LIGHTS;
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+					notificationManager.notify(0, notification);
+
+				} else if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+
+					action = Action.GET_ALL_OPEN_INCIDENCES_BG;
+					CommunicationHandler.getOpenIncidents(this, this, null);
+				} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
+					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+					String message = extras.getString("body");
+					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
+
+					Intent notificationIntent = new Intent(context, MainActivity.class);
+
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+					notification.setLatestEventInfo(context, "", message, pIntent);
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					notification.defaults |= Notification.DEFAULT_SOUND;
+					notification.defaults |= Notification.DEFAULT_LIGHTS;
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+					notificationManager.notify(0, notification);
+
+				} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
+					if (!extras.getString("senderEmployNum").equals(MainActivity.employeeNUM)) {
+						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+						if (frag instanceof FragmentTwo) {
+							((FragmentTwo) frag).sendChatMessage(extras.getString("senderName"), extras.getString("body"), extras.getString("timestamp"));
+						} else {
+							if (FragmentTwo.chatArrayAdapter != null) {
+								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body")));
+							} else {
+								FragmentTwo.chatArrayAdapter = new ChatArrayAdapter(this.getApplicationContext(), R.layout.single_chat_message);
+								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body")));
+							}
+						}
+					}
+
+				} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
+					Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+					if (frag instanceof FragmentIncident) {
+						String incidentId_local = ((FragmentIncident) frag).incidentID;
+						DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("body"));
+						cdd.show();
+					}
+
 				}
+			} else {
+				if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+					String message = extras.getString("body");
+					// Prepare intent which is triggered if the
+					// notification is selected
+					Intent myIntent = new Intent(context, MainActivity.class);
+					myIntent.putExtra("type", NEW_INCIDENT);
+					PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+					// Build notification
+					// Actions are just fake
+					Notification noti = new NotificationCompat.Builder(this).setContentTitle("New incident ").setContentText(message).setSmallIcon(R.drawable.mogale_icon_push).setWhen(System.currentTimeMillis()).setContentIntent(pendingIntent).setDefaults(Notification.DEFAULT_SOUND).setDefaults(Notification.DEFAULT_VIBRATE).setDefaults(Notification.DEFAULT_LIGHTS).setAutoCancel(true).build();
+					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+					// hide the notification after its selected
+					noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+					notificationManager.notify(0, noti);
+				} else {
+					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+					String message = extras.getString("body");
+					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
+
+					Intent notificationIntent = new Intent(context, MainActivity.class);
+					notificationIntent.putExtra("type", extras.getString("type"));
+
+					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+					notification.setLatestEventInfo(context, "", message, pIntent);
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					notification.defaults |= Notification.DEFAULT_SOUND;
+					notification.defaults |= Notification.DEFAULT_LIGHTS;
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+					notificationManager.notify(0, notification);
+				}
 			}
 
 			String message = extras.getString("description") + " : " + extras.getString("message");
@@ -520,36 +697,50 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		}
 	}
 
+	// foreground---
+
+	/**
+	 * Check if the android application is being sent in the background (i.e
+	 * behind another application's Activity).
+	 * 
+	 * @param context
+	 *            the context
+	 * @return true if another application will be above this one.
+	 */
+	public static boolean isAppRunning(Context context) {
+		// check with the first task(task in the foreground)
+		// in the returned list of tasks
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
+		if (services.get(0).topActivity.getPackageName().toString().equalsIgnoreCase(context.getPackageName().toString())) {
+			// your application is running in the background
+			return true;
+		}
+		return false;
+	}
+
 	// Defined in Activity class, so override
 	@Override
 	public void onBackPressed() {
-		if (prevFrag != null && prevFrag.size()>1) {
+		if (prevFrag != null && prevFrag.size() > 1) {
 			if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
-				if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof PipeLineInfo)
-				{
-					((PipeLineInfo)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof PipeLineInfo) {
+					((PipeLineInfo) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof ExistingMeterInformation) {
+					((ExistingMeterInformation) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof NewMeterInformation) {
+					((NewMeterInformation) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof ConnectionInfo) {
+					((ConnectionInfo) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof Hydrant) {
+					((Hydrant) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof Valve) {
+					((Valve) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
 				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof ExistingMeterInformation)
-				{
-					((ExistingMeterInformation)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
+				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof FragmentOne) {
+					super.onBackPressed();
 				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof NewMeterInformation)
-				{
-					((NewMeterInformation)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof ConnectionInfo)
-				{
-					((ConnectionInfo)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof Hydrant)
-				{
-					((Hydrant)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof Valve)
-				{
-					((Valve)getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				}
-				int index = prevFrag.size()-1;
+				int index = prevFrag.size() - 1;
 				FragmentManager frgManager = getFragmentManager();
 				frgManager.beginTransaction().replace(R.id.content_frame, prevFrag.get(index)).commit();
 				prevFrag.remove(index);
@@ -558,14 +749,11 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				setTitle(dataList.get(prevPos).getItemName());
 				mDrawerLayout.closeDrawer(mDrawerList);
 			}
-		}
-		else if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+		} else if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
 			mDrawerList.setItemChecked(prevPos, true);
 			setTitle(dataList.get(prevPos).getItemName());
 			mDrawerLayout.closeDrawer(mDrawerList);
-		}
-		else
-		{
+		} else {
 			super.onBackPressed();
 		}
 	}

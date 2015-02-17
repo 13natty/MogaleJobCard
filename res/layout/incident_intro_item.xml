@@ -50,4 +50,11 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#ffffff" />
 
+    <ImageView
+        android:id="@+id/acceptedimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="22dp"
+        android:layout_toLeftOf="@+id/severity_imageView" />
+
 </RelativeLayout>

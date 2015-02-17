@@ -15,6 +15,7 @@ public static class Config {
     	
     	public static final String KEY_USER_ID = "UserID";
     	public static final String KEY_EMPLOYEE_NUM = "employee_number";
+    	public static final String KEY_JOB_CARD_ID = "job_card_id";
     	
     	public static final String KEY_PIPELINE_INFO = "pipeline_info";
     	public static final String KEY_EXISTING_METER_INFO = "existing_meter_info";
@@ -22,6 +23,7 @@ public static class Config {
     	public static final String KEY_CONNECTION_INFO = "connection_info";
     	public static final String KEY_HYDRANT = "hydrant";
 		public static final String KEY_VALVE = "valve";
+		public static final String KEY_ADD_CHAT = "add_chat";
     	
     }
 

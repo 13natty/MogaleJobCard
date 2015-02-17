@@ -232,7 +232,7 @@ public class FragmentIncident extends Fragment {
 					List<DrawerItem> dataList = new ArrayList<DrawerItem>();
 					dataList.add(new DrawerItem("Add Comment", R.drawable.ic_action_add_comment, "accepted"));
 					dataList.add(new DrawerItem("View Comments", R.drawable.ic_action_view_comments, "accepted"));
-					((MainActivity) getActivity()).addMoreToDrawer(item.get("description"), dataList);
+//					((MainActivity) getActivity()).addMoreToDrawer(item.get("description"), dataList);
 				} else {
 
 					// List<DrawerItem> dataList = new ArrayList<DrawerItem>();
@@ -339,7 +339,8 @@ public class FragmentIncident extends Fragment {
 
 		JSONArray data = null;
 		try {
-			data = responceJSON.getJSONArray("data");
+			if (responceJSON != null)
+				data = responceJSON.getJSONArray("data");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -413,6 +414,26 @@ public class FragmentIncident extends Fragment {
 
 				commentsList.addView(comment);
 			}
+		}else {
+			LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
+			TextView name = (TextView) comment.findViewById(R.id.commentor);
+			TextView time = (TextView) comment.findViewById(R.id.commentDate);
+			TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
+
+			String strComment = "There are no comments on this incident";
+			Calendar c = Calendar.getInstance();
+			System.out.println("Current time => " + c.getTime());
+
+			SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+			String formattedDate = df.format(c.getTime());
+			String strName = "None";
+			strName += " ";
+
+			name.setText(strName);
+			time.setText(formattedDate);
+			singleComment.setText(strComment);
+
+			commentsList.addView(comment);
 		}
 
 		dialog.show();

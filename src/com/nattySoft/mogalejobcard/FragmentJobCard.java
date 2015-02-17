@@ -69,7 +69,7 @@ public class FragmentJobCard extends Fragment {
 					public void onClick(DialogInterface dialog, int pos) {
 						MainActivity.incidentStatus = (String) options[pos];
 						MainActivity.action = Action.SAVE_JOB_CARD;
-						CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID);
+						CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) options[pos]).toLowerCase());
 					}
 				});
 				builder.show();

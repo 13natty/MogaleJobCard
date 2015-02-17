@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-     
+    android:layout_height="match_parent" >
+
     <ImageView
         android:id="@+id/frag1_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-      />
- 
+        android:layout_height="wrap_content" />
+
     <TextView
         android:id="@+id/frag1_text"
         android:layout_width="wrap_content"
@@ -17,17 +15,23 @@
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/frag1_icon"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-    
-    <ListView
-        android:id="@+id/Incidents_listView"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_margin="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/frag1_text"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10.0sp" >
-        
-    </ListView>
- 
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ListView
+            android:id="@+id/Incidents_listView"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/frag1_text"
+            android:layout_margin="10dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10.0sp" >
+        </ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

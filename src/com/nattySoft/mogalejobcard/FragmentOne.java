@@ -11,24 +11,31 @@ import com.nattySoft.mogalejobcard.R;
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.MainActivity;
 import com.nattySoft.mogalejobcard.listener.IncidentClickedListener;
-import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnWindowFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class FragmentOne extends Fragment implements IncidentClickedListener{
+public class FragmentOne extends Fragment implements IncidentClickedListener, OnWindowFocusChangeListener{
 
 	private String TAG = FragmentOne.class.getSimpleName();
 
@@ -38,6 +45,10 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 	int[] icons = {R.drawable.no_water_50,R.drawable.water_meter_50,R.drawable.burst_pipe_50,R.drawable.water_pump_50,R.drawable.resevoir,R.drawable.water_tower_50};
 	ImageView ivIcon;
 	TextView tvItemName;
+
+	private SwipeRefreshLayout swipeContainer;
+
+	private Activity mActivity;
 
 	public static final String IMAGE_RESOURCE_ID = "iconResourceID";
 	public static final String ITEM_NAME = "itemName";
@@ -50,18 +61,43 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.fragment_layout_one, container, false);
+		
+		swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+            	MainActivity.action = Action.GET_ALL_OPEN_INCIDENCES;
+        		CommunicationHandler.getOpenIncidents(mActivity.getBaseContext(), (MainActivity)mActivity, ProgressDialog.show(mActivity, "Please wait", "Retrieving Open Incidents..."));
+            } 
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, 
+                android.R.color.holo_green_light, 
+                android.R.color.holo_orange_light, 
+                android.R.color.holo_red_light);
+        
 		menuList = (ListView) view.findViewById(R.id.Incidents_listView);
 		ivIcon = (ImageView) view.findViewById(R.id.frag1_icon);
 		tvItemName = (TextView) view.findViewById(R.id.frag1_text);
 
 		tvItemName.setText(getArguments().getString(ITEM_NAME));
 		ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
-		String responce = Preferences.getPreference(getActivity(), AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS);
+		String responce = Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS);
 		if(responce != null)
 			setMenus(responce, (IncidentClickedListener) this);
 		return view;
 	}
-
+	
+	public void setMenus(String responce)
+	{
+		IncidentClickedListener listener = (IncidentClickedListener) this;
+		setMenus(responce, (IncidentClickedListener) this);
+	}
+	
 	public void setMenus(String responce, final IncidentClickedListener listener) {		
 
 		JSONObject incidents = null;
@@ -86,6 +122,7 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 				Log.d("forst size", "incidentsArray size " + incidentsArray.length());
 
 				incidentslist.clear();
+				incidentsBigList.clear();
 
 				for (int i = 0; i < incidentsArray.length(); i++) {
 					HashMap<String, String> bigMap = new HashMap<String, String>();
@@ -141,9 +178,9 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 							bigMap.put("accepteeSurname_" + j, d.getString("surname"));
 							bigMap.put("active_" + j, d.getString("active"));
 							bigMap.put("password_" + j, d.getString("password"));
-							if(Preferences.getPreference(getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM) != null)
+							if(Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM) != null)
 							{
-								if (Preferences.getPreference(getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM).equals(d.optString("employeeNum"))) {
+								if (Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM).equals(d.optString("employeeNum"))) {
 									acctepted = true;
 								}
 							}
@@ -172,7 +209,7 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 					incidentsBigList.add(bigMap);
 				}
 				
-				incidentAdapeter adapter = new incidentAdapeter(getActivity(), icons, incidentsBigList);
+				incidentAdapeter adapter = new incidentAdapeter(mActivity, icons, incidentsBigList);
 				menuList.setAdapter(adapter);
 				//listener.hasBeenClicked(incidentsBigList.get(0));
 				menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -190,13 +227,19 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 			}
 		}
 	}
+	
+	@Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
+    }
 
 	@Override
 	public void hasBeenClicked(HashMap<String, String> item) {
 		Log.d("FragmentOne", "clicked incident " + item);
 		Bundle args = new Bundle();
 		args.putSerializable("HashMap", item);
-		((MainActivity)getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+		((MainActivity)mActivity).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
 		Fragment fragment = new FragmentIncident();
 		fragment.setArguments(args);
 		FragmentManager frgManager = getFragmentManager();
@@ -228,6 +271,13 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 			TextView dateText = (TextView) row.findViewById(R.id.date_text);
 			TextView ID = (TextView) row.findViewById(R.id.id_text);
 			ImageView severityImage = (ImageView) row.findViewById(R.id.severity_imageView);
+			ImageView accepted = (ImageView) row.findViewById(R.id.acceptedimage);
+			if (productlist.get(position).get("accepted") != null) {
+				if(productlist.get(position).get("accepted").equals("true"))
+				{
+					accepted.setImageResource(R.drawable.ic_action_good);
+				}
+			}
 						
 			int category = 0;
 			Log.d("getView", "pos " + position);
@@ -274,7 +324,12 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 			}
 			
 			myImage.setImageResource(icons[category]);
-			desc.setText(productlist.get(position).get("type"));
+			String descriprionText = productlist.get(position).get("description");
+			if(descriprionText.length()>35)
+			{
+				descriprionText = descriprionText.substring(0,33)+"...";
+			}
+			desc.setText(descriprionText);
 			dateText.setText((productlist.get(position).get("created")).substring(0, 10));
 			Log.d(TAG, "ID "+productlist.get(position).get("id"));
 			ID.setText("ID : "+productlist.get(position).get("id"));
@@ -298,6 +353,16 @@ public class FragmentOne extends Fragment implements IncidentClickedListener{
 
 			return count;
 		}
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		Intent intent = mActivity.getIntent();
+		if (intent != null && intent.getIntExtra("type", 0) == 1) {
+			Log.d(TAG, "call method now");
+
+		}
+		
 	}
 
 }

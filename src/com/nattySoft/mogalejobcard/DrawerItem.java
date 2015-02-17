@@ -9,6 +9,9 @@ public class DrawerItem {
 	boolean isSpinner;
 	
 	String type = null;
+	
+	int imgCountBG;
+	String count;
 
 	public DrawerItem(String itemName, int imgResID) {
 		super();
@@ -31,12 +34,25 @@ public class DrawerItem {
 		this.type = type;
 	}
 
+	public DrawerItem(String itemName, int imgResID, int imgCountBG) {
+		this(itemName, imgResID);
+		this.imgCountBG = imgCountBG;
+	}
+
 	public String getItemName() {
 		return ItemName;
 	}
 
 	public void setItemName(String itemName) {
 		ItemName = itemName;
+	}
+	
+	public String getCount() {
+		return count;
+	}
+
+	public void setCount(String count) {
+		this.count = count;
 	}
 
 	public int getImgResID() {
@@ -45,6 +61,14 @@ public class DrawerItem {
 
 	public void setImgResID(int imgResID) {
 		this.imgResID = imgResID;
+	}
+	
+	public int getImgCountBG() {
+		return imgCountBG;
+	}
+
+	public void setimgCountBG(int imgCountBG) {
+		this.imgCountBG = imgCountBG;
 	}
 
 	public String getTitle() {

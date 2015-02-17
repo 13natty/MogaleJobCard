@@ -33,6 +33,11 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 		this.layoutResID = layoutResourceID;
 
 	}
+	
+	public void setIncidentCOUNT(int count)
+	{
+		DrawerItem dItem = (DrawerItem) this.drawerItemList.get(0);		
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -49,7 +54,11 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 			view = inflater.inflate(layoutResID, parent, false);
 			drawerHolder.ItemName = (TextView) view
 					.findViewById(R.id.drawer_itemName);
+			drawerHolder.count = (TextView) view
+					.findViewById(R.id.incident_count_text);
 			drawerHolder.icon = (ImageView) view.findViewById(R.id.drawer_icon);
+			
+			drawerHolder.countImg = (ImageView) view.findViewById(R.id.incident_count);
 
 			drawerHolder.spinner = (Spinner) view
 					.findViewById(R.id.drawerSpinner);
@@ -122,14 +131,18 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 			drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(
 					dItem.getImgResID()));
 			drawerHolder.ItemName.setText(dItem.getItemName());
+			drawerHolder.count.setText(dItem.getCount());
+//			drawerHolder.countImg.setImageDrawable(view.getResources().getDrawable(
+//					dItem.getImgCountBG()));
 			Log.d("Getview","Passed5");
 		}
 		return view;
 	}
 
 	private static class DrawerItemHolder {
-		TextView ItemName, title;
+		TextView ItemName, title, count;
 		ImageView icon;
+		ImageView countImg;
 		LinearLayout headerLayout, itemLayout, spinnerLayout;
 		Spinner spinner;
 	}
