@@ -113,6 +113,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			action = Action.REGISTER;
 			Intent intentREG = new Intent(this, RegistrationActivity.class);
 			startActivityForResult(intentREG, 0);
+			finish();
 		}
 
 	}
