@@ -387,4 +387,20 @@ public class CommunicationHandler {
 
 	}
 
+	public static void pingIncidentReceived(Context context, RequestResponseListener listener, ProgressDialog dialog, String incidentId) {
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "incidentreceived.mobi");
+			json.accumulate("employeeNum", Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM));
+			json.accumulate("incidentId", incidentId); 
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+	}
+
 }

@@ -47,6 +47,25 @@
             android:layout_marginRight="10dp"
             android:text="Small Text"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+        <TextView
+            android:id="@+id/refrence_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/imageView_type"
+            android:layout_alignTop="@+id/imageView_type"
+            android:layout_marginLeft="10dp"
+            android:text="Ref Small Text"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+        <TextView
+            android:id="@+id/id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/imageView_type"
+            android:layout_below="@+id/refrence_text"
+            android:layout_marginLeft="10dp"
+            android:text="ID Small Text"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </RelativeLayout>
 
     <ScrollView
@@ -341,17 +360,25 @@
 
             <Button
                 android:id="@+id/button_accept"
+                style="?attr/buttonBarButtonStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Accept" />
+                android:background="#983c31"
+                android:layout_margin="1dp"
+                android:text="Accept"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/button_decline"
+                style="?attr/buttonBarButtonStyle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Decline" />
+                android:background="#983c31"
+                android:layout_margin="1dp"
+                android:text="Decline"
+                android:textColor="#FFFFFF" />
         </TableRow>
     </TableLayout>
 

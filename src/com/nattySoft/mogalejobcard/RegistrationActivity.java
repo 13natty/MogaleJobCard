@@ -4,19 +4,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.nattySoft.mogalejobcard.listener.PushListener;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
+import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.push.GCMer;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +32,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class RegistrationActivity extends Activity implements RequestResponseListener {
+public class RegistrationActivity extends Activity implements RequestResponseListener, PushListener {
 
 	EditText employeeNumber;
 	Button regButton;
@@ -47,6 +54,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 				}
 			}
 		});
+		GCMBroadcastReceiver.setListener(this);
 	}
 
 	@Override
@@ -150,6 +158,25 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 
 			// show it
 			alertDialog.show();
+	}
+
+	@Override
+	public void pushReceived(Context context, Intent intent) {
+		final Bundle extras = intent.getExtras();
+		if (extras.getString("type").equalsIgnoreCase(MainActivity.REGISTRATION_SUCCESS)) {
+			
+			String message = extras.getString("body");
+			// Prepare intent which is triggered if the
+			// Build notification
+			// Actions are just fake
+			Notification noti = new NotificationCompat.Builder(this).setContentTitle("Registered successfully").setContentText(message).setSmallIcon(R.drawable.mogale_icon_push).setWhen(System.currentTimeMillis()).setDefaults(Notification.DEFAULT_SOUND).setDefaults(Notification.DEFAULT_VIBRATE).setDefaults(Notification.DEFAULT_LIGHTS).setAutoCancel(true).build();
+			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+			// hide the notification after its selected
+			noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+			notificationManager.notify(0, noti);			
+			
+		}
 	}
 }
 

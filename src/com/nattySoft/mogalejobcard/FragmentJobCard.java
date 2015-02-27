@@ -99,7 +99,7 @@ public class FragmentJobCard extends Fragment {
 					break;
 				case 2:
 					((MainActivity) getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
-					Fragment fragment2 = new ConnectionInfo();
+					Fragment fragment2 = new NewConnectionInfo();
 					FragmentManager frgManager2 = getFragmentManager();
 					frgManager2.beginTransaction().replace(R.id.content_frame, fragment2).commit();
 					break;

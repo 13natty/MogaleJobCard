@@ -3,17 +3,22 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/service"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -22,42 +27,121 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Type Of Service :"
-                    android:layout_marginLeft="10dp" >
+                    android:layout_margin="10dp"
+                    android:text="Type of Service :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/type_of_service_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/service_fire"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/type_of_service" />
+                    android:hint="Fire" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/service_domestic"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Domestic" />
             </TableRow>
         </TableLayout>
 
-        <EditText
-            android:id="@+id/connection_length"
+        <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/service"
-            android:hint="Length Of Connection :" >
-        </EditText>
-
-        <EditText
-            android:id="@+id/connection_diameter"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/connection_length"
-            android:hint="Diameter :" >
-        </EditText>
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/road_crossing"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/diameter" >
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/length_of_conn"
+                    android:text="Length of Connection (m) :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/length_of_conn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/size"
+                    android:text="Size (Diameter)(mm) :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/size"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/depth"
+                    android:text="Depth (mm):" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/depth"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+        </TableLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -66,34 +150,45 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Road Crossing :"
-                    android:layout_marginLeft="10dp" >
+                    android:layout_margin="10dp"
+                    android:text="Is Road Crossing ? :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/connection_road_crossing_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/road_cross_yes"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/yes_no" />
+                    android:hint="Yes" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/road_cross_no"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="No" />
             </TableRow>
         </TableLayout>
 
-        <EditText
-            android:id="@+id/connection_depth"
+        <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/road_crossing"
-            android:hint="Depth :" >
-        </EditText>
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/type_of_material"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/depth_input" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -102,46 +197,63 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Type Of Material :"
-                    android:layout_marginLeft="10dp" >
+                    android:layout_margin="10dp"
+                    android:text="Type of Material :" >
                 </TextView>
-
-                <Spinner
-                    android:id="@+id/type_of_material_spinner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/type_of_material" />
             </TableRow>
-        </TableLayout>
-
-        <TableLayout
-            android:id="@+id/type_of_connection"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/type_of_material" >
 
             <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
-                <TextView
+                <CheckBox
+                    android:id="@+id/steel"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Type Of Connection :"
-                    android:layout_marginLeft="10dp" >
-                </TextView>
+                    android:hint="Steel" />
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/type_of_connection_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/hdpe_black"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/type_of_connection" />
+                    android:hint="HDPE Black" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/upvc"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="uPVC" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/ac"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="AC" />
             </TableRow>
         </TableLayout>
-    </RelativeLayout>
+        
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+        
+    </LinearLayout>
 
 </ScrollView>

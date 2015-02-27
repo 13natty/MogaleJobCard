@@ -56,17 +56,21 @@
             <ImageView
                 android:id="@+id/drawer_icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp" />
 
             <TextView
                 android:id="@+id/drawer_itemName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp" >
 
                 <ImageView
                     android:id="@+id/incident_count"
@@ -77,8 +81,7 @@
                     android:id="@+id/incident_count_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#FFFFFF" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
             </RelativeLayout>
         </LinearLayout>
 

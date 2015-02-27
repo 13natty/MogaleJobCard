@@ -3,7 +3,7 @@
     <string-array name="sections">
         <item >EXISTING METER INFORMATION</item>
         <item >NEW METER INFORMATION</item>
-        <item >CONNECTION INFORMATION</item>
+        <item >NEW CONNECTION INFORMATION</item>
         <item >PIPE LINE INFORMATION</item>
         <item >HYDRANT</item>
         <item >VALVE</item>

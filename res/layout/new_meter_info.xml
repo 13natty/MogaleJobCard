@@ -3,169 +3,82 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <TableLayout
-            android:id="@+id/checkBoxes"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" >
-
-            <TableRow
-                android:id="@+id/tableRow1"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <CheckBox
-                    android:id="@+id/new_above_ground"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter above ground on sidewalk" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/tableRow2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <CheckBox
-                    android:id="@+id/new_below_ground"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter below ground on sidewalk" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/tableRow3"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <CheckBox
-                    android:id="@+id/new_onstand_above_ground"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter on stand above ground" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/tableRow4"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <CheckBox
-                    android:id="@+id/new_onstand_below_ground"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter on stand below ground" />
-            </TableRow>
-
-            <EditText
-                android:id="@+id/new_existing_meter_no"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="EXISTING METER No :" >
-            </EditText>
-        </TableLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
         <View
-            android:id="@+id/divider1"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:layout_below="@+id/checkBoxes"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/table2"
+            android:id="@+id/new_meter_checkBoxes"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/divider1"
             android:stretchColumns="1" >
 
             <TableRow
-                android:id="@+id/tableRow7"
-                android:layout_width="0dp"
+                android:id="@+id/new_meter_tableRow1"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
-                <EditText
-                    android:id="@+id/new_scaling_factor"
+                <CheckBox
+                    android:id="@+id/new_meter_above_ground"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Scaling Factor :" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/new_make"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Make :" >
-                </EditText>
+                    android:hint="Meter above ground" />
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow8"
-                android:layout_width="0dp"
+                android:id="@+id/new_meter_tableRow2"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
-                <EditText
-                    android:id="@+id/new_dia"
+                <CheckBox
+                    android:id="@+id/new_meter_below_ground"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Dia :" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/new_meter_no"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter No:" >
-                </EditText>
+                    android:hint="Meter below ground" />
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow9"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" >
 
-                <EditText
-                    android:id="@+id/new_meter_reading"
+                <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Meter Reading :" >
-                </EditText>
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/new_meter_existing_meter_no"
+                    android:text="EXISTING METER No :" >
+                </TextView>
 
                 <EditText
-                    android:id="@+id/new_no_digits"
+                    android:id="@+id/new_meter_existing_meter_no"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="No. Digits :" >
+                    android:layout_margin="10dp"
+                    android:inputType="text" >
                 </EditText>
-            </TableRow>            
+            </TableRow>
         </TableLayout>
 
         <View
-            android:id="@+id/divider2"
+            android:id="@+id/new_meter_divider1"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:layout_below="@+id/table2"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/table3"
+            android:id="@+id/new_meter_table2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/divider2"
             android:stretchColumns="1" >
 
             <TableRow
@@ -175,75 +88,209 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Com. M" >
+                    android:layout_margin="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="METER TYPE :" >
                 </TextView>
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-                </TextView>
-            </TableRow>
-            
-            <TableRow
-                android:id="@+id/tableRow10"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-                </TextView>
-
-                <EditText
-                    android:id="@+id/new_type"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Type :" >
-                </EditText>
-            </TableRow>
-            <TableRow
-                android:id="@+id/tableRow11"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" >
-
-                <EditText
-                    android:id="@+id/new_dia2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Dia :" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/new_meter_no_2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Meter No :" >
-                </EditText>
             </TableRow>
 
             <TableRow
-                android:id="@+id/tableRow12"
-                android:layout_width="0dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
 
-                <EditText
-                    android:id="@+id/new_meter_reading_2"
+                <CheckBox
+                    android:id="@+id/new_meter_meterTypePrepaid"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Meter Reading :" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/new_no_digits_2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="No. Digits :" >
-                </EditText>
+                    android:hint="Prepaid" />
             </TableRow>
 
-            <TableLayout>
-            </TableLayout>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterTypeConv"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Conventional" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterTypeConvBulk"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Bulk" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterTypeConvSingle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Single Reading" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterTypeConvComb"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Combination" />
+            </TableRow>
         </TableLayout>
-    </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="METER MAKE :" >
+                </TextView>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterMakeElster"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Elster Kent" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterMakeTeqnovo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Teqnovo" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterMakeSensus"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Sensus" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/new_meter_meterMakePrepaidKent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Prepaid Kent" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/new_meter_dia"
+                    android:text="Size :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/new_meter_dia"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/new_meter_meter_reading"
+                    android:text="Meter Reading :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/new_meter_meter_reading"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/new_meter_no_digits"
+                    android:text="No. Digits :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/new_meter_no_digits"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+        </TableLayout>
+
+        <View
+            android:id="@+id/new_meter_divider2"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />        
+
+    </LinearLayout>
 
 </ScrollView>

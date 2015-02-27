@@ -3,86 +3,22 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-        <TableLayout
-            android:id="@+id/location"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" >
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:hint="Location :" >
-                </TextView>
-
-                <Spinner
-                    android:id="@+id/location_spinner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/location" />
-            </TableRow>
-        </TableLayout>
-
-        <EditText
-            android:id="@+id/distance"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/location"
-            android:hint="Distance :" >
-        </EditText>
-        
         <View
-            android:id="@+id/divider"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:layout_below="@+id/distance"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:background="@android:color/holo_blue_dark" />
 
-        <EditText
-            android:id="@+id/distance_from_stand_corner"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/divider"
-            android:hint="Distance from stand corners :" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/left"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/distance_from_stand_corner"
-            android:hint="Left :" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/right"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/left"
-            android:hint="Right :" >
-        </EditText>
-
         <TableLayout
-            android:id="@+id/road_crossing"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/right" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -91,26 +27,45 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:hint="Road Crossing :" >
+                    android:layout_margin="10dp"
+                    android:text="Location Info :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/road_crossing_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/mid_block"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/yes_no" />
+                    android:hint="Mid Block" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/side_walk"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Side Walk" />
             </TableRow>
         </TableLayout>
-        
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
         <TableLayout
-            android:id="@+id/pipe_diameter"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/road_crossing" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -119,35 +74,45 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:hint="Pipe diameter :" >
+                    android:layout_margin="10dp"
+                    android:text="Road Crossing :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/pipe_diameter_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_crossing_yes"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/pipe_diameter" />
+                    android:hint="Yes" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_crossing_no"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="No" />
             </TableRow>
         </TableLayout>
 
-        <EditText
-            android:id="@+id/other_size"
+        <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/pipe_diameter"
-            android:hint="Other Size :"
-            android:visibility="gone" >
-        </EditText>
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/pipe_material"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/other_size" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -156,35 +121,177 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:hint="Pipe Material :" >
+                    android:layout_margin="10dp"
+                    android:text="Pipe Diameter :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/pipe_material_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_20"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/pipe_material" />
+                    android:hint="20" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_25"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="25" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_32"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="32" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_40"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="40" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_50"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="50" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_75"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="75" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_90"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="90" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_110"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="110" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_160"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="160" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_200"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="200" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_250"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="250" />
+            </TableRow>
+            
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_dia_other"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Other" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/other_size_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/other_size"
+                    android:text="Other (mm) :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/other_size"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
             </TableRow>
         </TableLayout>
-        
-        <EditText
-            android:id="@+id/other_material"
+
+        <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/pipe_material"
-            android:hint="Other :"
-            android:visibility="gone" >
-        </EditText>
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
 
         <TableLayout
-            android:id="@+id/type_of_repair"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/other_material" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -193,62 +300,67 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Type Of Repair :"
-                    android:layout_marginLeft="10dp" >
+                    android:layout_margin="10dp"
+                    android:text="Type of Material :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/type_of_repair_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_steel"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/type_of_repair" />
+                    android:hint="Steel" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_hdpe_black"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="HDPE Black" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_upvc"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="uPVC" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_ac"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="AC" />
             </TableRow>
         </TableLayout>
-        
-        <EditText
-            android:id="@+id/cut_out_length"
+
+        <View
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/type_of_repair"
-            android:hint="Cut out length :"
-            android:visibility="gone" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/replace_length"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/cut_out_length"
-            android:hint="Replace length :"
-            android:visibility="gone" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/flush_hydrant_time"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/replace_length"
-            android:hint="Flush Hydrant Time :"
-            android:visibility="gone" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/code"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/flush_hydrant_time"
-            android:hint="Code :"
-            android:visibility="gone" >
-        </EditText>
-        
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
         <TableLayout
-            android:id="@+id/approximately_hole_size"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/code" >
+            android:stretchColumns="1" >
 
             <TableRow
                 android:layout_width="fill_parent"
@@ -257,19 +369,61 @@
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Approximately hole size :"
-                    android:layout_marginLeft="10dp" >
+                    android:layout_margin="10dp"
+                    android:text="Type of Repair :" >
                 </TextView>
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/hole_size_spinner"
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_cut_out_length"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:drawSelectorOnTop="false"
-                    android:entries="@array/approx_hole_size" />
+                    android:hint="Cut Out Length" />
+            </TableRow>
+            
+            <TableRow
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/cut_out_length_label"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:labelFor="@+id/cut_out_lenth"
+                    android:text="Cut Out Length (m) :" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/cut_out_lenth"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:inputType="number" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <CheckBox
+                    android:id="@+id/pipe_line_fix_burst_pipe"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Fix Burst Pipe" />
             </TableRow>
         </TableLayout>
-        
-    </RelativeLayout>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+    </LinearLayout>
 
 </ScrollView>

@@ -19,23 +19,23 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class Hydrant extends Fragment implements OnItemSelectedListener {
 	
-	private CheckBox hydrantAbove;
-	private CheckBox hydrantBelow;
-	private String hydrantPosition;
-	
-	private EditText hydrantNumber;
-	private EditText hydrantPressure;
-	private EditText hydrantTime;
-	private EditText hydrantLeftCorner;
-	private EditText hydrantRightCorner;
-	
-	private Spinner typeOfRepairSpinner;
-	private boolean hydrantReplace = false;
-	private boolean hydrantReplaceLid = false;
-	private boolean hydrantCloseLeak = false;
-	private boolean hydrantReplaceBox = false;
-	
-	private EditText code;
+//	private CheckBox hydrantAbove;
+//	private CheckBox hydrantBelow;
+//	private String hydrantPosition;
+//	
+//	private EditText hydrantNumber;
+//	private EditText hydrantPressure;
+//	private EditText hydrantTime;
+//	private EditText hydrantLeftCorner;
+//	private EditText hydrantRightCorner;
+//	
+//	private Spinner typeOfRepairSpinner;
+//	private boolean hydrantReplace = false;
+//	private boolean hydrantReplaceLid = false;
+//	private boolean hydrantCloseLeak = false;
+//	private boolean hydrantReplaceBox = false;
+//	
+//	private EditText code;
 
 	View view;
 	@Override
@@ -48,104 +48,104 @@ public class Hydrant extends Fragment implements OnItemSelectedListener {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		hydrantAbove = (CheckBox) view.findViewById(R.id.hydrant_above_ground);
-		hydrantAbove.setOnClickListener(new OnClickListener() {
+//		hydrantAbove = (CheckBox) view.findViewById(R.id.hydrant_above_ground);
+//		hydrantAbove.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if(hydrantAbove.isChecked()){
-                	hydrantBelow.setChecked(false);
-                	hydrantPosition = "Above ground";
-                }else{
-                    System.out.println("Un-Checked");
-                }
-            }
-        });
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//                if(hydrantAbove.isChecked()){
+//                	hydrantBelow.setChecked(false);
+//                	hydrantPosition = "Above ground";
+//                }else{
+//                    System.out.println("Un-Checked");
+//                }
+//            }
+//        });
 		
-		hydrantBelow = (CheckBox) view.findViewById(R.id.hydrant_below_ground);
-		hydrantBelow.setOnClickListener(new OnClickListener() {
+//		hydrantBelow = (CheckBox) view.findViewById(R.id.hydrant_below_ground);
+//		hydrantBelow.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if(hydrantBelow.isChecked()){
-                	hydrantAbove.setChecked(false);
-                	hydrantPosition = "Below ground";
-                }else{
-                    System.out.println("Un-Checked");
-                }
-            }
-        });
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//                if(hydrantBelow.isChecked()){
+//                	hydrantAbove.setChecked(false);
+//                	hydrantPosition = "Below ground";
+//                }else{
+//                    System.out.println("Un-Checked");
+//                }
+//            }
+//        });
 		
-		hydrantNumber = (EditText) view.findViewById(R.id.hydrant_number);
-		hydrantPressure = (EditText) view.findViewById(R.id.hydrant_pressure);
-		hydrantTime = (EditText) view.findViewById(R.id.hydrant_time);
-		hydrantLeftCorner = (EditText) view.findViewById(R.id.hydrant_left_corner);
-		hydrantRightCorner = (EditText) view.findViewById(R.id.hydrant_right_corner);
-		
-		typeOfRepairSpinner = (Spinner) view.findViewById(R.id.hydrant_type_of_repair_spinner);
-		typeOfRepairSpinner.setOnItemSelectedListener(this);
-		
-		code = (EditText) view.findViewById(R.id.hydrant_code);
-		code.setVisibility(View.GONE);
+//		hydrantNumber = (EditText) view.findViewById(R.id.hydrant_number);
+//		hydrantPressure = (EditText) view.findViewById(R.id.hydrant_pressure);
+//		hydrantTime = (EditText) view.findViewById(R.id.hydrant_time);
+//		hydrantLeftCorner = (EditText) view.findViewById(R.id.hydrant_left_corner);
+//		hydrantRightCorner = (EditText) view.findViewById(R.id.hydrant_right_corner);
+//		
+//		typeOfRepairSpinner = (Spinner) view.findViewById(R.id.hydrant_type_of_repair_spinner);
+//		typeOfRepairSpinner.setOnItemSelectedListener(this);
+//		
+//		code = (EditText) view.findViewById(R.id.hydrant_code);
+//		code.setVisibility(View.GONE);
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 		if(parent.getItemAtPosition(pos).toString().equals("Code"))
 		{
-			code.setVisibility(View.VISIBLE);
-			hydrantReplace = false;
-			hydrantReplaceLid = false;
-			hydrantCloseLeak = false;
-			hydrantReplaceBox = false;
+//			code.setVisibility(View.VISIBLE);
+//			hydrantReplace = false;
+//			hydrantReplaceLid = false;
+//			hydrantCloseLeak = false;
+//			hydrantReplaceBox = false;
 		}
 		else
 		{
-			if(parent.getItemAtPosition(pos).toString().equals("203:Replace hydrant"))
-			{
-				hydrantReplace = true;
-				hydrantReplaceLid = false;
-				hydrantCloseLeak = false;
-				hydrantReplaceBox = false;
-			}
-			else if(parent.getItemAtPosition(pos).toString().equals("200:Replace Lid"))
-			{
-				hydrantReplace = false;
-				hydrantReplaceLid = true;
-				hydrantCloseLeak = false;
-				hydrantReplaceBox = false;
-			}
-			else if(parent.getItemAtPosition(pos).toString().equals("201:Close leaking hydrant"))
-			{
-				hydrantReplace = false;
-				hydrantReplaceLid = false;
-				hydrantCloseLeak = true;
-				hydrantReplaceBox = false;
-			}
-			else if(parent.getItemAtPosition(pos).toString().equals("202:Repair hydrant"))
-			{
-				hydrantReplace = false;
-				hydrantReplaceLid = false;
-				hydrantCloseLeak = false;
-				hydrantReplaceBox = false;
-			}
-			else if(parent.getItemAtPosition(pos).toString().equals("203:Replace box"))
-			{
-				hydrantReplace = false;
-				hydrantReplaceLid = false;
-				hydrantCloseLeak = false;
-				hydrantReplaceBox = true;
-			}
-			else
-			{
-				hydrantReplace = false;
-				hydrantReplaceLid = false;
-				hydrantCloseLeak = false;
-				hydrantReplaceBox = false;
-			}
-			code.setVisibility(View.GONE);
+//			if(parent.getItemAtPosition(pos).toString().equals("203:Replace hydrant"))
+//			{
+//				hydrantReplace = true;
+//				hydrantReplaceLid = false;
+//				hydrantCloseLeak = false;
+//				hydrantReplaceBox = false;
+//			}
+//			else if(parent.getItemAtPosition(pos).toString().equals("200:Replace Lid"))
+//			{
+//				hydrantReplace = false;
+//				hydrantReplaceLid = true;
+//				hydrantCloseLeak = false;
+//				hydrantReplaceBox = false;
+//			}
+//			else if(parent.getItemAtPosition(pos).toString().equals("201:Close leaking hydrant"))
+//			{
+//				hydrantReplace = false;
+//				hydrantReplaceLid = false;
+//				hydrantCloseLeak = true;
+//				hydrantReplaceBox = false;
+//			}
+//			else if(parent.getItemAtPosition(pos).toString().equals("202:Repair hydrant"))
+//			{
+//				hydrantReplace = false;
+//				hydrantReplaceLid = false;
+//				hydrantCloseLeak = false;
+//				hydrantReplaceBox = false;
+//			}
+//			else if(parent.getItemAtPosition(pos).toString().equals("203:Replace box"))
+//			{
+//				hydrantReplace = false;
+//				hydrantReplaceLid = false;
+//				hydrantCloseLeak = false;
+//				hydrantReplaceBox = true;
+//			}
+//			else
+//			{
+//				hydrantReplace = false;
+//				hydrantReplaceLid = false;
+//				hydrantCloseLeak = false;
+//				hydrantReplaceBox = false;
+//			}
+//			code.setVisibility(View.GONE);
 		}
 	}
 
@@ -161,18 +161,18 @@ public class Hydrant extends Fragment implements OnItemSelectedListener {
 			{
 				JSONObject json = new JSONObject(jsonStr);
 				
-				hydrantAbove.setChecked(Boolean.parseBoolean(json.getString("hydrantAbove")));
-				hydrantBelow.setChecked(Boolean.parseBoolean(json.getString("hydrantBelow")));
-				
-				hydrantNumber.setText(json.getString("hydrantNumber"));
-				hydrantPressure.setText(json.getString("hydrantPressure"));
-				hydrantTime.setText(json.getString("hydrantTime"));
-				hydrantLeftCorner.setText(json.getString("hydrantLeftCorner"));
-				hydrantRightCorner.setText(json.getString("hydrantRightCorner"));
-				
-				typeOfRepairSpinner.setSelection(Integer.parseInt(json.getString("typeOfRepairSpinner")));
-				
-				code.setText(json.getString("code"));
+//				hydrantAbove.setChecked(Boolean.parseBoolean(json.getString("hydrantAbove")));
+//				hydrantBelow.setChecked(Boolean.parseBoolean(json.getString("hydrantBelow")));
+//				
+//				hydrantNumber.setText(json.getString("hydrantNumber"));
+//				hydrantPressure.setText(json.getString("hydrantPressure"));
+//				hydrantTime.setText(json.getString("hydrantTime"));
+//				hydrantLeftCorner.setText(json.getString("hydrantLeftCorner"));
+//				hydrantRightCorner.setText(json.getString("hydrantRightCorner"));
+//				
+//				typeOfRepairSpinner.setSelection(Integer.parseInt(json.getString("typeOfRepairSpinner")));
+//				
+//				code.setText(json.getString("code"));
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -183,29 +183,29 @@ public class Hydrant extends Fragment implements OnItemSelectedListener {
 	
 	public void saveForm() {
 		JSONObject json = new JSONObject();
-		try {
-			json.accumulate("hydrantAbove", hydrantAbove.isChecked());
-			json.accumulate("hydrantBelow", hydrantBelow.isChecked());
-			json.accumulate("hydrantPosition", hydrantPosition);
+//		try {
+//			json.accumulate("hydrantAbove", hydrantAbove.isChecked());
+//			json.accumulate("hydrantBelow", hydrantBelow.isChecked());
+//			json.accumulate("hydrantPosition", hydrantPosition);
+//			
+//			json.accumulate("hydrantNumber", hydrantNumber.getText().toString());
+//			json.accumulate("hydrantPressure", hydrantPressure.getText().toString());
+//			json.accumulate("hydrantTime", hydrantTime.getText().toString());
+//			json.accumulate("hydrantLeftCorner", hydrantLeftCorner.getText().toString());
+//			json.accumulate("hydrantRightCorner", hydrantRightCorner.getText().toString());
+//			
+//			json.accumulate("typeOfRepairSpinner", typeOfRepairSpinner.getSelectedItemPosition());
+//			json.accumulate("hydrantReplace", hydrantReplace);
+//			json.accumulate("hydrantReplaceLid", hydrantReplaceLid);
+//			json.accumulate("hydrantCloseLeak", hydrantCloseLeak);
+//			json.accumulate("hydrantReplaceBox", hydrantReplaceBox);
+//			
+//			json.accumulate("code", code.getText().toString());
 			
-			json.accumulate("hydrantNumber", hydrantNumber.getText().toString());
-			json.accumulate("hydrantPressure", hydrantPressure.getText().toString());
-			json.accumulate("hydrantTime", hydrantTime.getText().toString());
-			json.accumulate("hydrantLeftCorner", hydrantLeftCorner.getText().toString());
-			json.accumulate("hydrantRightCorner", hydrantRightCorner.getText().toString());
-			
-			json.accumulate("typeOfRepairSpinner", typeOfRepairSpinner.getSelectedItemPosition());
-			json.accumulate("hydrantReplace", hydrantReplace);
-			json.accumulate("hydrantReplaceLid", hydrantReplaceLid);
-			json.accumulate("hydrantCloseLeak", hydrantCloseLeak);
-			json.accumulate("hydrantReplaceBox", hydrantReplaceBox);
-			
-			json.accumulate("code", code.getText().toString());
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		Preferences.savePreference(getActivity(), AppConstants.PreferenceKeys.KEY_HYDRANT+FragmentIncident.incidentID,  json.toString());
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		Preferences.savePreference(getActivity(), AppConstants.PreferenceKeys.KEY_HYDRANT+FragmentIncident.incidentID,  json.toString());
 		
 	}
 

@@ -45,6 +45,8 @@ public class FragmentIncident extends Fragment {
 
 	ImageView image;
 	TextView statusText;
+	TextView referenceText;
+	TextView IDText;
 	TextView typeText;
 	TextView title;
 	TextView reporterName;
@@ -97,6 +99,8 @@ public class FragmentIncident extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		statusText = (TextView) getActivity().findViewById(R.id.status_text);
 		typeText = (TextView) getActivity().findViewById(R.id.text_type);
+		referenceText = (TextView) getActivity().findViewById(R.id.refrence_text);
+		IDText = (TextView) getActivity().findViewById(R.id.id_text);
 		image = (ImageView) getActivity().findViewById(R.id.imageView_type);
 		title = (TextView) getActivity().findViewById(R.id.title);
 		reporterName = (TextView) getActivity().findViewById(R.id.reporterName);
@@ -250,6 +254,8 @@ public class FragmentIncident extends Fragment {
 			}
 			statusText.setText("Status : " + item.get("status"));
 			typeText.setText("Type : " + item.get("type"));
+			referenceText.setText("Reference : "+item.get("refNum"));
+			IDText.setText("ID : "+item.get("id"));
 			title.setText(item.get("description"));
 			reporterName.setText(item.get("reporterName"));
 			reporterSurName.setText(item.get("reporterSurname"));
