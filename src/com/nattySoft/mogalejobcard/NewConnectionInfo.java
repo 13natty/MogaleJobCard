@@ -80,23 +80,23 @@ public class NewConnectionInfo extends Fragment implements OnCheckedChangeListen
 			{
 				JSONObject json = new JSONObject(jsonStr);
 				
-				connectiontypeOfService = Integer.parseInt(json.getString("connectiontypeOfService"));
+				connectiontypeOfService = Integer.parseInt(json.getString("connectionServiceType"));
 				if (connectiontypeOfService == 1) {
 					typeOfServiceFire.setChecked(true);
 				} else if (connectiontypeOfService == 2) {
 					typeOfServiceDomestic.setChecked(true);
 				}
-				connectionRoadCrossing = Boolean.parseBoolean(json.getString("connectionRoadCrossing"));
+				connectionRoadCrossing = Boolean.parseBoolean(json.getString("connectionCrossRoad"));
 				if (connectionRoadCrossing) {
 					roadCrossingYes.setChecked(true);
 				}
 				
-				connectionLength.setText(json.getString("connectionLength"));
-				connectionDiameter.setText(json.getString("connectionDiameter"));
+				connectionLength.setText(json.getString("connectionLegth"));
+				connectionDiameter.setText(json.getString("connectionSize"));
 				
 				connectionDepth.setText(json.getString("connectionDepth"));
 				
-				connectionMaterial = Integer.parseInt(json.getString("connectionMaterial"));
+				connectionMaterial = Integer.parseInt(json.getString("connectionMaterialType"));
 				switch (connectionMaterial) {
 				case 1:
 					connectionMaterialSteel.setChecked(true);
@@ -125,13 +125,13 @@ public class NewConnectionInfo extends Fragment implements OnCheckedChangeListen
 	public void saveForm() {
 		JSONObject json = new JSONObject();
 		try {
-			json.accumulate("connectiontypeOfService", connectiontypeOfService);		
+			json.accumulate("connectionServiceType", connectiontypeOfService);		
 			
-			json.accumulate("connectionLength", connectionLength.getText().toString());
-			json.accumulate("connectionDiameter", connectionDiameter.getText().toString());
+			json.accumulate("connectionLegth", connectionLength.getText().toString());
+			json.accumulate("connectionSize", connectionDiameter.getText().toString());
 			json.accumulate("connectionDepth", connectionDepth.getText().toString());
-			json.accumulate("connectionRoadCrossing", connectionRoadCrossing);
-			json.accumulate("connectionMaterial", connectionMaterial);
+			json.accumulate("connectionCrossRoad", connectionRoadCrossing);
+			json.accumulate("connectionMaterialType", connectionMaterial);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

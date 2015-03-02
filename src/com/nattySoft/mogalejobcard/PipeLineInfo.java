@@ -152,11 +152,11 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 				} else if (pipelineLocation == 2) {
 					sideWalk.setChecked(true);
 				}
-				pipelineRoadCrossing = Boolean.parseBoolean(json.getString("pipelineRoadCrossing"));
+				pipelineRoadCrossing = Boolean.parseBoolean(json.getString("pipelineCrossRoad"));
 				if (pipelineRoadCrossing) {
 					roadCrossingYes.setChecked(true);
 				}
-				pipeDiameter = Integer.parseInt(json.getString("pipeLineDiameter"));
+				pipeDiameter = Integer.parseInt(json.getString("pipelineDiameter"));
 				if (pipeDiameter > 0) {
 					if (pipeDiameter == 20 || pipeDiameter == 25 || pipeDiameter == 32 || pipeDiameter == 40 || pipeDiameter == 50 || pipeDiameter == 75 || pipeDiameter == 90 || pipeDiameter == 110 || pipeDiameter == 160 || pipeDiameter == 200 || pipeDiameter == 250) {
 						switch (pipeDiameter) {
@@ -199,10 +199,10 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 						}
 					} else {
 						pipeDiameterOther.setChecked(true);
-						otherDiameter.setText(json.getString("pipeLineDiameter"));
+						otherDiameter.setText(json.getString("pipelineDiameter"));
 					}
 				}
-				pipeMaterial = Integer.parseInt(json.getString("pipeMaterial"));
+				pipeMaterial = Integer.parseInt(json.getString("pipelineMaterial"));
 				switch (pipeMaterial) {
 				case 1:
 					pipeMaterialSteel.setChecked(true);
@@ -220,11 +220,11 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 				default:
 					break;
 				}
-				typeOfRepair = Integer.parseInt(json.getString("pipeLineTypeOfRepair"));
+				typeOfRepair = Integer.parseInt(json.getString("pipelineRepairType"));
 				switch (typeOfRepair) {
 				case 1:
 					typeOfRepairCutOutLength.setChecked(true);
-					cutOutLength.setText(json.getString("pipeLineCutOutLength"));
+					cutOutLength.setText(json.getString("pipelineCutOutLength"));
 					break;
 				case 2:
 					typeOfRepairFixBurstPipe.setChecked(true);
@@ -246,7 +246,7 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 		JSONObject json = new JSONObject();
 		try {
 			json.accumulate("pipelineLocation", pipelineLocation);
-			json.accumulate("pipelineRoadCrossing", pipelineRoadCrossing);
+			json.accumulate("pipelineCrossRoad", pipelineRoadCrossing);
 			if (pipeDiameter == 0) {
 				if (otherDiameter.getText().length() > 0) {
 					int dia = Integer.parseInt(otherDiameter.getText().toString());
@@ -255,9 +255,9 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 					}
 				}
 			}
-			json.accumulate("pipeLineDiameter", pipeDiameter);
-			json.accumulate("pipeMaterial", pipeMaterial);
-			json.accumulate("pipeLineTypeOfRepair", typeOfRepair);
+			json.accumulate("pipelineDiameter", pipeDiameter);
+			json.accumulate("pipelineMaterial", pipeMaterial);
+			json.accumulate("pipelineRepairType", typeOfRepair);
 			if (typeOfRepair == 1) {
 				if (cutOutLength.getText().length() > 0) {
 					int cutLength = Integer.parseInt(cutOutLength.getText().toString());
@@ -270,7 +270,7 @@ public class PipeLineInfo extends Fragment implements OnCheckedChangeListener {
 					pipeLineCutOutLength = 6;
 				}
 			}
-			json.accumulate("pipeLineCutOutLength", pipeLineCutOutLength);
+			json.accumulate("pipelineCutOutLength", pipeLineCutOutLength);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

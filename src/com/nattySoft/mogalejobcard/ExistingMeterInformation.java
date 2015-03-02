@@ -25,7 +25,7 @@ public class ExistingMeterInformation extends Fragment implements OnCheckedChang
 
 	private CheckBox meterAbove;
 	private CheckBox meterBelow;
-	private int existingMeterPosition;
+	private int existingMeterPosition = 0;
 
 	private EditText existingMeterNo;
 	private CheckBox existingPrepaid;
@@ -104,16 +104,16 @@ public class ExistingMeterInformation extends Fragment implements OnCheckedChang
 		try {
 			if (jsonStr != null) {
 				JSONObject json = new JSONObject(jsonStr);
-				existingMeterPosition = Integer.parseInt(json.getString("existingMeterPosition"));
+				existingMeterPosition = Integer.parseInt(json.getString("meterPosition"));
 				if (existingMeterPosition == 1) {
 					meterAbove.setChecked(true);
 				} else if (existingMeterPosition == 2) {
 					meterBelow.setChecked(true);
 				}
 								
-				existingMeterNo.setText(json.getString("existingMeterNo"));
+				existingMeterNo.setText(json.getString("meterNum"));
 				
-				existingMeterType = Integer.parseInt(json.getString("existingMeterType"));
+				existingMeterType = Integer.parseInt(json.getString("meterType"));
 				if(existingMeterType == 1)
 				{
 					existingPrepaid.setChecked(true);
@@ -134,7 +134,7 @@ public class ExistingMeterInformation extends Fragment implements OnCheckedChang
 					}
 				}
 				
-				existingMeterMake = Integer.parseInt(json.getString("existingMeterMake"));
+				existingMeterMake = Integer.parseInt(json.getString("meterMake"));
 				if(existingMeterMake == 1)
 				{
 					existingElsterKent.setChecked(true);
@@ -149,9 +149,9 @@ public class ExistingMeterInformation extends Fragment implements OnCheckedChang
 					existingPrepaidKent.setChecked(true);
 				}
 				
-				existingSize.setText(json.getString("existingSize"));
-				existingMeterReading.setText(json.getString("existingMeterReading"));
-				existingNoDigits.setText(json.getString("existingNoDigits"));
+				existingSize.setText(json.getString("meterSize"));
+				existingMeterReading.setText(json.getString("meterReading"));
+				existingNoDigits.setText(json.getString("meterNumOfDigits"));
 				
 			}
 		} catch (JSONException e) {
@@ -165,16 +165,16 @@ public class ExistingMeterInformation extends Fragment implements OnCheckedChang
 		JSONObject json = new JSONObject();
 		try {
 			
-			json.accumulate("existingMeterPosition", existingMeterPosition);
-			json.accumulate("existingMeterNo", existingMeterNo.getText().toString());
+			json.accumulate("meterPosition", existingMeterPosition);
+			json.accumulate("meterNum", existingMeterNo.getText().toString());
 
-			json.accumulate("existingMeterType", existingMeterType);
+			json.accumulate("meterType", existingMeterType);
 			json.accumulate("existingConventionalMeterType", existingConventionalMeterType);
-			json.accumulate("existingMeterMake", existingMeterMake);
+			json.accumulate("meterMake", existingMeterMake);
 			
-			json.accumulate("existingSize", existingSize.getText().toString());
-			json.accumulate("existingMeterReading", existingMeterReading.getText().toString());
-			json.accumulate("existingNoDigits", existingNoDigits.getText().toString());
+			json.accumulate("meterSize", existingSize.getText().toString());
+			json.accumulate("meterReading", existingMeterReading.getText().toString());
+			json.accumulate("meterNumOfDigits", existingNoDigits.getText().toString());
 
 		} catch (JSONException e) {
 			e.printStackTrace();

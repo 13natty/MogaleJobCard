@@ -32,6 +32,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.Notification;
@@ -43,6 +45,8 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -78,6 +82,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	static final String INCIDENT_UPDATE = "2";
 	static final String CHAT_MESSAGE = "3";
 	static final String INCIDENT_ACCEPT = "4";
+	static final String UPDATE_APP = "5";
 
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -95,6 +100,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	public static int incidentCount = 0;
 
 	public static Action action;
+	public static String version;
 
 	protected static String incidentStatus;
 	
@@ -102,6 +108,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		version = getVersionInfo();
 		String regStr = Preferences.getPreference(this, AppConstants.PreferenceKeys.KEY_REGISTERED);
 		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true : false;
 		prevFrag = new ArrayList<Fragment>();
@@ -123,7 +130,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			    	}
 			    }
 				startApp(savedInstanceState);
-
+				
 			}
 		} else {
 			action = Action.REGISTER;
@@ -217,6 +224,16 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// SelectItem(0);
 		// }
 		// }
+		
+//		String servicestring = Context.DOWNLOAD_SERVICE;
+//	    DownloadManager downloadmanager;
+//	    downloadmanager = (DownloadManager) getSystemService(servicestring);
+//	    Uri uri = Uri
+//	      .parse("https://app.asana.com/app/asana/-/download_asset?asset_id=28246520176063");
+//	    DownloadManager.Request request = new Request(uri);
+//	    Long reference = downloadmanager.enqueue(request);
+//	    Log.d("DOWNLOAD", "reference "+reference);
+	    
 
 		action = Action.GET_ALL_OPEN_INCIDENCES;
 		CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
@@ -686,6 +703,15 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 						cdd.show();
 					}
 
+				}else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
+					String servicestring = Context.DOWNLOAD_SERVICE;
+				    DownloadManager downloadmanager;
+				    downloadmanager = (DownloadManager) getSystemService(servicestring);
+				    Uri uri = Uri
+				      .parse("https://app.asana.com/app/asana/-/download_asset?asset_id=28246520176063");
+				    DownloadManager.Request request = new Request(uri);
+				    Long reference = downloadmanager.enqueue(request);
+
 				}
 			} else {
 				if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
@@ -796,5 +822,24 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			super.onBackPressed();
 		}
 	}
+	
+	public String getVersionInfo() {
+        String strVersion = "";
+
+        PackageInfo packageInfo;
+        try {
+            packageInfo = getApplicationContext()
+                .getPackageManager()
+                .getPackageInfo(
+                    getApplicationContext().getPackageName(), 
+                    0
+                );
+            strVersion += packageInfo.versionName;
+        } catch (NameNotFoundException e) {
+            strVersion += "Unknown";
+        }
+
+        return strVersion;
+    }
 
 }

@@ -53,12 +53,12 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:labelFor="@+id/new_meter_existing_meter_no"
+                    android:labelFor="@+id/new_meter_meter_no"
                     android:text="EXISTING METER No :" >
                 </TextView>
 
                 <EditText
-                    android:id="@+id/new_meter_existing_meter_no"
+                    android:id="@+id/new_meter_meter_no"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"

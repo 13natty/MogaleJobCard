@@ -151,55 +151,40 @@ public class CommunicationHandler {
 			String existingmeterJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_EXISTING_METER_INFO + FragmentIncident.incidentID);
 			if (existingmeterJSONSTR != null) {
 				JSONObject existingmeterJSON = new JSONObject(existingmeterJSONSTR);
-				if (isValid(existingmeterJSON.getString("meterAboveOnSidewalk")))
-					json.accumulate("meterAboveOnSidewalk", existingmeterJSON.getString("meterAboveOnSidewalk"));
-				if (isValid(existingmeterJSON.getString("meterBelowOnSidewalk")))
-					json.accumulate("meterBelowOnSidewalk", existingmeterJSON.getString("meterBelowOnSidewalk"));
-				if (isValid(existingmeterJSON.getString("meterOnStandAbove")))
-					json.accumulate("meterOnStandAbove", existingmeterJSON.getString("meterOnStandAbove"));
-				if (isValid(existingmeterJSON.getString("meterOnStandBelow")))
-					json.accumulate("meterOnStandBelow", existingmeterJSON.getString("meterOnStandBelow"));
-
-				if (isValid(existingmeterJSON.getString("meterPosition")))
-					json.accumulate("meterPosition", existingmeterJSON.getString("meterPosition"));
 				if (isValid(existingmeterJSON.getString("meterNum")))
-					json.accumulate("meterNum", existingmeterJSON.getString("existingMeterNo"));
-				if (isValid(existingmeterJSON.getString("meterScalingFactor")))
-					json.accumulate("meterScalingFactor", existingmeterJSON.getString("scalingFactor"));
+					json.accumulate("meterNum", existingmeterJSON.getString("meterNum"));
+				if (isValid(existingmeterJSON.getString("meterPosition")))
+					json.accumulate("meterPosition", existingmeterJSON.getString("meterPosition"));				
+				if (isValid(existingmeterJSON.getString("meterType")))
+					json.accumulate("meterType", existingmeterJSON.getString("meterType"));				
 				if (isValid(existingmeterJSON.getString("meterMake")))
-					json.accumulate("meterMake", existingmeterJSON.getString("make"));
-				if (isValid(existingmeterJSON.getString("meterDiameter")))
-					json.accumulate("meterDiameter", existingmeterJSON.getString("dia"));
+					json.accumulate("meterMake", existingmeterJSON.getString("meterMake"));				
+				if (isValid(existingmeterJSON.getString("meterSize")))
+					json.accumulate("meterSize", existingmeterJSON.getString("meterSize"));				
 				if (isValid(existingmeterJSON.getString("meterReading")))
-					json.accumulate("meterReading", existingmeterJSON.getString("meterReading"));
-				if (isValid(existingmeterJSON.getString("numOfDigits")))
-					json.accumulate("numOfDigits", existingmeterJSON.getString("noDigits"));
-				if (isValid(existingmeterJSON.getString("meterReadingDate")))
-					json.accumulate("meterReadingDate", existingmeterJSON.getString("meterReadingDate"));
-				if (isValid(existingmeterJSON.getString("DistFromLeftCorner")))
-					json.accumulate("DistFromLeftCorner", existingmeterJSON.getString("distanceFromLeft"));
-				if (isValid(existingmeterJSON.getString("DistFromRighCorner")))
-					json.accumulate("DistFromRighCorner", existingmeterJSON.getString("distanceFromRight"));
+					json.accumulate("meterReading", existingmeterJSON.getString("meterReading"));				
+				if (isValid(existingmeterJSON.getString("meterNumOfDigits")))
+					json.accumulate("meterNumOfDigits", existingmeterJSON.getString("meterNumOfDigits"));
+				
 			}
 
 			String newmeterJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_NEW_METER_INFO + FragmentIncident.incidentID);
 			if (newmeterJSONSTR != null) {
-				JSONObject newmeterJSON = new JSONObject(newmeterJSONSTR);
-
+				JSONObject newmeterJSON = new JSONObject(newmeterJSONSTR);				
 				if (isValid(newmeterJSON.getString("newMeterNum")))
-					json.accumulate("newMeterNum", newmeterJSON.getString("existingMeterNo"));
-				if (isValid(newmeterJSON.getString("meterScalingFactor")))
-					json.accumulate("meterScalingFactor", newmeterJSON.getString("scalingFactor"));
+					json.accumulate("newMeterNum", newmeterJSON.getString("newMeterNum"));
 				if (isValid(newmeterJSON.getString("newMeterPosition")))
 					json.accumulate("newMeterPosition", newmeterJSON.getString("newMeterPosition"));
+				if (isValid(newmeterJSON.getString("newMeterType")))
+					json.accumulate("newMeterType", newmeterJSON.getString("newMeterType"));
 				if (isValid(newmeterJSON.getString("newMeterMake")))
-					json.accumulate("newMeterMake", newmeterJSON.getString("make"));
-				if (isValid(newmeterJSON.getString("newMeterDiameter")))
-					json.accumulate("newMeterDiameter", newmeterJSON.getString("dia"));
+					json.accumulate("newMeterMake", newmeterJSON.getString("newMeterMake"));
+				if (isValid(newmeterJSON.getString("newMeterSize")))
+					json.accumulate("newMeterSize", newmeterJSON.getString("newMeterSize"));
 				if (isValid(newmeterJSON.getString("newMeterReading")))
-					json.accumulate("newMeterReading", newmeterJSON.getString("meterReading"));
+					json.accumulate("newMeterReading", newmeterJSON.getString("newMeterReading"));
 				if (isValid(newmeterJSON.getString("newMeterNumOfDigits")))
-					json.accumulate("newMeterNumOfDigits", newmeterJSON.getString("noDigits"));
+					json.accumulate("newMeterNumOfDigits", newmeterJSON.getString("newMeterNumOfDigits"));
 			}
 
 			String connectionJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_CONNECTION_INFO + FragmentIncident.incidentID);
@@ -210,28 +195,28 @@ public class CommunicationHandler {
 					json.accumulate("connectionServiceType", connectionJSON.getString("connectionServiceType"));
 				if (isValid(connectionJSON.getString("connectionLegth")))
 					json.accumulate("connectionLegth", connectionJSON.getString("connectionLegth"));
-				if (isValid(connectionJSON.getString("connectionDiameter")))
-					json.accumulate("connectionDiameter", connectionJSON.getString("connectionDiameter"));
+				if (isValid(connectionJSON.getString("connectionSize")))
+					json.accumulate("connectionSize", connectionJSON.getString("connectionSize"));
 				if (isValid(connectionJSON.getString("connectionCrossRoad")))
 					json.accumulate("connectionCrossRoad", connectionJSON.getString("connectionCrossRoad"));
 				if (isValid(connectionJSON.getString("connectionDepth")))
 					json.accumulate("connectionDepth", connectionJSON.getString("connectionDepth"));
 				if (isValid(connectionJSON.getString("connectionMaterialType")))
 					json.accumulate("connectionMaterialType", connectionJSON.getString("connectionMaterialType"));
-				if (isValid(connectionJSON.getString("connectionType")))
-					json.accumulate("connectionType", connectionJSON.getString("connectionType"));
+//				if (isValid(connectionJSON.getString("connectionType")))
+//					json.accumulate("connectionType", connectionJSON.getString("connectionType"));
 			}
 
-			String pipelineJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_CONNECTION_INFO + FragmentIncident.incidentID);
+			String pipelineJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_PIPELINE_INFO + FragmentIncident.incidentID);
 			if (pipelineJSONSTR != null) {
 				JSONObject pipelineJSON = new JSONObject(pipelineJSONSTR);
 
 				if (isValid(pipelineJSON.getString("pipelineLocation")))
 					json.accumulate("pipelineLocation", pipelineJSON.getString("pipelineLocation"));
-				if (isValid(pipelineJSON.getString("pipelineDistanceFromLeft")))
-					json.accumulate("pipelineDistanceFromLeft", pipelineJSON.getString("left"));
-				if (isValid(pipelineJSON.getString("pipelineDistanceFromRight")))
-					json.accumulate("pipelineDistanceFromRight", pipelineJSON.getString("right"));
+//				if (isValid(pipelineJSON.getString("pipelineDistanceFromLeft")))
+//					json.accumulate("pipelineDistanceFromLeft", pipelineJSON.getString("left"));
+//				if (isValid(pipelineJSON.getString("pipelineDistanceFromRight")))
+//					json.accumulate("pipelineDistanceFromRight", pipelineJSON.getString("right"));
 				if (isValid(pipelineJSON.getString("pipelineCrossRoad")))
 					json.accumulate("pipelineCrossRoad", pipelineJSON.getString("pipelineCrossRoad"));
 				if (isValid(pipelineJSON.getString("pipelineDiameter")))
@@ -240,43 +225,25 @@ public class CommunicationHandler {
 					json.accumulate("pipelineMaterial", pipelineJSON.getString("pipelineMaterial"));
 				if (isValid(pipelineJSON.getString("pipelineRepairType")))
 					json.accumulate("pipelineRepairType", pipelineJSON.getString("pipelineRepairType"));
-				if (isValid(pipelineJSON.getString("pipelineHoleSize")))
-					json.accumulate("pipelineHoleSize", pipelineJSON.getString("pipelineHoleSize"));
-				if (isValid(pipelineJSON.getString("pipelineHydrantFlushTime")))
-					json.accumulate("pipelineHydrantFlushTime", pipelineJSON.getString("flushHydrantTime"));
-				if (isValid(pipelineJSON.getString("pipelineCode")))
-					json.accumulate("pipelineCode", pipelineJSON.getString("code"));
+				if (isValid(pipelineJSON.getString("pipelineCutOutLength")))
+					json.accumulate("pipelineCutOutLength", pipelineJSON.getString("pipelineCutOutLength"));
 			}
 
-			String hydrantJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_CONNECTION_INFO + FragmentIncident.incidentID);
+			String hydrantJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_HYDRANT + FragmentIncident.incidentID);
 			if (hydrantJSONSTR != null) {
 				JSONObject hydrantJSON = new JSONObject(hydrantJSONSTR);
 
 				if (isValid(hydrantJSON.getString("hydrantPosition")))
 					json.accumulate("hydrantPosition", hydrantJSON.getString("hydrantPosition"));
-				if (isValid(hydrantJSON.getString("hydrantNum")))
-					json.accumulate("hydrantNum", hydrantJSON.getString("hydrantNumber"));
 				if (isValid(hydrantJSON.getString("hydrantPressure")))
 					json.accumulate("hydrantPressure", hydrantJSON.getString("hydrantPressure"));
 				if (isValid(hydrantJSON.getString("hydrantPressureTime")))
-					json.accumulate("hydrantPressureTime", hydrantJSON.getString("hydrantTime"));
-				if (isValid(hydrantJSON.getString("hydrantDistanceFromLeft")))
-					json.accumulate("hydrantDistanceFromLeft", hydrantJSON.getString("hydrantLeftCorner"));
-				if (isValid(hydrantJSON.getString("hydrantDistanceFromRight")))
-					json.accumulate("hydrantDistanceFromRight", hydrantJSON.getString("hydrantRightCorner"));
-				if (isValid(hydrantJSON.getString("hydrantReplace")))
-					json.accumulate("hydrantReplace", hydrantJSON.getString("hydrantReplace"));
-				if (isValid(hydrantJSON.getString("hydrantReplaceLid")))
-					json.accumulate("hydrantReplaceLid", hydrantJSON.getString("hydrantReplaceLid"));
-				if (isValid(hydrantJSON.getString("hydrantCloseLeak")))
-					json.accumulate("hydrantCloseLeak", hydrantJSON.getString("hydrantCloseLeak"));
-				if (isValid(hydrantJSON.getString("hydrantReplaceBox")))
-					json.accumulate("hydrantReplaceBox", hydrantJSON.getString("hydrantReplaceBox"));
-				if (isValid(hydrantJSON.getString("hydrantCode")))
-					json.accumulate("hydrantCode", hydrantJSON.getString("code"));
+					json.accumulate("hydrantPressureTime", hydrantJSON.getString("hydrantPressureTime"));
+				if (isValid(hydrantJSON.getString("hydrantRepairType")))
+					json.accumulate("hydrantRepairType", hydrantJSON.getString("hydrantRepairType"));
 			}
 
-			String valveJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_CONNECTION_INFO + FragmentIncident.incidentID);
+			String valveJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_VALVE + FragmentIncident.incidentID);
 			if (valveJSONSTR != null) {
 				JSONObject valveJSON = new JSONObject(valveJSONSTR);
 
