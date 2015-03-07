@@ -132,7 +132,7 @@ public class CommunicationHandler {
 
 	}
 
-	public static void saveJobCard(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String incidentStatus) {
+	public static void saveJobCard(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String incidentStatus, int incidentType) {
 		JSONObject json = new JSONObject();
 		try {
 			String jobCardId = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
@@ -147,6 +147,7 @@ public class CommunicationHandler {
 			json.accumulate("incidentId", FragmentIncident.incidentID);
 			json.accumulate("employeeNum", MainActivity.employeeNUM);
 			json.accumulate("status", incidentStatus);
+			json.accumulate("incidentType", incidentType);
 
 			String existingmeterJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_EXISTING_METER_INFO + FragmentIncident.incidentID);
 			if (existingmeterJSONSTR != null) {
@@ -247,41 +248,16 @@ public class CommunicationHandler {
 			if (valveJSONSTR != null) {
 				JSONObject valveJSON = new JSONObject(valveJSONSTR);
 
-				if (isValid(valveJSON.getString("valveRepackGland")))
-					json.accumulate("valveRepackGland", valveJSON.getString("valveRepackGland"));
-				if (isValid(valveJSON.getString("valveTightenGland")))
-					json.accumulate("valveTightenGland", valveJSON.getString("valveTightenGland"));
-				if (isValid(valveJSON.getString("valveReplaceLid")))
-					json.accumulate("valveReplaceLid", valveJSON.getString("valveReplaceLid"));
-				if (isValid(valveJSON.getString("valveReplaceRSVValve")))
-					json.accumulate("valveReplaceRSVValve", valveJSON.getString("valveReplaceRSVValve"));
-				if (isValid(valveJSON.getString("valveReplaceIronValve")))
-					json.accumulate("valveReplaceIronValve", valveJSON.getString("valveReplaceIronValve"));
-
 				if (isValid(valveJSON.getString("openTime")))
-					json.accumulate("openTime", valveJSON.getString("valveOpenTime"));
+					json.accumulate("openTime", valveJSON.getString("openTime"));
 				if (isValid(valveJSON.getString("closeTime")))
-					json.accumulate("closeTime", valveJSON.getString("valveClosedTime"));
-				if (isValid(valveJSON.getString("numOfTurns")))
-					json.accumulate("numOfTurns", valveJSON.getString("valveNumTurns"));
+					json.accumulate("closeTime", valveJSON.getString("closeTime"));
 				if (isValid(valveJSON.getString("leftSide")))
 					json.accumulate("leftSide", valveJSON.getString("leftSide"));
-				if (isValid(valveJSON.getString("RightSide")))
-					json.accumulate("RightSide", valveJSON.getString("RightSide"));
-				if (isValid(valveJSON.getString("valveNum")))
-					json.accumulate("valveNum", valveJSON.getString("valveNo"));
-				if (isValid(valveJSON.getString("oppositeStand")))
-					json.accumulate("oppositeStand", valveJSON.getString("oppStd"));
-				if (isValid(valveJSON.getString("houseNum")))
-					json.accumulate("houseNum", valveJSON.getString("hseNo"));
 				if (isValid(valveJSON.getString("streetName")))
 					json.accumulate("streetName", valveJSON.getString("streetName"));
-				if (isValid(valveJSON.getString("repairCode")))
-					json.accumulate("repairCode", valveJSON.getString("repairCode"));
-				if (isValid(valveJSON.getString("distanceFromLeftBoundary")))
-					json.accumulate("distanceFromLeftBoundary", valveJSON.getString("distanceLeft"));
-				if (isValid(valveJSON.getString("distanceFromRightBoundary")))
-					json.accumulate("distanceFromRightBoundary", valveJSON.getString("distanceRight"));
+				if (isValid(valveJSON.getString("valveRepairType")))
+					json.accumulate("valveRepairType", valveJSON.getString("valveRepairType"));
 			}
 
 		} catch (JSONException e) {

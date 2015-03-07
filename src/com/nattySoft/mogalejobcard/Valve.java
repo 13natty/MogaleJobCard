@@ -1,5 +1,7 @@
 package com.nattySoft.mogalejobcard;
 
+import java.util.Calendar;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,21 +19,25 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TimePicker;
 
 public class Valve extends Fragment implements OnCheckedChangeListener {
 
-	private EditText valveOpenTime_hh;
-	private EditText valveOpenTime_mm;
+	private TimePicker valveOpenTime;
 
 	private CheckBox Left_H;
 	private CheckBox right_H;
 	private boolean leftSide = false;
 
-	private EditText valveClosedTime_hh;
-	private EditText valveClosedTime_mm;
+	private TimePicker valveClosedTime;
 	
 	private EditText streetName;
-	private String repairCode;
+	
+	private CheckBox repairGland;
+	private CheckBox tightenGland;
+	private CheckBox replaceLid;
+	private CheckBox replaceValve;
+	private int valveRepairType;
 
 	View view;
 
@@ -46,11 +52,11 @@ public class Valve extends Fragment implements OnCheckedChangeListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		valveOpenTime_hh = (EditText) view.findViewById(R.id.opened_time_hh);
-		valveOpenTime_mm = (EditText) view.findViewById(R.id.opened_time_mm);
+		valveOpenTime = (TimePicker) view.findViewById(R.id.opened_time);
+		valveOpenTime.setIs24HourView(true);
 
-		valveClosedTime_hh = (EditText) view.findViewById(R.id.closed_time_hh);
-		valveClosedTime_mm = (EditText) view.findViewById(R.id.closed_time_mm);
+		valveClosedTime = (TimePicker) view.findViewById(R.id.closed_time);
+		valveClosedTime.setIs24HourView(true);
 
 		Left_H = (CheckBox) view.findViewById(R.id.l_h);
 		Left_H.setOnCheckedChangeListener(this);
@@ -58,7 +64,16 @@ public class Valve extends Fragment implements OnCheckedChangeListener {
 		Left_H.setChecked(true);
 		right_H.setOnCheckedChangeListener(this);
 		
-		streetName = (EditText) view.findViewById(R.id.street);		
+		streetName = (EditText) view.findViewById(R.id.street);
+		
+		repairGland = (CheckBox) view.findViewById(R.id.repair_repair_gland);
+		repairGland.setOnCheckedChangeListener(this);
+		tightenGland = (CheckBox) view.findViewById(R.id.tighten_gland);
+		tightenGland.setOnCheckedChangeListener(this);
+		replaceLid = (CheckBox) view.findViewById(R.id.replace_valve_lid);
+		replaceLid.setOnCheckedChangeListener(this);
+		replaceValve = (CheckBox) view.findViewById(R.id.replace_valve);
+		replaceValve.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -68,11 +83,15 @@ public class Valve extends Fragment implements OnCheckedChangeListener {
 			if (jsonStr != null) {
 				JSONObject json = new JSONObject(jsonStr);
 
-				valveOpenTime_hh.setText(json.getString("valveOpenTime_hh"));
-				valveOpenTime_mm.setText(json.getString("valveOpenTime_mm"));
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(Long.parseLong(json.getString("openTime")));
+				valveOpenTime.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+				valveOpenTime.setCurrentMinute(calendar.get(Calendar.MINUTE));
 				
-				valveClosedTime_hh.setText(json.getString("valveClosedTime_hh"));
-				valveClosedTime_mm.setText(json.getString("valveClosedTime_mm"));
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.setTimeInMillis(Long.parseLong(json.getString("closeTime")));
+				valveClosedTime.setCurrentHour(calendar2.get(Calendar.HOUR_OF_DAY));
+				valveClosedTime.setCurrentMinute(calendar2.get(Calendar.MINUTE));
 				
 				leftSide = Boolean.parseBoolean(json.getString("leftSide"));
 				if (!leftSide) {
@@ -94,16 +113,26 @@ public class Valve extends Fragment implements OnCheckedChangeListener {
 	public void saveForm() {
 		JSONObject json = new JSONObject();
 		try {
-			json.accumulate("valveOpenTime_hh", valveOpenTime_hh.getText().toString());
-			json.accumulate("valveOpenTime_mm", valveOpenTime_mm.getText().toString());
+			valveOpenTime.clearFocus();
+			Calendar calendar = Calendar.getInstance();
+//			calendar.set(0, 0, 0, valveOpenTime.getCurrentHour(), valveOpenTime.getCurrentMinute());
+			calendar.set(Calendar.HOUR, valveOpenTime.getCurrentHour());
+			calendar.set(Calendar.MINUTE, valveOpenTime.getCurrentMinute());
+			long time = calendar.getTimeInMillis();
+			json.accumulate("openTime", time);
 			
-			json.accumulate("valveClosedTime_hh", valveClosedTime_hh.getText().toString());
-			json.accumulate("valveClosedTime_mm", valveClosedTime_mm.getText().toString());
+			valveClosedTime.clearFocus();
+			Calendar calendar2 = Calendar.getInstance();
+//			calendar2.set(0, 0, 0, valveClosedTime.getCurrentHour(), valveClosedTime.getCurrentMinute());
+			calendar.set(Calendar.HOUR, valveClosedTime.getCurrentHour());
+			calendar.set(Calendar.MINUTE, valveClosedTime.getCurrentMinute());
+			long time2 = calendar2.getTimeInMillis();
+			json.accumulate("closeTime", time2);
 
 			json.accumulate("leftSide", leftSide);
 			
 			json.accumulate("streetName", streetName.getText().toString());	
-			json.accumulate("repairCode", repairCode);
+			json.accumulate("valveRepairType", valveRepairType);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -128,6 +157,34 @@ public class Valve extends Fragment implements OnCheckedChangeListener {
 			Left_H.setChecked(true);
 			Left_H.setOnCheckedChangeListener(this);
 			leftSide = true;
+		}else if (buttonView == (CompoundButton) repairGland || buttonView == (CompoundButton) replaceLid || buttonView == (CompoundButton) tightenGland || buttonView == (CompoundButton) replaceValve) {
+			repairGland.setChecked(false);
+			replaceLid.setChecked(false);
+			tightenGland.setChecked(false);
+			replaceValve.setChecked(false);
+			valveRepairType = 0;
+
+			if (buttonView == (CompoundButton) repairGland && isChecked) {
+				repairGland.setOnCheckedChangeListener(null);
+				repairGland.setChecked(true);
+				repairGland.setOnCheckedChangeListener(this);
+				valveRepairType = 1;
+			} else if (buttonView == (CompoundButton) replaceLid && isChecked) {
+				replaceLid.setOnCheckedChangeListener(null);
+				replaceLid.setChecked(true);
+				replaceLid.setOnCheckedChangeListener(this);
+				valveRepairType = 2;
+			} else if (buttonView == (CompoundButton) tightenGland && isChecked) {
+				tightenGland.setOnCheckedChangeListener(null);
+				tightenGland.setChecked(true);
+				tightenGland.setOnCheckedChangeListener(this);
+				valveRepairType = 3;
+			} else if (buttonView == (CompoundButton) replaceValve && isChecked) {
+				replaceValve.setOnCheckedChangeListener(null);
+				replaceValve.setChecked(true);
+				replaceValve.setOnCheckedChangeListener(this);
+				valveRepairType = 4;
+			} 
 		}
 		
 	}

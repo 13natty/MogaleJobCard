@@ -3,7 +3,7 @@ package com.nattySoft.mogalejobcard;
 public class AppConstants {
 public static class Config {
     	
-    	public static final String SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";	
+    	public static String SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";	
     	public static final String GCM_SENDER_ID = "7567532847";
     }
     

@@ -1,20 +1,58 @@
 package com.nattySoft.mogalejobcard;
 
-import java.security.PublicKey;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
+import android.app.DownloadManager.Request;
+import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Vibrator;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.nattySoft.mogalejobcard.AppConstants;
-import com.nattySoft.mogalejobcard.RegistrationActivity;
-import com.nattySoft.mogalejobcard.R;
-import com.nattySoft.mogalejobcard.listener.IncidentClickedListener;
 import com.nattySoft.mogalejobcard.listener.PushListener;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
@@ -22,57 +60,12 @@ import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
-import android.R.integer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Vibrator;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Dialog;
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.Notification;
-import android.app.Notification.Builder;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.app.ActivityManager.RunningTaskInfo;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 public class MainActivity extends Activity implements RequestResponseListener, PushListener {
 
 	private String TAG = MainActivity.class.getSimpleName();
 
+	private long enqueue;
+	private DownloadManager dm;
 	private boolean registered = false;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	public static String employeeNUM = null;
@@ -103,7 +96,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	public static String version;
 
 	protected static String incidentStatus;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -115,22 +108,64 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		if (registered) {
 			// Check device for Play Services APK.
 			if (checkPlayServices()) {
+				new DeleteInstallerThread().start();
 				employeeNUM = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM);
 				Intent current = getIntent();
-			    if (current != null) {
-			    	Bundle extras = current.getExtras();
-			    	if(extras != null)
-			    	{
-			    		String type = extras.getString("type");
-			    		String incidentId = extras.getString("incidentId");
-			    		if(type != null && type.equalsIgnoreCase(""+NEW_INCIDENT))
-			    		{
-			    			CommunicationHandler.pingIncidentReceived(this, this, null, incidentId);
-			    		}
-			    	}
-			    }
+				if (current != null) {
+					Bundle extras = current.getExtras();
+					if (extras != null) {
+						String type = extras.getString("type");
+						String incidentId = extras.getString("incidentId");
+						if (type != null && type.equalsIgnoreCase("" + NEW_INCIDENT)) {
+							CommunicationHandler.pingIncidentReceived(this, this, null, incidentId);
+						}
+					}
+				}
 				startApp(savedInstanceState);
-				
+
+				BroadcastReceiver receiver = new BroadcastReceiver() {
+					@Override
+					public void onReceive(Context context, Intent intent) {
+						String action = intent.getAction();
+						if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+							long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+							Query query = new Query();
+							query.setFilterById(enqueue);
+							Cursor c = dm.query(query);
+							if (c.moveToFirst()) {
+								int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+								if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+
+									try {
+										// FileUtil.createDirectory(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath());
+										File apkFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/mogaleupdate/MogaleJobCard.apk");
+										if (apkFile.exists()) {
+											Intent intentAPK = new Intent(Intent.ACTION_VIEW);
+											intentAPK.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+											startActivity(intentAPK);
+										}
+
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+					}
+				};
+
+				registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+				BroadcastReceiver myReceiver = new BroadcastReceiver() {
+					@Override
+					public void onReceive(Context context, Intent intent) {
+						startActivity(intent);
+					}
+				};
+
+				registerReceiver(myReceiver, new IntentFilter("ACTION"));
+				unregisterReceiver(myReceiver);
+
 			}
 		} else {
 			action = Action.REGISTER;
@@ -224,16 +259,15 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// SelectItem(0);
 		// }
 		// }
-		
-//		String servicestring = Context.DOWNLOAD_SERVICE;
-//	    DownloadManager downloadmanager;
-//	    downloadmanager = (DownloadManager) getSystemService(servicestring);
-//	    Uri uri = Uri
-//	      .parse("https://app.asana.com/app/asana/-/download_asset?asset_id=28246520176063");
-//	    DownloadManager.Request request = new Request(uri);
-//	    Long reference = downloadmanager.enqueue(request);
-//	    Log.d("DOWNLOAD", "reference "+reference);
-	    
+
+		// String servicestring = Context.DOWNLOAD_SERVICE;
+		// DownloadManager downloadmanager;
+		// downloadmanager = (DownloadManager) getSystemService(servicestring);
+		// Uri uri = Uri
+		// .parse("https://app.asana.com/app/asana/-/download_asset?asset_id=28246520176063");
+		// DownloadManager.Request request = new Request(uri);
+		// Long reference = downloadmanager.enqueue(request);
+		// Log.d("DOWNLOAD", "reference "+reference);
 
 		action = Action.GET_ALL_OPEN_INCIDENCES;
 		CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
@@ -259,18 +293,18 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
-	
+
 	public void setCount(int count) {
 		DrawerItem dItem0 = dataList.get(0);
 		DrawerItem dItem1 = dataList.get(1);
 		dataList.clear();
-		
+
 		dItem0.setimgCountBG(R.drawable.messagecount);
-		if(count>0)
-			dItem0.setCount(""+count);
+		if (count > 0)
+			dItem0.setCount("" + count);
 		else
 			dItem0.setCount("");
-		
+
 		dataList.add(dItem0);
 		dataList.add(dItem1);
 		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
@@ -279,7 +313,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
+
 	}
 
 	/**
@@ -304,13 +338,15 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem menItem = menu.getItem(1);
+		menItem.setTitle("OS version " + version);
 		return true;
 	}
 
 	public void SelectItem(int possition) {
 
-		
 		Fragment fragment = null;
 		Bundle args = new Bundle();
 		switch (possition) {
@@ -322,8 +358,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			// dataList.get(possition).getImgResID());
 
 			fragment = new FragmentOne();
-			if(incidentCount>0)
-			{
+			if (incidentCount > 0) {
 				incidentCount = 0;
 				setCount(incidentCount);
 			}
@@ -437,7 +472,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		mDrawerList.setItemChecked(possition, true);
 		setTitle(dataList.get(possition).getItemName());
 		mDrawerLayout.closeDrawer(mDrawerList);
-		
+
 		prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
 		prevPos = possition;
 
@@ -482,9 +517,40 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// The action bar home/up action should open or close the drawer.
 		// ActionBarDrawerToggle will take care of this.
+		int id = item.getItemId();
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
+		} else if (id == R.id.action_change_host) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setMessage("Enter new host IP");
+
+			final EditText hostInput = new EditText(this);
+			// hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
+			hostInput.setHint(AppConstants.Config.SERVER_URL);
+
+			alert.setView(hostInput);
+
+			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// get user input and set it to result
+					// edit text
+					AppConstants.Config.SERVER_URL = "http://" + hostInput.getText().toString() + "/Mogale/Controller";
+				}
+			});
+
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
+					dialog.cancel();
+				}
+			});
+
+			alert.show();
+		} else if (id == R.id.action_version) {
+			return true;
 		}
+		// return super.onOptionsItemSelected(item);
 
 		return false;
 	}
@@ -548,43 +614,38 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			if (!responce.equalsIgnoreCase("Did not work!"))
 				Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
 			SelectItem(0);
-		}else if(action == Action.GET_ALL_OPEN_INCIDENCES_BG){
-			if(responce.equalsIgnoreCase("{\"message\":[\"Server returned success.\"],\"response\":[\"success\"]}"))
+		} else if (action == Action.GET_ALL_OPEN_INCIDENCES_BG) {
+			if (responce.equalsIgnoreCase("{\"message\":[\"Server returned success.\"],\"response\":[\"success\"]}"))
 				return;
 			if (!responce.equalsIgnoreCase("Did not work!"))
 				Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
 			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 			if (frag instanceof FragmentOne) {
 				((FragmentOne) frag).setMenus(responce);
-			}else
-			{
+			} else {
 				for (int i = 0; i < prevFrag.size(); i++) {
-					if(prevFrag.get(i) instanceof FragmentOne)
-					{
-						((FragmentOne)prevFrag.get(i)).setMenus(responce);
-						incidentCount ++;
+					if (prevFrag.get(i) instanceof FragmentOne) {
+						((FragmentOne) prevFrag.get(i)).setMenus(responce);
+						incidentCount++;
 						setCount(incidentCount);
-						Toast.makeText(getApplicationContext(), "New Incident Received",
-								   Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(), "New Incident Received", Toast.LENGTH_LONG).show();
 					}
 				}
-				
-				
-				//vibrate and make sound
+
+				// vibrate and make sound
 				Vibrator vibrator;
 				vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 				vibrator.vibrate(500);
-				
+
 				try {
-				    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-				    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-				    r.play();
+					Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+					Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+					r.play();
 				} catch (Exception e) {
-				    e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
-		}
-		else if (action == Action.DECLINE_INCIDENT) {
+		} else if (action == Action.DECLINE_INCIDENT) {
 			action = Action.GET_ALL_OPEN_INCIDENCES;
 			CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 		} else if (action == Action.ACCEPT_INCIDENT) {
@@ -660,7 +721,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 					action = Action.GET_ALL_OPEN_INCIDENCES_BG;
 					CommunicationHandler.getOpenIncidents(this, this, null);
-					CommunicationHandler.pingIncidentReceived(this, this, null,extras.getString("incidentId"));
+					CommunicationHandler.pingIncidentReceived(this, this, null, extras.getString("incidentId"));
 				} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
 					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 					String message = extras.getString("body");
@@ -703,14 +764,14 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 						cdd.show();
 					}
 
-				}else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
-					String servicestring = Context.DOWNLOAD_SERVICE;
-				    DownloadManager downloadmanager;
-				    downloadmanager = (DownloadManager) getSystemService(servicestring);
-				    Uri uri = Uri
-				      .parse("https://app.asana.com/app/asana/-/download_asset?asset_id=28246520176063");
-				    DownloadManager.Request request = new Request(uri);
-				    Long reference = downloadmanager.enqueue(request);
+				} else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
+
+					dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+					Request request = new Request(Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+
+					request.setVisibleInDownloadsUi(true);
+					request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/mogaleupdate/MogaleJobCard.apk");
+					enqueue = dm.enqueue(request);
 
 				}
 			} else {
@@ -719,8 +780,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					// Prepare intent which is triggered if the
 					// notification is selected
 					Intent myIntent = new Intent(context, MainActivity.class);
-					Bundle extrasBundle = new Bundle();					
-					String inciID = extras.getString("incidentId");					
+					Bundle extrasBundle = new Bundle();
+					String inciID = extras.getString("incidentId");
 					extrasBundle.putString("incidentId", inciID);
 					extrasBundle.putString("type", NEW_INCIDENT);
 					myIntent.putExtras(extrasBundle);
@@ -734,32 +795,66 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
 					notificationManager.notify(0, noti);
-				} 
-//				else {
-//					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//					String message = extras.getString("body");
-//					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
-//
-//					Intent notificationIntent = new Intent(context, MainActivity.class);
-//					notificationIntent.putExtra("type", extras.getString("type"));
-//
-//					notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//
-//					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-//
-//					notification.setLatestEventInfo(context, "", message, pIntent);
-//					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-//					notification.defaults |= Notification.DEFAULT_SOUND;
-//					notification.defaults |= Notification.DEFAULT_LIGHTS;
-//					notification.defaults |= Notification.DEFAULT_VIBRATE;
-//
-//					notificationManager.notify(0, notification);
-//				}
+				} else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
+
+					dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+					Request request = new Request(Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+
+					request.setVisibleInDownloadsUi(true);
+					request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/mogaleupdate/MogaleJobCard.apk");
+					enqueue = dm.enqueue(request);
+
+				}
+				// else {
+				// NotificationManager notificationManager =
+				// (NotificationManager)
+				// context.getSystemService(Context.NOTIFICATION_SERVICE);
+				// String message = extras.getString("body");
+				// Notification notification = new
+				// Notification(R.drawable.mogale_icon_push, message,
+				// System.currentTimeMillis());
+				//
+				// Intent notificationIntent = new Intent(context,
+				// MainActivity.class);
+				// notificationIntent.putExtra("type",
+				// extras.getString("type"));
+				//
+				// notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+				// Intent.FLAG_ACTIVITY_SINGLE_TOP |
+				// Intent.FLAG_ACTIVITY_NEW_TASK);
+				//
+				// PendingIntent pIntent = PendingIntent.getActivity(context, 0,
+				// notificationIntent, 0);
+				//
+				// notification.setLatestEventInfo(context, "", message,
+				// pIntent);
+				// notification.flags |= Notification.FLAG_AUTO_CANCEL;
+				// notification.defaults |= Notification.DEFAULT_SOUND;
+				// notification.defaults |= Notification.DEFAULT_LIGHTS;
+				// notification.defaults |= Notification.DEFAULT_VIBRATE;
+				//
+				// notificationManager.notify(0, notification);
+				// }
 			}
 
 			String message = extras.getString("description") + " : " + extras.getString("message");
 
 		}
+	}
+
+	private void DeleteRecursive(File fileOrDirectory) {
+
+		if (fileOrDirectory.isDirectory())
+			for (File child : fileOrDirectory.listFiles())
+				DeleteRecursive(child);
+
+		fileOrDirectory.delete();
+	}
+
+	public void showDownload() {
+		Intent i = new Intent();
+		i.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
+		startActivity(i);
 	}
 
 	// foreground---
@@ -801,8 +896,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					((Hydrant) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
 				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof Valve) {
 					((Valve) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				}
-				else if(getFragmentManager().findFragmentById(R.id.content_frame) instanceof FragmentOne) {
+				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof FragmentOne) {
 					super.onBackPressed();
 				}
 				int index = prevFrag.size() - 1;
@@ -822,24 +916,19 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			super.onBackPressed();
 		}
 	}
-	
+
 	public String getVersionInfo() {
-        String strVersion = "";
+		String strVersion = "";
 
-        PackageInfo packageInfo;
-        try {
-            packageInfo = getApplicationContext()
-                .getPackageManager()
-                .getPackageInfo(
-                    getApplicationContext().getPackageName(), 
-                    0
-                );
-            strVersion += packageInfo.versionName;
-        } catch (NameNotFoundException e) {
-            strVersion += "Unknown";
-        }
+		PackageInfo packageInfo;
+		try {
+			packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+			strVersion += packageInfo.versionName;
+		} catch (NameNotFoundException e) {
+			strVersion += "Unknown";
+		}
 
-        return strVersion;
-    }
+		return strVersion;
+	}
 
 }

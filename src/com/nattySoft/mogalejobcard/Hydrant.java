@@ -193,7 +193,8 @@ public class Hydrant extends Fragment implements OnItemSelectedListener, OnCheck
 			json.accumulate("hydrantPressure", hydrantPressure.getText().toString());
 			hydrantTime.clearFocus();
 			Calendar calendar = Calendar.getInstance();
-			calendar.set(0, 0, 0, hydrantTime.getCurrentHour(), hydrantTime.getCurrentMinute());
+			calendar.set(Calendar.HOUR, hydrantTime.getCurrentHour());
+			calendar.set(Calendar.MINUTE, hydrantTime.getCurrentMinute());
 			long time = calendar.getTimeInMillis();
 			json.accumulate("hydrantPressureTime", time);
 

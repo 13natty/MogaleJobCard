@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MogaleJobCard</string>
+    <string name="app_name">Mogale 911</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_change_host">change host IP</string>
+    <string name="action_os_ver">1.1</string>
     <string name="title_activity_registration">RegistrationActivity</string>
 
     <string-array name="menus">

@@ -28,27 +28,16 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:labelFor="@+id/opened_time_hh"
+                    android:labelFor="@+id/opened_time"
                     android:text="Open Time HH:MM :" >
                 </TextView>
 
-                <EditText
-                    android:id="@+id/opened_time_hh"
-                    android:layout_width="fill_parent"
+                <TimePicker
+                    android:id="@+id/opened_time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="HH"
-                    android:inputType="number" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/opened_time_mm"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="MM"
-                    android:inputType="number" >
-                </EditText>
+                    android:scaleX="0.9"
+                    android:scaleY="0.9" />
             </TableRow>
 
             <TableRow
@@ -59,27 +48,16 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:labelFor="@+id/closed_time_hh"
-                    android:text="Open Time HH:MM :" >
+                    android:labelFor="@+id/closed_time"
+                    android:text="Close Time HH:MM :" >
                 </TextView>
 
-                <EditText
-                    android:id="@+id/closed_time_hh"
-                    android:layout_width="fill_parent"
+                <TimePicker
+                    android:id="@+id/closed_time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="HH"
-                    android:inputType="number" >
-                </EditText>
-
-                <EditText
-                    android:id="@+id/closed_time_mm"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:hint="MM"
-                    android:inputType="number" >
-                </EditText>
+                    android:scaleX="0.9"
+                    android:scaleY="0.9" />
             </TableRow>
         </TableLayout>
 
@@ -159,7 +137,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:inputType="number" >
+                    android:inputType="text" >
                 </EditText>
             </TableRow>
         </TableLayout>

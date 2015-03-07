@@ -21,9 +21,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +34,13 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 public class RegistrationActivity extends Activity implements RequestResponseListener, PushListener {
 
 	EditText employeeNumber;
 	Button regButton;
+	private AlertDialog alertDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,9 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.registration, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem menItem = menu.getItem(1);
+		menItem.setTitle("OS version "+getVersionInfo());
 		return true;
 	}
 
@@ -70,7 +77,35 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_change_host) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+			alert.setMessage("Enter new host IP");
+
+			final EditText hostInput = new EditText(this);
+//			hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
+			hostInput.setHint(AppConstants.Config.SERVER_URL);
+
+			alert.setView(hostInput);
+
+			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog,int id) {
+				// get user input and set it to result
+				// edit text
+			    	AppConstants.Config.SERVER_URL = "http://"+hostInput.getText().toString()+"/Mogale/Controller";
+			    }
+			  });
+
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			    public void onClick(DialogInterface dialog,int id) {
+			    	AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
+				dialog.cancel();
+			    }
+			  });
+
+			alert.show();
+		}
+		else if (id == R.id.action_version) {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -178,5 +213,24 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 			
 		}
 	}
+	
+	public String getVersionInfo() {
+        String strVersion = "";
+
+        PackageInfo packageInfo;
+        try {
+            packageInfo = getApplicationContext()
+                .getPackageManager()
+                .getPackageInfo(
+                    getApplicationContext().getPackageName(), 
+                    0
+                );
+            strVersion += packageInfo.versionName;
+        } catch (NameNotFoundException e) {
+            strVersion += "Unknown";
+        }
+
+        return strVersion;
+    }
 }
 

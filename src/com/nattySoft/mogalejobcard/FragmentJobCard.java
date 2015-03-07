@@ -65,11 +65,76 @@ public class FragmentJobCard extends Fragment {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle("Update this incident");
 				builder.setItems(options, new DialogInterface.OnClickListener() {
+					private AlertDialog levelDialog;
+
 					@Override
-					public void onClick(DialogInterface dialog, int pos) {
-						MainActivity.incidentStatus = (String) options[pos];
-						MainActivity.action = Action.SAVE_JOB_CARD;
-						CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) options[pos]).toLowerCase());
+					public void onClick(DialogInterface dialog, final int pos) {
+
+//						AlertDialog levelDialog;
+						// Strings to Show In Dialog with Radio Buttons
+						
+						final CharSequence[] items = { " Water Tower ", " Water Reservior ", " Water Pipe Burst ", " Water Pump ", " No Water ", " Valve ", " Prepaid ", " Meter Leak - Stop Cock "
+								, " Meter Leak - Joint Leak ", " Meter Faulty - Stopped ", " Meter Faulty - Erratic Reading ", " Meter Faulty - Unreadable Screen ", " Meter Faulty - High Consumption "};
+
+						// Creating and Building the Dialog
+						AlertDialog.Builder builderType = new AlertDialog.Builder(FragmentJobCard.this.getActivity());
+						builderType.setTitle("Select incident type");
+						builderType.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+							
+							public void onClick(DialogInterface dialog, int item) {
+								int incidentType = 0;
+
+								switch (item) {
+								case 0:
+									incidentType = 1;
+									break;
+								case 1:
+									incidentType = 2;
+									break;
+								case 2:
+									incidentType = 3;
+									break;
+								case 3:
+									incidentType = 4;
+									break;
+								case 4:
+									incidentType = 5;
+									break;
+								case 5:
+									incidentType = 8;
+									break;
+								case 6:
+									incidentType = 9;
+									break;
+								case 7:
+									incidentType = 10;
+									break;
+								case 8:
+									incidentType = 11;
+									break;
+								case 9:
+									incidentType = 12;
+									break;
+								case 10:
+									incidentType = 13;
+									break;
+								case 11:
+									incidentType = 14;
+									break;
+								case 12:
+									incidentType = 15;
+									break;
+
+								}
+								levelDialog.dismiss();
+								MainActivity.incidentStatus = (String) options[pos];
+								MainActivity.action = Action.SAVE_JOB_CARD;
+								CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) options[pos]).toLowerCase(), incidentType);
+							}
+						});
+						levelDialog = builderType.create();
+						levelDialog.show();
+
 					}
 				});
 				builder.show();

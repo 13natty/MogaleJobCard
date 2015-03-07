@@ -231,7 +231,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:labelFor="@+id/dia"
-                    android:text="Size :" >
+                    android:text="Size(Diameter) :" >
                 </TextView>
 
                 <EditText
