@@ -174,6 +174,7 @@ public class Hydrant extends Fragment implements OnItemSelectedListener, OnCheck
 				
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(Long.parseLong(json.getString("hydrantPressureTime")));
+				hydrantTime.setIs24HourView(true);
 				hydrantTime.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
 				hydrantTime.setCurrentMinute(calendar.get(Calendar.MINUTE));
 			}
@@ -193,7 +194,7 @@ public class Hydrant extends Fragment implements OnItemSelectedListener, OnCheck
 			json.accumulate("hydrantPressure", hydrantPressure.getText().toString());
 			hydrantTime.clearFocus();
 			Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.HOUR, hydrantTime.getCurrentHour());
+			calendar.set(Calendar.HOUR_OF_DAY, hydrantTime.getCurrentHour());
 			calendar.set(Calendar.MINUTE, hydrantTime.getCurrentMinute());
 			long time = calendar.getTimeInMillis();
 			json.accumulate("hydrantPressureTime", time);

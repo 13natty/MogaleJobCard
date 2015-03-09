@@ -101,6 +101,10 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if(Preferences.getPreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL) == null)
+		{
+			Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL); 
+		}
 		version = getVersionInfo();
 		String regStr = Preferences.getPreference(this, AppConstants.PreferenceKeys.KEY_REGISTERED);
 		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true : false;
@@ -536,12 +540,14 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					// get user input and set it to result
 					// edit text
 					AppConstants.Config.SERVER_URL = "http://" + hostInput.getText().toString() + "/Mogale/Controller";
+					Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 				}
 			});
 
 			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
+					Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 					dialog.cancel();
 				}
 			});
@@ -748,10 +754,10 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 							((FragmentTwo) frag).sendChatMessage(extras.getString("senderName"), extras.getString("body"), extras.getString("timestamp"));
 						} else {
 							if (FragmentTwo.chatArrayAdapter != null) {
-								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body")));
+								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
 							} else {
 								FragmentTwo.chatArrayAdapter = new ChatArrayAdapter(this.getApplicationContext(), R.layout.single_chat_message);
-								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body")));
+								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
 							}
 						}
 					}

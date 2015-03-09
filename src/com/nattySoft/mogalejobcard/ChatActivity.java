@@ -1,5 +1,7 @@
 package com.nattySoft.mogalejobcard;
 
+import java.util.Calendar;
+
 import com.nattySoft.mogalejobcard.listener.ChatResponceListener;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
@@ -77,14 +79,18 @@ public class ChatActivity extends Activity implements RequestResponseListener, C
     }
 
     private boolean sendChatMessage(){
-        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+    	Calendar c = Calendar.getInstance(); 
+    	int hour = c.get(Calendar.HOUR_OF_DAY);
+    	int minutes = c.get(Calendar.MINUTE);
+    	
+        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString(), hour+":"+minutes, "me"));
         chatText.setText("");
         side = !side;
         return true;
     }
     
     public boolean sendChatMessage(String sender, String message, String time){
-        chatArrayAdapter.add(new ChatMessage(false, message));
+        chatArrayAdapter.add(new ChatMessage(false, message, time, sender));
         chatText.setText("");
         side = !side;
         return true;

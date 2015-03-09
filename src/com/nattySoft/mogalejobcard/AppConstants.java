@@ -24,6 +24,7 @@ public static class Config {
     	public static final String KEY_HYDRANT = "hydrant";
 		public static final String KEY_VALVE = "valve";
 		public static final String KEY_ADD_CHAT = "add_chat";
+		public static final String KEY_SERVER_URL = "serverurl";
     	
     }
 

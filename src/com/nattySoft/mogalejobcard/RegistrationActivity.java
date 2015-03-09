@@ -93,12 +93,14 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 				// get user input and set it to result
 				// edit text
 			    	AppConstants.Config.SERVER_URL = "http://"+hostInput.getText().toString()+"/Mogale/Controller";
+			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 			    }
 			  });
 
 			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog,int id) {
 			    	AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
+			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 				dialog.cancel();
 			    }
 			  });

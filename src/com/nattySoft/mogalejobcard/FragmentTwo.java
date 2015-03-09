@@ -1,5 +1,7 @@
 package com.nattySoft.mogalejobcard;
 
+import java.util.Calendar;
+
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.util.Preferences;
@@ -27,6 +29,8 @@ public class FragmentTwo extends Fragment {
 	public static ChatArrayAdapter chatArrayAdapter;
 	private ListView listView;
 	private EditText chatText;
+	private EditText timeText;
+	private EditText senderText;
 	private Button buttonSend;
 
 	Intent intent;
@@ -67,6 +71,8 @@ public class FragmentTwo extends Fragment {
 		listView.setAdapter(chatArrayAdapter);
 
 		chatText = (EditText) view.findViewById(R.id.chatText);
+		timeText = (EditText) view.findViewById(R.id.messegeTime);
+		senderText = (EditText) view.findViewById(R.id.owner);
 		// chatText.setOnKeyListener(new OnKeyListener() {
 		// public boolean onKey(View v, int keyCode, KeyEvent event) {
 		// if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode ==
@@ -100,14 +106,18 @@ public class FragmentTwo extends Fragment {
 	}
 
 	private boolean sendChatMessage() {
-		chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+		Calendar c = Calendar.getInstance(); 
+    	int hour = c.get(Calendar.HOUR_OF_DAY);
+    	int minutes = c.get(Calendar.MINUTE);
+    	
+		chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString(), hour+":"+minutes, "Me"));
 		chatText.setText("");
 		side = !side;
 		return true;
 	}
 
 	public boolean sendChatMessage(String sender, String message, String time) {
-		chatArrayAdapter.add(new ChatMessage(false, message));
+		chatArrayAdapter.add(new ChatMessage(false, message, time, sender));
 		chatText.setText("");
 		side = !side;
 		return true;

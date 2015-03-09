@@ -60,7 +60,7 @@ public class FragmentJobCard extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// open popup
-				final CharSequence options[] = new CharSequence[] { "Complete", "Awaiting parts", "None Issue", "Pending" };
+				final CharSequence options[] = new CharSequence[] { "Complete", "None Issue", "Pending" };
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle("Update this incident");
@@ -69,7 +69,7 @@ public class FragmentJobCard extends Fragment {
 
 					@Override
 					public void onClick(DialogInterface dialog, final int pos) {
-
+						final CharSequence optionsStrings[] = new CharSequence[] { "complete", "none_issue", "pending" };
 //						AlertDialog levelDialog;
 						// Strings to Show In Dialog with Radio Buttons
 						
@@ -127,9 +127,9 @@ public class FragmentJobCard extends Fragment {
 
 								}
 								levelDialog.dismiss();
-								MainActivity.incidentStatus = (String) options[pos];
+								MainActivity.incidentStatus = (String) optionsStrings[pos];
 								MainActivity.action = Action.SAVE_JOB_CARD;
-								CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) options[pos]).toLowerCase(), incidentType);
+								CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) optionsStrings[pos]).toLowerCase(), incidentType);
 							}
 						});
 						levelDialog = builderType.create();
@@ -185,6 +185,9 @@ public class FragmentJobCard extends Fragment {
 					break;
 				case 5:
 					((MainActivity) getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+//					Fragment fragment5 = new Valve();
+//					FragmentManager frgManager5 = getFragmentManager();
+//					frgManager5.beginTransaction().replace(R.id.content_frame, fragment5).commit();
 					Fragment fragment5 = new Valve();
 					FragmentManager frgManager5 = getFragmentManager();
 					frgManager5.beginTransaction().replace(R.id.content_frame, fragment5).commit();
