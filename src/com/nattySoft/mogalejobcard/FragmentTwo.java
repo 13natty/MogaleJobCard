@@ -2,9 +2,9 @@ package com.nattySoft.mogalejobcard;
 
 import java.util.Calendar;
 
+import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
-import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;

@@ -12,8 +12,8 @@ import android.widget.Toast;
 
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
-import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.util.Preferences;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 final class GCMRegisterTask extends AsyncTask<Void, Void, Void> {

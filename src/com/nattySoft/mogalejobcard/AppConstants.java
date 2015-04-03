@@ -3,8 +3,10 @@ package com.nattySoft.mogalejobcard;
 public class AppConstants {
 public static class Config {
     	
-    	public static String SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";	
+    	public static String SERVER_URL = "http://109.201.146.41/Mogale/Controller";	
     	public static final String GCM_SENDER_ID = "7567532847";
+    	public static long KEY_START_TIME;
+		public static long KEY_JOB_TIME;
     }
     
     public static class PreferenceKeys {
@@ -24,8 +26,8 @@ public static class Config {
     	public static final String KEY_HYDRANT = "hydrant";
 		public static final String KEY_VALVE = "valve";
 		public static final String KEY_ADD_CHAT = "add_chat";
-		public static final String KEY_SERVER_URL = "serverurl";
-    	
+		public static final String KEY_SERVER_URL = "serverurl";		
+		
     }
 
 }

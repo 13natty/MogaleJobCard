@@ -33,7 +33,6 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.nattySoft.mogalejobcard.MainActivity;
-import com.nattySoft.mogalejobcard.net.ConnectionManager;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 
 public class ConnectionManager {
