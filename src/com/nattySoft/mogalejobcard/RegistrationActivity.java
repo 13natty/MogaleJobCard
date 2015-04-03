@@ -6,10 +6,10 @@ import org.json.JSONObject;
 
 import com.nattySoft.mogalejobcard.listener.PushListener;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
-import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.push.GCMer;
 import com.nattySoft.mogalejobcard.util.Preferences;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -99,7 +99,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 
 			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			    public void onClick(DialogInterface dialog,int id) {
-			    	AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
+			    	AppConstants.Config.SERVER_URL = "http://109.201.146.41/Mogale/Controller";
 			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 				dialog.cancel();
 			    }

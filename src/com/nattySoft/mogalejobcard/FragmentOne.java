@@ -11,9 +11,9 @@ import com.nattySoft.mogalejobcard.R;
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.MainActivity;
 import com.nattySoft.mogalejobcard.listener.IncidentClickedListener;
+import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
-import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -15,9 +15,9 @@ import com.nattySoft.mogalejobcard.MainActivity;
 import com.nattySoft.mogalejobcard.R;
 import com.nattySoft.mogalejobcard.R.id;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
+import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
-import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
@@ -187,6 +187,7 @@ public class FragmentIncident extends Fragment {
 
 			@Override
 			public void onClick(View v) {
+				AppConstants.Config.KEY_START_TIME = System.currentTimeMillis();
 				((MainActivity) getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
 				Fragment fragment = new FragmentJobCard();
 				FragmentManager frgManager = getFragmentManager();

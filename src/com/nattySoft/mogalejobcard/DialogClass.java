@@ -1,10 +1,10 @@
 package com.nattySoft.mogalejobcard;
 
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
-import com.nattySoft.mogalejobcard.net.CommunicationHandler;
-import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.util.Preferences;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 
 import android.app.Activity;
 import android.app.Dialog;

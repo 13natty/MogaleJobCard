@@ -1,9 +1,9 @@
 package com.nattySoft.mogalejobcard;
 
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
+import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
-import com.nattySoft.mogalejobcard.util.Preferences;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -129,6 +129,7 @@ public class FragmentJobCard extends Fragment {
 								levelDialog.dismiss();
 								MainActivity.incidentStatus = (String) optionsStrings[pos];
 								MainActivity.action = Action.SAVE_JOB_CARD;
+								AppConstants.Config.KEY_JOB_TIME = System.currentTimeMillis() - AppConstants.Config.KEY_START_TIME;
 								CommunicationHandler.saveJobCard(FragmentJobCard.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Saving Incident..."), Preferences.getPreference(FragmentJobCard.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), FragmentIncident.incidentID, ((String) optionsStrings[pos]).toLowerCase(), incidentType);
 							}
 						});
