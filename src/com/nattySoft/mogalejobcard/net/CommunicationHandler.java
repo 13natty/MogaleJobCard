@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,18 +19,19 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
+import com.nattySoft.mogalejobcard.net.ConnectionManager;
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.FragmentIncident;
 import com.nattySoft.mogalejobcard.MainActivity;
-import com.nattySoft.mogalejobcard.RegistrationActivity;
 //import com.nattySoft.mogalejobcard.RegistrationActivity;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.push.GCMer;
 import com.nattySoft.mogalejobcard.util.Preferences;
-import com.nattySoft.mogalejobcard.net.CommunicationHandler;
-import com.nattySoft.mogalejobcard.net.ConnectionManager;
 
 public class CommunicationHandler {
+
+	private static final String SERVER_URL = AppConstants.Config.SERVER_URL;
 	private static final String LOG_TAG = CommunicationHandler.class.getSimpleName();
 
 	public enum Action {
@@ -49,10 +49,10 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "json.toString() " + json.toString());
 
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 	}
 
 	public static void getOpenIncidents(Context context, RequestResponseListener listener, ProgressDialog dialog) {
@@ -66,9 +66,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 	}
 
 	public static void registerUser(Context context, RequestResponseListener listener, ProgressDialog dialog, String employeeNumber) {
@@ -89,9 +89,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -108,9 +108,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -126,9 +126,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -143,8 +143,7 @@ public class CommunicationHandler {
 				json.accumulate("nav", "updatejobcard.mobi");
 				json.accumulate("id", jobCardId);
 			}
-			
-			json.accumulate("jobDuration", AppConstants.Config.KEY_JOB_TIME);
+
 			json.accumulate("incidentId", FragmentIncident.incidentID);
 			json.accumulate("employeeNum", MainActivity.employeeNUM);
 			json.accumulate("status", incidentStatus);
@@ -248,20 +247,17 @@ public class CommunicationHandler {
 			String valveJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_VALVE + FragmentIncident.incidentID);
 			if (valveJSONSTR != null) {
 				JSONObject valveJSON = new JSONObject(valveJSONSTR);
-				
-				JSONArray valvesArray = valveJSON.getJSONArray("valves");
-//
-//				if (isValid(valveJSON.getString("openTime")))
-//					json.accumulate("openTime", valveJSON.getString("openTime"));
-//				if (isValid(valveJSON.getString("closeTime")))
-//					json.accumulate("closeTime", valveJSON.getString("closeTime"));
-//				if (isValid(valveJSON.getString("leftSide")))
-//					json.accumulate("leftSide", valveJSON.getString("leftSide"));
-//				if (isValid(valveJSON.getString("streetName")))
-//					json.accumulate("streetName", valveJSON.getString("streetName"));
-//				if (isValid(valveJSON.getString("valveRepairType")))
-//					json.accumulate("valveRepairType", valveJSON.getString("valveRepairType"));
-				json.accumulate("valves", valvesArray);
+
+				if (isValid(valveJSON.getString("openTime")))
+					json.accumulate("openTime", valveJSON.getString("openTime"));
+				if (isValid(valveJSON.getString("closeTime")))
+					json.accumulate("closeTime", valveJSON.getString("closeTime"));
+				if (isValid(valveJSON.getString("leftSide")))
+					json.accumulate("leftSide", valveJSON.getString("leftSide"));
+				if (isValid(valveJSON.getString("streetName")))
+					json.accumulate("streetName", valveJSON.getString("streetName"));
+				if (isValid(valveJSON.getString("valveRepairType")))
+					json.accumulate("valveRepairType", valveJSON.getString("valveRepairType"));
 			}
 
 		} catch (JSONException e) {
@@ -269,9 +265,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -293,9 +289,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -310,9 +306,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -328,9 +324,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 
 	}
 
@@ -345,9 +341,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL));
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_SERVER_URL), json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 	}
 
 }
