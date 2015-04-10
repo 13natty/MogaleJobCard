@@ -1,7 +1,6 @@
 package com.nattySoft.mogalejobcard;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -40,14 +38,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Vibrator;
-import android.provider.Telephony;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.telephony.CellInfoGsm;
-import android.telephony.CellSignalStrengthGsm;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,10 +55,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nattySoft.mogalejobcard.listener.PushListener;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
-import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
-import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
+import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
+import com.nattySoft.mogalejobcard.util.Preferences;
 
 public class MainActivity extends Activity implements RequestResponseListener, PushListener {
 
@@ -107,14 +101,6 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		hasTelephony();
-		
-		TelephonyManager telephonyManager = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-		// for example value of first element
-		CellInfoGsm cellinfogsm = (CellInfoGsm)telephonyManager.getAllCellInfo().get(0);
-		CellSignalStrengthGsm cellSignalStrengthGsm = cellinfogsm.getCellSignalStrength();
-		cellSignalStrengthGsm.getDbm();
-		
 		if(Preferences.getPreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL) == null)
 		{
 			Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL); 
@@ -192,51 +178,6 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			finish();
 		}
 
-	}
-	
-	private Boolean hasTelephony;
-
-	public boolean hasTelephony()
-	{
-	    if(hasTelephony==null)
-	    {
-	        TelephonyManager tm=(TelephonyManager )this.getSystemService(Context.TELEPHONY_SERVICE);
-	        if(tm==null)
-	        {
-	            hasTelephony=new Boolean(false);
-	            return hasTelephony.booleanValue();
-	        }
-//	        if(this.getSDKVersion() < 5)
-//	        {
-//	            hasTelephony=new Boolean(true);
-//	            return hasTelephony;
-//	        }
-	        PackageManager pm = this.getPackageManager();
-	        Method method=null;
-	        if(pm==null)
-	            return hasTelephony;
-	        else
-	        {
-	            try
-	            {
-	                Class[] parameters=new Class[1];
-	                parameters[0]=String.class;
-	                method=pm.getClass().getMethod("hasSystemFeature", parameters);
-	                Object[] parm=new Object[1];
-	                parm[0]=new String(PackageManager.FEATURE_TELEPHONY);
-	                Object retValue=method.invoke(pm, parm);
-	                if(retValue instanceof Boolean)
-	                    hasTelephony=new Boolean(((Boolean )retValue).booleanValue());
-	                else
-	                    hasTelephony=new Boolean(false);
-	            }
-	            catch(Exception e)
-	            {
-	                hasTelephony=new Boolean(false);
-	            }
-	        }
-	    }
-	    return hasTelephony;
 	}
 
 	private void startApp(Bundle savedInstanceState) {
@@ -605,7 +546,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
-					AppConstants.Config.SERVER_URL = "http://109.201.146.41/Mogale/Controller";
+					AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
 					Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
 					dialog.cancel();
 				}
