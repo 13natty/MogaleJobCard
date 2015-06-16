@@ -35,7 +35,7 @@ public class CommunicationHandler {
 	private static final String LOG_TAG = CommunicationHandler.class.getSimpleName();
 
 	public enum Action {
-		GET_ALL_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG;
+		GET_USER, GET_ALL_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG;
 	}
 
 	public static void registerForPush(final Context context, String deviceId, String employeeNumber, RequestResponseListener listener, ProgressDialog dialog) {
@@ -132,7 +132,7 @@ public class CommunicationHandler {
 
 	}
 
-	public static void saveJobCard(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String incidentStatus, int incidentType) {
+	public static void saveJobCard(Activity activity, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, String incidentStatus, int incidentType, long jobDuration) {
 		JSONObject json = new JSONObject();
 		try {
 			String jobCardId = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
@@ -148,6 +148,7 @@ public class CommunicationHandler {
 			json.accumulate("employeeNum", MainActivity.employeeNUM);
 			json.accumulate("status", incidentStatus);
 			json.accumulate("incidentType", incidentType);
+			json.accumulate("jobDuration", jobDuration);
 
 			String existingmeterJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_EXISTING_METER_INFO + FragmentIncident.incidentID);
 			if (existingmeterJSONSTR != null) {
@@ -344,6 +345,22 @@ public class CommunicationHandler {
 		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
 		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+	}
+
+	public static void getUser(Context context, RequestResponseListener listener) {
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "getuser.mobi");
+			json.accumulate("employeeNum", Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, null, new Pair<String, JSONObject>(SERVER_URL, json));
+		
 	}
 
 }

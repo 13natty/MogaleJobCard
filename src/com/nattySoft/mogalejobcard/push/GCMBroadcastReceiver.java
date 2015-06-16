@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.DownloadManager.Request;
+import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -16,15 +18,19 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-import com.google.android.gms.analytics.n;
+
+//import com.google.android.gms.analytics.n;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult;
+import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.DialogClass;
 import com.nattySoft.mogalejobcard.FragmentIncident;
 import com.nattySoft.mogalejobcard.MainActivity;
@@ -67,8 +73,26 @@ public final class GCMBroadcastReceiver extends WakefulBroadcastReceiver {
 				Log.d(LOG_TAG, "extras.toString() " + extras.toString());
 				Log.d(LOG_TAG, "Message received: " + extras.getString("body"));
 
-				
-				pushListener.pushReceived(context, intent);
+				if(pushListener != null)
+				{
+					pushListener.pushReceived(context, intent);
+				}
+				else
+				{
+					if(extras.getString("type").equalsIgnoreCase(MainActivity.UPDATE_APP))
+					{
+						DownloadManager dm = (DownloadManager) context.getSystemService(context.DOWNLOAD_SERVICE);
+						Request request = new Request(
+	//							Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+						Uri.parse(AppConstants.Config.SERVER_URL_UPDATE+"/MogaleJobCard.apk"));
+	
+						request.setVisibleInDownloadsUi(true);
+						request.setDestinationInExternalPublicDir(
+								Environment.DIRECTORY_DOWNLOADS,
+								"/mogaleupdate/MogaleJobCard.apk");
+						dm.enqueue(request);
+					}
+				}
 						
 			}
 		}

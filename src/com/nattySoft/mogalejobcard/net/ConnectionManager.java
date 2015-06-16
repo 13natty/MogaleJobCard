@@ -238,7 +238,7 @@ public class ConnectionManager {
 	if(inputStream != null)
         result = convertInputStreamToString(inputStream);
     else
-        result = "Did not work!";
+        result = "Connection Failed";
 	
 	Log.d(LOG_TAG, "result [" + result + "]");
 	

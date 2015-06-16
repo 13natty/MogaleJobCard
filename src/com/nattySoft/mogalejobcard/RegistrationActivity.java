@@ -47,6 +47,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_registration);
 
+		setTitle("Registration");
 		employeeNumber = (EditText) findViewById(R.id.editText1);
 		regButton = (Button) findViewById(R.id.regButton);
 		regButton.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,8 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 				}
 			}
 		});
-		GCMBroadcastReceiver.setListener(this);
+		GCMBroadcastReceiver bcr = new GCMBroadcastReceiver();
+		bcr.pushListener = this;
 	}
 
 	@Override
@@ -78,34 +80,119 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_change_host) {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//
+//			alert.setMessage("Enter new host IP");
+//
+//			final EditText hostInput = new EditText(this);
+////			hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
+//			hostInput.setHint(AppConstants.Config.SERVER_URL);
+//
+//			alert.setView(hostInput);
+//
+//			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//			    public void onClick(DialogInterface dialog,int id) {
+//				// get user input and set it to result
+//				// edit text
+//			    	if(!hostInput.getText().toString().equals(""))
+//					{
+//				    	AppConstants.Config.SERVER_URL = "http://"+hostInput.getText().toString()+"/Mogale/Controller";
+//				    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
+//					}
+//			    }
+//			  });
+//
+//			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//			    public void onClick(DialogInterface dialog,int id) {
+////			    	AppConstants.Config.SERVER_URL = "http://109.201.146.41/Mogale/Controller";
+////			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
+//				dialog.cancel();
+//			    }
+//			  });
+//
+//			alert.show();
+			
+			AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this);
 
-			alert.setMessage("Enter new host IP");
+			final EditText edittext = new EditText(
+					RegistrationActivity.this);
+			passwordAlert.setMessage("Enter password");
+			passwordAlert.setTitle("Enter Password");
 
-			final EditText hostInput = new EditText(this);
-//			hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
-			hostInput.setHint(AppConstants.Config.SERVER_URL);
+			passwordAlert.setView(edittext);
 
-			alert.setView(hostInput);
+			passwordAlert.setPositiveButton("Done",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// What ever you want to do with the value
+							String YouEditTextValue = edittext.getText()
+									.toString();
+							if (YouEditTextValue.equalsIgnoreCase("idol")) {
+								AlertDialog.Builder alert = new AlertDialog.Builder(RegistrationActivity.this);
 
-			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog,int id) {
-				// get user input and set it to result
-				// edit text
-			    	AppConstants.Config.SERVER_URL = "http://"+hostInput.getText().toString()+"/Mogale/Controller";
-			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
-			    }
-			  });
+								alert.setMessage("Enter new host IP");
 
-			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog,int id) {
-			    	AppConstants.Config.SERVER_URL = "http://109.201.146.41/Mogale/Controller";
-			    	Preferences.savePreference(RegistrationActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
-				dialog.cancel();
-			    }
-			  });
+								final EditText hostInput = new EditText(
+										RegistrationActivity.this);
+								// hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
+								hostInput
+										.setHint(AppConstants.Config.SERVER_URL);
 
-			alert.show();
+								alert.setView(hostInput);
+
+								alert.setPositiveButton("Ok",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												// get user input and set it to
+												// result
+												// edit text
+												if (!hostInput.getText()
+														.toString().equals("")) {
+													AppConstants.Config.HOST = "http://"
+															+ hostInput
+																	.getText()
+																	.toString();
+													Preferences.savePreference(
+															RegistrationActivity.this
+																	.getApplicationContext(),
+															AppConstants.PreferenceKeys.KEY_SERVER_URL,
+															AppConstants.Config.HOST);
+												}
+											}
+										});
+
+								alert.setNegativeButton("Cancel",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												// AppConstants.Config.SERVER_URL
+												// =
+												// "http://192.198.100.27:8080/Mogale/Controller";
+												// Preferences.savePreference(MainActivity.this.getApplicationContext(),
+												// AppConstants.PreferenceKeys.KEY_SERVER_URL,
+												// AppConstants.Config.SERVER_URL);
+												dialog.cancel();
+											}
+										});
+
+								alert.show();
+							}
+						}
+					});
+
+			passwordAlert.setNegativeButton("cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							dialog.dismiss();
+						}
+					});
+
+			passwordAlert.show();
 		}
 		else if (id == R.id.action_version) {
 			return true;
@@ -160,7 +247,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 			}
 		} catch (JSONException e) {
 			Log.e("JSON Parser", "Error parsing data " + e.toString());
-			sucsess();
+			failedToRegister(response);
 		}
 		
 		
@@ -187,6 +274,37 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 					RegistrationActivity.this.finish();
 					//now display main app
 					startActivityForResult(new Intent(RegistrationActivity.this, MainActivity.class), 0);
+				}
+			  });
+
+			// create alert dialog
+			AlertDialog alertDialog = alertDialogBuilder.create();
+
+			// show it
+			alertDialog.show();
+	}
+	
+	private void failedToRegister(String msg) {
+		String empN = employeeNumber.getText().toString();
+		Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM, empN);
+		Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_REGISTERED, "true");
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		// set title
+		alertDialogBuilder.setTitle("Failed");
+
+		// set dialog message
+		alertDialogBuilder
+			.setMessage("Registation failed : "+msg)
+			.setCancelable(false)
+			.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog,int id) {
+				// // if this button is clicked, close
+				// // current activity
+					dialog.cancel();
+//					RegistrationActivity.this.finish();
+//					//now display main app
+//					startActivityForResult(new Intent(RegistrationActivity.this, MainActivity.class), 0);
 				}
 			  });
 

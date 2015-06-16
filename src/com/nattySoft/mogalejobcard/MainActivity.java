@@ -2,8 +2,10 @@ package com.nattySoft.mogalejobcard;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +62,8 @@ import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 import com.nattySoft.mogalejobcard.push.GCMBroadcastReceiver;
 import com.nattySoft.mogalejobcard.util.Preferences;
 
-public class MainActivity extends Activity implements RequestResponseListener, PushListener {
+public class MainActivity extends Activity implements RequestResponseListener,
+		PushListener {
 
 	private String TAG = MainActivity.class.getSimpleName();
 
@@ -69,13 +72,14 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	private boolean registered = false;
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 	public static String employeeNUM = null;
+	public static String employeeName = null;
 
 	static final String REGISTRATION_SUCCESS = "0";
 	static final String NEW_INCIDENT = "1";
 	static final String INCIDENT_UPDATE = "2";
 	static final String CHAT_MESSAGE = "3";
 	static final String INCIDENT_ACCEPT = "4";
-	static final String UPDATE_APP = "5";
+	public static final String UPDATE_APP = "5";
 
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -90,6 +94,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	ArrayList<Fragment> prevFrag;
 	private int prevPos;
 
+	private Bundle savedInstanceState;
+
 	public static int incidentCount = 0;
 
 	public static Action action;
@@ -101,51 +107,73 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if(Preferences.getPreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL) == null)
-		{
-			Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL); 
+		this.savedInstanceState = savedInstanceState;
+		if (Preferences.getPreference(
+				MainActivity.this.getApplicationContext(),
+				AppConstants.PreferenceKeys.KEY_SERVER_URL) == null) {
+			Preferences.savePreference(
+					MainActivity.this.getApplicationContext(),
+					AppConstants.PreferenceKeys.KEY_SERVER_URL,
+					AppConstants.Config.HOST);
 		}
 		version = getVersionInfo();
-		String regStr = Preferences.getPreference(this, AppConstants.PreferenceKeys.KEY_REGISTERED);
-		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true : false;
+		String regStr = Preferences.getPreference(this,
+				AppConstants.PreferenceKeys.KEY_REGISTERED);
+		registered = regStr != null && regStr.equalsIgnoreCase("true") ? true
+				: false;
 		prevFrag = new ArrayList<Fragment>();
 		if (registered) {
 			// Check device for Play Services APK.
 			if (checkPlayServices()) {
 				new DeleteInstallerThread().start();
-				employeeNUM = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM);
+				employeeNUM = Preferences.getPreference(getBaseContext(),
+						AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM);
+				action = Action.GET_USER;
+				CommunicationHandler.getUser(this, this);
 				Intent current = getIntent();
 				if (current != null) {
 					Bundle extras = current.getExtras();
 					if (extras != null) {
 						String type = extras.getString("type");
 						String incidentId = extras.getString("incidentId");
-						if (type != null && type.equalsIgnoreCase("" + NEW_INCIDENT)) {
-							CommunicationHandler.pingIncidentReceived(this, this, null, incidentId);
+						if (type != null
+								&& type.equalsIgnoreCase("" + NEW_INCIDENT)) {
+							CommunicationHandler.pingIncidentReceived(this,
+									this, null, incidentId);
 						}
 					}
 				}
-				startApp(savedInstanceState);
 
 				BroadcastReceiver receiver = new BroadcastReceiver() {
 					@Override
 					public void onReceive(Context context, Intent intent) {
 						String action = intent.getAction();
-						if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-							long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+						if (DownloadManager.ACTION_DOWNLOAD_COMPLETE
+								.equals(action)) {
+							long downloadId = intent.getLongExtra(
+									DownloadManager.EXTRA_DOWNLOAD_ID, 0);
 							Query query = new Query();
 							query.setFilterById(enqueue);
 							Cursor c = dm.query(query);
 							if (c.moveToFirst()) {
-								int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-								if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+								int columnIndex = c
+										.getColumnIndex(DownloadManager.COLUMN_STATUS);
+								if (DownloadManager.STATUS_SUCCESSFUL == c
+										.getInt(columnIndex)) {
 
 									try {
 										// FileUtil.createDirectory(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath());
-										File apkFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/mogaleupdate/MogaleJobCard.apk");
+										File apkFile = new File(
+												Environment
+														.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+														+ "/mogaleupdate/MogaleJobCard.apk");
 										if (apkFile.exists()) {
-											Intent intentAPK = new Intent(Intent.ACTION_VIEW);
-											intentAPK.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+											Intent intentAPK = new Intent(
+													Intent.ACTION_VIEW);
+											intentAPK
+													.setDataAndType(Uri
+															.fromFile(apkFile),
+															"application/vnd.android.package-archive");
 											startActivity(intentAPK);
 										}
 
@@ -158,7 +186,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					}
 				};
 
-				registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+				registerReceiver(receiver, new IntentFilter(
+						DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
 				BroadcastReceiver myReceiver = new BroadcastReceiver() {
 					@Override
@@ -195,7 +224,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+				GravityCompat.START);
 
 		// Add Drawer Item to dataList
 		// dataList.add(new DrawerItem(true)); // adding a spinner to the list
@@ -203,8 +233,10 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// dataList.add(new DrawerItem("My Favorites")); // adding a header to
 		// the
 		// list
-		dataList.add(new DrawerItem("Incidents", R.drawable.ic_action_incident));
-		dataList.add(new DrawerItem("Chat", R.drawable.ic_action_chat));
+		dataList.add(new DrawerItem("Incidents for " + employeeName,
+				R.drawable.ic_action_incident));
+		dataList.add(new DrawerItem("Chat for " + employeeName,
+				R.drawable.ic_action_chat));
 		// dataList.add(new DrawerItem("Games", R.drawable.ic_action_gamepad));
 		// dataList.add(new DrawerItem("Lables", R.drawable.ic_action_labels));
 
@@ -226,7 +258,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// dataList.add(new DrawerItem("Settings",
 		// R.drawable.ic_action_settings));
 		// dataList.add(new DrawerItem("Help", R.drawable.ic_action_help));
-		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
+		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item,
+				dataList);
 
 		mDrawerList.setAdapter(adapter);
 
@@ -235,7 +268,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
 			public void onDrawerClosed(View view) {
 				getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
@@ -274,7 +309,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		// Log.d("DOWNLOAD", "reference "+reference);
 
 		action = Action.GET_ALL_OPEN_INCIDENCES;
-		CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+		CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(
+				MainActivity.this, "Please wait",
+				"Retrieving Open Incidents..."));
 
 	}
 
@@ -290,7 +327,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			dataList.add(items.get(i));
 		}
 
-		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
+		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item,
+				dataList);
 		mDrawerList.setAdapter(adapter);
 
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
@@ -311,7 +349,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		dataList.add(dItem0);
 		dataList.add(dItem1);
-		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item, dataList);
+		adapter = new CustomDrawerAdapter(this, R.layout.custom_drawer_item,
+				dataList);
 		mDrawerList.setAdapter(adapter);
 
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
@@ -326,10 +365,12 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	 * Google Play Store or enable it in the device's system settings.
 	 */
 	private boolean checkPlayServices() {
-		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		int resultCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
 		if (resultCode != ConnectionResult.SUCCESS) {
 			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+						PLAY_SERVICES_RESOLUTION_REQUEST).show();
 			} else {
 				Log.i(TAG, "This device is not supported.");
 				finish();
@@ -366,13 +407,17 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				incidentCount = 0;
 				setCount(incidentCount);
 			}
-			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
-			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
+			args.putString(FragmentOne.ITEM_NAME, dataList.get(possition)
+					.getItemName());
+			args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition)
+					.getImgResID());
 			break;
 		case 1:
 			fragment = new FragmentTwo();
-			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
-			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
+			args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition)
+					.getItemName());
+			args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition)
+					.getImgResID());
 			break;
 		// case 2:
 		// fragment = new FragmentThree();
@@ -471,7 +516,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		fragment.setArguments(args);
 		FragmentManager frgManager = getFragmentManager();
-		frgManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+		frgManager.beginTransaction().replace(R.id.content_frame, fragment)
+				.commit();
 
 		mDrawerList.setItemChecked(possition, true);
 		setTitle(dataList.get(possition).getItemName());
@@ -505,7 +551,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		if (intent_extras != null && intent_extras.containsKey("action")) {
 			if (intent_extras.get("action") == "newIncident") {
 				action = Action.GET_ALL_OPEN_INCIDENCES;
-				CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+				CommunicationHandler.getOpenIncidents(this, this,
+						ProgressDialog.show(MainActivity.this, "Please wait",
+								"Retrieving Open Incidents..."));
 			}
 		}
 	}
@@ -525,34 +573,88 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		} else if (id == R.id.action_change_host) {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this);
 
-			alert.setMessage("Enter new host IP");
+			final EditText edittext = new EditText(
+					MainActivity.this);
+			passwordAlert.setMessage("Enter password");
+			passwordAlert.setTitle("Enter Password");
 
-			final EditText hostInput = new EditText(this);
-			// hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
-			hostInput.setHint(AppConstants.Config.SERVER_URL);
+			passwordAlert.setView(edittext);
 
-			alert.setView(hostInput);
+			passwordAlert.setPositiveButton("Done",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// What ever you want to do with the value
+							String YouEditTextValue = edittext.getText()
+									.toString();
+							if (YouEditTextValue.equalsIgnoreCase("idol")) {
+								AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
-			alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					// get user input and set it to result
-					// edit text
-					AppConstants.Config.SERVER_URL = "http://" + hostInput.getText().toString() + "/Mogale/Controller";
-					Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
-				}
-			});
+								alert.setMessage("Enter new host IP");
 
-			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					AppConstants.Config.SERVER_URL = "http://192.198.100.27:8080/Mogale/Controller";
-					Preferences.savePreference(MainActivity.this.getApplicationContext(), AppConstants.PreferenceKeys.KEY_SERVER_URL, AppConstants.Config.SERVER_URL);
-					dialog.cancel();
-				}
-			});
+								final EditText hostInput = new EditText(
+										MainActivity.this);
+								// hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
+								hostInput
+										.setHint(AppConstants.Config.SERVER_URL);
 
-			alert.show();
+								alert.setView(hostInput);
+
+								alert.setPositiveButton("Ok",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												// get user input and set it to
+												// result
+												// edit text
+												if (!hostInput.getText()
+														.toString().equals("")) {
+													AppConstants.Config.HOST = "http://"
+															+ hostInput
+																	.getText()
+																	.toString();
+													Preferences.savePreference(
+															MainActivity.this
+																	.getApplicationContext(),
+															AppConstants.PreferenceKeys.KEY_SERVER_URL,
+															AppConstants.Config.HOST);
+												}
+											}
+										});
+
+								alert.setNegativeButton("Cancel",
+										new DialogInterface.OnClickListener() {
+											public void onClick(
+													DialogInterface dialog,
+													int id) {
+												// AppConstants.Config.SERVER_URL
+												// =
+												// "http://192.198.100.27:8080/Mogale/Controller";
+												// Preferences.savePreference(MainActivity.this.getApplicationContext(),
+												// AppConstants.PreferenceKeys.KEY_SERVER_URL,
+												// AppConstants.Config.SERVER_URL);
+												dialog.cancel();
+											}
+										});
+
+								alert.show();
+							}
+						}
+					});
+
+			passwordAlert.setNegativeButton("cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							dialog.dismiss();
+						}
+					});
+
+			passwordAlert.show();
+
 		} else if (id == R.id.action_version) {
 			return true;
 		}
@@ -561,10 +663,13 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		return false;
 	}
 
-	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+	private class DrawerItemClickListener implements
+			ListView.OnItemClickListener {
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			DrawerItem item = (DrawerItem) mDrawerList.getItemAtPosition(position);
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			DrawerItem item = (DrawerItem) mDrawerList
+					.getItemAtPosition(position);
 			String tittle = item.getTitle();
 			String itemName = item.getItemName();
 			String type = item.type;
@@ -616,16 +721,60 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	public void hasResponse(String responce) {
 		Log.d(TAG, " response " + responce);
 		Log.d(TAG, " action " + action);
-		if (action == Action.GET_ALL_OPEN_INCIDENCES) {
+		if (action == Action.GET_USER) {
+			if (!responce.equalsIgnoreCase("Did not work!")) {
+				Preferences.savePreference(this,
+						AppConstants.PreferenceKeys.KEY_USER, responce);
+
+				JSONObject userProfile = null;
+
+				// try parse the string to a JSON object
+				try {
+					userProfile = new JSONObject(responce);
+				} catch (JSONException e) {
+					Log.e("JSON Parser", "Error parsing data " + e.toString());
+				}
+
+				if (userProfile != null) {
+					try {
+
+						// Getting JSON Array from URL
+						String[] data = new String[userProfile.length()];
+						Log.d("forst size", "data1 size " + data.length);
+						Log.d(TAG, "userProfile " + userProfile);
+
+						JSONArray userProfileArray = userProfile
+								.getJSONArray("data");
+
+						Log.d("forst size", "userProfileArray size "
+								+ userProfileArray.length());
+						JSONObject userProfileObject = userProfileArray
+								.getJSONObject(0);
+						employeeName = userProfileObject.getString("name");
+						startApp(savedInstanceState);
+					} catch (Exception e) {
+						employeeName = "Unknown";
+						startApp(savedInstanceState);
+					}
+
+				}
+			}
+		} else if (action == Action.GET_ALL_OPEN_INCIDENCES) {
 			if (!responce.equalsIgnoreCase("Did not work!"))
-				Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
+				Preferences.savePreference(this,
+						AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS,
+						responce);
 			SelectItem(0);
 		} else if (action == Action.GET_ALL_OPEN_INCIDENCES_BG) {
-			if (responce.equalsIgnoreCase("{\"message\":[\"Server returned success.\"],\"response\":[\"success\"]}"))
+			if (responce
+					.equalsIgnoreCase("{\"message\":[\"Server returned success.\"],\"response\":[\"success\"]}"))
 				return;
 			if (!responce.equalsIgnoreCase("Did not work!"))
-				Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS, responce);
-			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+				Preferences.savePreference(this,
+						AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS,
+						responce);
+			Fragment frag = getFragmentManager().findFragmentById(
+					R.id.content_frame);
 			if (frag instanceof FragmentOne) {
 				((FragmentOne) frag).setMenus(responce);
 			} else {
@@ -634,7 +783,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 						((FragmentOne) prevFrag.get(i)).setMenus(responce);
 						incidentCount++;
 						setCount(incidentCount);
-						Toast.makeText(getApplicationContext(), "New Incident Received", Toast.LENGTH_LONG).show();
+						Toast.makeText(getApplicationContext(),
+								"New Incident Received", Toast.LENGTH_LONG)
+								.show();
 					}
 				}
 
@@ -644,8 +795,10 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				vibrator.vibrate(500);
 
 				try {
-					Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-					Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+					Uri notification = RingtoneManager
+							.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+					Ringtone r = RingtoneManager.getRingtone(
+							getApplicationContext(), notification);
 					r.play();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -653,20 +806,27 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			}
 		} else if (action == Action.DECLINE_INCIDENT) {
 			action = Action.GET_ALL_OPEN_INCIDENCES;
-			CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+			CommunicationHandler.getOpenIncidents(this, this, ProgressDialog
+					.show(MainActivity.this, "Please wait",
+							"Retrieving Open Incidents..."));
 		} else if (action == Action.ACCEPT_INCIDENT) {
 			if (responce.contains("success")) {
 				action = Action.GET_ALL_OPEN_INCIDENCES;
-				CommunicationHandler.getOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+				CommunicationHandler.getOpenIncidents(this, this,
+						ProgressDialog.show(MainActivity.this, "Please wait",
+								"Retrieving Open Incidents..."));
 			}
 		} else if (action == Action.GET_COMMENTS) {
 			Log.d(TAG, "responce " + responce);
-			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			Fragment frag = getFragmentManager().findFragmentById(
+					R.id.content_frame);
 			if (frag instanceof FragmentIncident) {
 				((FragmentIncident) frag).showComments(responce);
 			}
 		} else if (action == Action.SAVE_JOB_CARD) {
-			String jobCardId = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
+			String jobCardId = Preferences.getPreference(getBaseContext(),
+					AppConstants.PreferenceKeys.KEY_JOB_CARD_ID
+							+ FragmentIncident.incidentID);
 			if (jobCardId == null) {
 				String id = null;
 				try {
@@ -676,17 +836,21 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID, id);
+				Preferences.savePreference(getBaseContext(),
+						AppConstants.PreferenceKeys.KEY_JOB_CARD_ID
+								+ FragmentIncident.incidentID, id);
 			}
 			// action = Action.INCIDENT_STATUS;
 			// CommunicationHandler.updateIncident(this, this,
 			// ProgressDialog.show(MainActivity.this, "Please wait",
 			// "Updating incident..."), incidentStatus);
-			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			Fragment frag = getFragmentManager().findFragmentById(
+					R.id.content_frame);
 			DialogClass cdd = new DialogClass(this, "", "", "JOB CARD SAVED");
 			cdd.show();
 		} else if (action == Action.UPDATE_JOB_CARD) {
-			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			Fragment frag = getFragmentManager().findFragmentById(
+					R.id.content_frame);
 			DialogClass cdd = new DialogClass(this, "", "", "JOB CARD UPDATED");
 			cdd.show();
 			// action = Action.INCIDENT_STATUS;
@@ -704,18 +868,26 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 			if (isAppRunning(context)) {
 
-				if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
-					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+				if (extras.getString("type").equalsIgnoreCase(
+						REGISTRATION_SUCCESS)) {
+					NotificationManager notificationManager = (NotificationManager) context
+							.getSystemService(Context.NOTIFICATION_SERVICE);
 					String message = extras.getString("body");
-					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
+					Notification notification = new Notification(
+							R.drawable.mogale_icon_push, message,
+							System.currentTimeMillis());
 
-					Intent notificationIntent = new Intent(context, MainActivity.class);
+					Intent notificationIntent = new Intent(context,
+							MainActivity.class);
 
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+							| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+					PendingIntent pIntent = PendingIntent.getActivity(context,
+							0, notificationIntent, 0);
 
-					notification.setLatestEventInfo(context, "", message, pIntent);
+					notification.setLatestEventInfo(context, "", message,
+							pIntent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
 					notification.defaults |= Notification.DEFAULT_SOUND;
 					notification.defaults |= Notification.DEFAULT_LIGHTS;
@@ -723,23 +895,33 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 					notificationManager.notify(0, notification);
 
-				} else if (extras.getString("type").equalsIgnoreCase(NEW_INCIDENT)) {
+				} else if (extras.getString("type").equalsIgnoreCase(
+						NEW_INCIDENT)) {
 
 					action = Action.GET_ALL_OPEN_INCIDENCES_BG;
 					CommunicationHandler.getOpenIncidents(this, this, null);
-					CommunicationHandler.pingIncidentReceived(this, this, null, extras.getString("incidentId"));
-				} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_UPDATE)) {
-					NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+					CommunicationHandler.pingIncidentReceived(this, this, null,
+							extras.getString("incidentId"));
+				} else if (extras.getString("type").equalsIgnoreCase(
+						INCIDENT_UPDATE)) {
+					NotificationManager notificationManager = (NotificationManager) context
+							.getSystemService(Context.NOTIFICATION_SERVICE);
 					String message = extras.getString("body");
-					Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
+					Notification notification = new Notification(
+							R.drawable.mogale_icon_push, message,
+							System.currentTimeMillis());
 
-					Intent notificationIntent = new Intent(context, MainActivity.class);
+					Intent notificationIntent = new Intent(context,
+							MainActivity.class);
 
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+							| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-					PendingIntent pIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+					PendingIntent pIntent = PendingIntent.getActivity(context,
+							0, notificationIntent, 0);
 
-					notification.setLatestEventInfo(context, "", message, pIntent);
+					notification.setLatestEventInfo(context, "", message,
+							pIntent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
 					notification.defaults |= Notification.DEFAULT_SOUND;
 					notification.defaults |= Notification.DEFAULT_LIGHTS;
@@ -747,36 +929,61 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 					notificationManager.notify(0, notification);
 
-				} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
-					if (!extras.getString("senderEmployNum").equals(MainActivity.employeeNUM)) {
-						Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+				} else if (extras.getString("type").equalsIgnoreCase(
+						CHAT_MESSAGE)) {
+					if (!extras.getString("senderEmployNum").equals(
+							MainActivity.employeeNUM)) {
+						Fragment frag = getFragmentManager().findFragmentById(
+								R.id.content_frame);
 						if (frag instanceof FragmentTwo) {
-							((FragmentTwo) frag).sendChatMessage(extras.getString("senderName"), extras.getString("body"), extras.getString("timestamp"));
+							((FragmentTwo) frag).sendChatMessage(
+									extras.getString("senderName"),
+									extras.getString("body"),
+									extras.getString("timestamp"));
 						} else {
 							if (FragmentTwo.chatArrayAdapter != null) {
-								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
+								FragmentTwo.chatArrayAdapter
+										.add(new ChatMessage(false, extras
+												.getString("body"), extras
+												.getString("timestamp"), extras
+												.getString("senderName")));
 							} else {
-								FragmentTwo.chatArrayAdapter = new ChatArrayAdapter(this.getApplicationContext(), R.layout.single_chat_message);
-								FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
+								FragmentTwo.chatArrayAdapter = new ChatArrayAdapter(
+										this.getApplicationContext(),
+										R.layout.single_chat_message);
+								FragmentTwo.chatArrayAdapter
+										.add(new ChatMessage(false, extras
+												.getString("body"), extras
+												.getString("timestamp"), extras
+												.getString("senderName")));
 							}
 						}
 					}
 
-				} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
-					Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+				} else if (extras.getString("type").equalsIgnoreCase(
+						INCIDENT_ACCEPT)) {
+					Fragment frag = getFragmentManager().findFragmentById(
+							R.id.content_frame);
 					if (frag instanceof FragmentIncident) {
 						String incidentId_local = ((FragmentIncident) frag).incidentID;
-						DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("body"));
+						DialogClass cdd = new DialogClass(this,
+								incidentId_local,
+								extras.getString("incidentId"),
+								extras.getString("body"));
 						cdd.show();
 					}
 
-				} else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
+				} else if (extras.getString("type")
+						.equalsIgnoreCase(UPDATE_APP)) {
 
 					dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-					Request request = new Request(Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+					Request request = new Request(
+							Uri.parse(AppConstants.Config.SERVER_URL_UPDATE+"/MogaleJobCard.apk"));
 
 					request.setVisibleInDownloadsUi(true);
-					request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/mogaleupdate/MogaleJobCard.apk");
+					request.setDestinationInExternalPublicDir(
+							Environment.DIRECTORY_DOWNLOADS,
+							"/mogaleupdate/MogaleJobCard.apk");
 					enqueue = dm.enqueue(request);
 
 				}
@@ -791,23 +998,40 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 					extrasBundle.putString("incidentId", inciID);
 					extrasBundle.putString("type", NEW_INCIDENT);
 					myIntent.putExtras(extrasBundle);
-					PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					PendingIntent pendingIntent = PendingIntent.getActivity(
+							context, 0, myIntent,
+							PendingIntent.FLAG_UPDATE_CURRENT
+									| Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 					// Build notification
 					// Actions are just fake
-					Notification noti = new NotificationCompat.Builder(this).setContentTitle("New incident ").setContentText(message).setSmallIcon(R.drawable.mogale_icon_push).setWhen(System.currentTimeMillis()).setContentIntent(pendingIntent).setDefaults(Notification.DEFAULT_SOUND).setDefaults(Notification.DEFAULT_VIBRATE).setDefaults(Notification.DEFAULT_LIGHTS).setAutoCancel(true).build();
+					Notification noti = new NotificationCompat.Builder(this)
+							.setContentTitle("New incident ")
+							.setContentText(message)
+							.setSmallIcon(R.drawable.mogale_icon_push)
+							.setWhen(System.currentTimeMillis())
+							.setContentIntent(pendingIntent)
+							.setDefaults(Notification.DEFAULT_SOUND)
+							.setDefaults(Notification.DEFAULT_VIBRATE)
+							.setDefaults(Notification.DEFAULT_LIGHTS)
+							.setAutoCancel(true).build();
 					NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 					// hide the notification after its selected
 					noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
 					notificationManager.notify(0, noti);
-				} else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
+				} else if (extras.getString("type")
+						.equalsIgnoreCase(UPDATE_APP)) {
 
 					dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-					Request request = new Request(Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+					Request request = new Request(
+//							Uri.parse("http://192.198.100.27:8080/Mogale/updates/MogaleJobCard.apk"));
+					Uri.parse(AppConstants.Config.SERVER_URL_UPDATE+"/MogaleJobCard.apk"));
 
 					request.setVisibleInDownloadsUi(true);
-					request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/mogaleupdate/MogaleJobCard.apk");
+					request.setDestinationInExternalPublicDir(
+							Environment.DIRECTORY_DOWNLOADS,
+							"/mogaleupdate/MogaleJobCard.apk");
 					enqueue = dm.enqueue(request);
 
 				}
@@ -843,7 +1067,8 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 				// }
 			}
 
-			String message = extras.getString("description") + " : " + extras.getString("message");
+			String message = extras.getString("description") + " : "
+					+ extras.getString("message");
 
 		}
 	}
@@ -876,9 +1101,12 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	public static boolean isAppRunning(Context context) {
 		// check with the first task(task in the foreground)
 		// in the returned list of tasks
-		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		List<RunningTaskInfo> services = activityManager.getRunningTasks(Integer.MAX_VALUE);
-		if (services.get(0).topActivity.getPackageName().toString().equalsIgnoreCase(context.getPackageName().toString())) {
+		ActivityManager activityManager = (ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		List<RunningTaskInfo> services = activityManager
+				.getRunningTasks(Integer.MAX_VALUE);
+		if (services.get(0).topActivity.getPackageName().toString()
+				.equalsIgnoreCase(context.getPackageName().toString())) {
 			// your application is running in the background
 			return true;
 		}
@@ -891,23 +1119,37 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		if (prevFrag != null && prevFrag.size() > 1) {
 			if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
 				if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof PipeLineInfo) {
-					((PipeLineInfo) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof ExistingMeterInformation) {
-					((ExistingMeterInformation) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof NewMeterInformation) {
-					((NewMeterInformation) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof NewConnectionInfo) {
-					((NewConnectionInfo) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof Hydrant) {
-					((Hydrant) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof Valve) {
-					((Valve) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
-				} else if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof FragmentOne) {
+					((PipeLineInfo) getFragmentManager().findFragmentById(
+							R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof ExistingMeterInformation) {
+					((ExistingMeterInformation) getFragmentManager()
+							.findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof NewMeterInformation) {
+					((NewMeterInformation) getFragmentManager()
+							.findFragmentById(R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof NewConnectionInfo) {
+					((NewConnectionInfo) getFragmentManager().findFragmentById(
+							R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof Hydrant) {
+					((Hydrant) getFragmentManager().findFragmentById(
+							R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof Valve) {
+					((Valve) getFragmentManager().findFragmentById(
+							R.id.content_frame)).saveForm();
+				} else if (getFragmentManager().findFragmentById(
+						R.id.content_frame) instanceof FragmentOne) {
 					super.onBackPressed();
 				}
 				int index = prevFrag.size() - 1;
 				FragmentManager frgManager = getFragmentManager();
-				frgManager.beginTransaction().replace(R.id.content_frame, prevFrag.get(index)).commit();
+				frgManager.beginTransaction()
+						.replace(R.id.content_frame, prevFrag.get(index))
+						.commit();
 				prevFrag.remove(index);
 			} else {
 				mDrawerList.setItemChecked(prevPos, true);
@@ -919,8 +1161,31 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			setTitle(dataList.get(prevPos).getItemName());
 			mDrawerLayout.closeDrawer(mDrawerList);
 		} else {
-			super.onBackPressed();
+			new AlertDialog.Builder(MainActivity.this)
+					.setTitle("Exit App")
+					.setMessage("Are you sure you want to exit")
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+									exit();
+								}
+							})
+					.setNegativeButton("No",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).setIcon(android.R.drawable.ic_dialog_alert)
+					.show();
+
 		}
+	}
+
+	protected void exit() {
+		super.onBackPressed();
 	}
 
 	public String getVersionInfo() {
@@ -928,7 +1193,9 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		PackageInfo packageInfo;
 		try {
-			packageInfo = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0);
+			packageInfo = getApplicationContext()
+					.getPackageManager()
+					.getPackageInfo(getApplicationContext().getPackageName(), 0);
 			strVersion += packageInfo.versionName;
 		} catch (NameNotFoundException e) {
 			strVersion += "Unknown";
