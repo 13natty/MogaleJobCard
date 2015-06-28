@@ -255,9 +255,12 @@ public class FragmentIncident extends Fragment {
 			@Override
 			public void onClick(View v) {
 				AppConstants.Config.KEY_START_TIME = System.currentTimeMillis();
+				AppConstants.Config.KEY_START_TIME = System.currentTimeMillis();
+
 				((MainActivity) getActivity()).prevFrag
 						.add(getFragmentManager().findFragmentById(
 								R.id.content_frame));
+
 				Fragment fragment = new FragmentJobCard();
 				FragmentManager frgManager = getFragmentManager();
 				frgManager.beginTransaction()

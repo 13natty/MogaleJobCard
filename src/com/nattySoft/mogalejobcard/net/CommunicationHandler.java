@@ -20,8 +20,6 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 
-import com.nattySoft.mogalejobcard.net.CommunicationHandler;
-import com.nattySoft.mogalejobcard.net.ConnectionManager;
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.FragmentIncident;
 import com.nattySoft.mogalejobcard.MainActivity;
@@ -29,6 +27,8 @@ import com.nattySoft.mogalejobcard.MainActivity;
 import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.push.GCMer;
 import com.nattySoft.mogalejobcard.util.Preferences;
+import com.nattySoft.mogalejobcard.net.CommunicationHandler;
+import com.nattySoft.mogalejobcard.net.ConnectionManager;
 
 public class CommunicationHandler {
 
@@ -193,7 +193,8 @@ public class CommunicationHandler {
 				json.accumulate("nav", "updatejobcard.mobi");
 				json.accumulate("id", jobCardId);
 			}
-
+			
+			json.accumulate("jobDuration", AppConstants.Config.KEY_JOB_TIME);
 			json.accumulate("incidentId", FragmentIncident.incidentID);
 			json.accumulate("employeeNum", MainActivity.employeeNUM);
 			json.accumulate("status", incidentStatus);

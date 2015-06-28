@@ -133,11 +133,13 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 
 								alert.setMessage("Enter new host IP");
 
+
 								final EditText hostInput = new EditText(
 										RegistrationActivity.this);
 								// hostInput.setInputType(InputType.TYPE_CLASS_TEXT);
 								hostInput
 										.setHint(AppConstants.Config.SERVER_URL);
+
 
 								alert.setView(hostInput);
 
