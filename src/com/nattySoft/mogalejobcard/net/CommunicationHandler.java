@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,7 +36,7 @@ public class CommunicationHandler {
 	private static final String LOG_TAG = CommunicationHandler.class.getSimpleName();
 
 	public enum Action {
-		GET_USER, GET_ALL_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG;
+		GET_ALL_USERS, GET_USER, GET_ALL_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG, RE_ASSIGN, GET_INCIDENCES_ASSIGNED_TO_ME;
 	}
 
 	public static void registerForPush(final Context context, String deviceId, String employeeNumber, RequestResponseListener listener, ProgressDialog dialog) {
@@ -61,6 +62,55 @@ public class CommunicationHandler {
 		try {
 			json.accumulate("nav", "incidents.mobi");
 			json.accumulate("employeeNum", Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+	}
+	
+	public static void getIncidentsAssignedTome(Context context, RequestResponseListener listener, ProgressDialog dialog) {
+
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "assignedtome.mobi");
+			json.accumulate("employeeNum", Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+	}
+	
+	public static void getAllUsers(Context context, RequestResponseListener listener, ProgressDialog dialog) {
+
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "getallusers.mobi");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+	}
+	
+	public static void reassignincident(Context context, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, JSONArray assignees) {
+
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "reassignincident.mobi");
+			json.accumulate("employeeNum", employeeNum);
+			json.accumulate("incidentId", incidentId);
+			json.accumulate("assignees", assignees);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

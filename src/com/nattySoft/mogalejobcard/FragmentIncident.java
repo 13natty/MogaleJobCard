@@ -19,6 +19,7 @@ import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -67,11 +68,15 @@ public class FragmentIncident extends Fragment {
 	Button commentButton;
 	Button jobCardButton;
 	Button declineButton;
+	Button assignButton;
 	private ArrayList<HashMap<String, String>> assigneeAList;
 	private ArrayList<HashMap<String, String>> accepteeAList;
 	public static String incidentID = null;
 	private LayoutInflater inflater;
 	private TableRow.LayoutParams params;
+	private boolean[] selectedAssignees;
+	private JSONArray AssignedAssignees = null;
+	private String[]  allUsersData;
 
 	public static final String IMAGE_RESOURCE_ID = "iconResourceID";
 	public static final String ITEM_NAME = "itemName";
@@ -81,9 +86,11 @@ public class FragmentIncident extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View view = inflater.inflate(R.layout.fragment_layout_incident, container, false);
+		View view = inflater.inflate(R.layout.fragment_layout_incident,
+				container, false);
 
 		// ivIcon = (ImageView) view.findViewById(R.id.frag3_icon);
 		// tvItemName = (TextView) view.findViewById(R.id.frag3_text);
@@ -99,30 +106,38 @@ public class FragmentIncident extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		statusText = (TextView) getActivity().findViewById(R.id.status_text);
 		typeText = (TextView) getActivity().findViewById(R.id.text_type);
-		referenceText = (TextView) getActivity().findViewById(R.id.refrence_text);
+		referenceText = (TextView) getActivity().findViewById(
+				R.id.refrence_text);
 		IDText = (TextView) getActivity().findViewById(R.id.id_text);
 		image = (ImageView) getActivity().findViewById(R.id.imageView_type);
 		title = (TextView) getActivity().findViewById(R.id.title);
 		reporterName = (TextView) getActivity().findViewById(R.id.reporterName);
-		reporterSurName = (TextView) getActivity().findViewById(R.id.reporterSurname);
-		accountNumber = (TextView) getActivity().findViewById(R.id.accountNumber);
+		reporterSurName = (TextView) getActivity().findViewById(
+				R.id.reporterSurname);
+		accountNumber = (TextView) getActivity().findViewById(
+				R.id.accountNumber);
 		township = (TextView) getActivity().findViewById(R.id.township);
 		stand = (TextView) getActivity().findViewById(R.id.stand);
 		portion = (TextView) getActivity().findViewById(R.id.portion);
 		streename = (TextView) getActivity().findViewById(R.id.street);
 		building = (TextView) getActivity().findViewById(R.id.building);
-		reporterIdNumber = (TextView) getActivity().findViewById(R.id.reporterIdNumber);
-		reporterContact = (TextView) getActivity().findViewById(R.id.reporterContact);
+		reporterIdNumber = (TextView) getActivity().findViewById(
+				R.id.reporterIdNumber);
+		reporterContact = (TextView) getActivity().findViewById(
+				R.id.reporterContact);
 
 		int left = 6;
 		int top = 12;
 		int right = 6;
 		int bottom = 6;
 
-		params = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
 		params.setMargins(left, top, right, bottom);
-		assigneeLayout = (LinearLayout) getActivity().findViewById(id.assigneeView);
-		accepteeLayout = (LinearLayout) getActivity().findViewById(id.accepteesView);
+		assigneeLayout = (LinearLayout) getActivity().findViewById(
+				id.assigneeView);
+		accepteeLayout = (LinearLayout) getActivity().findViewById(
+				id.accepteesView);
 
 		acceptButton = (Button) getActivity().findViewById(R.id.button_accept);
 		acceptButton.setOnClickListener(new OnClickListener() {
@@ -130,51 +145,103 @@ public class FragmentIncident extends Fragment {
 			@Override
 			public void onClick(View v) {
 				MainActivity.action = Action.ACCEPT_INCIDENT;
-				CommunicationHandler.acceptIncident(getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Accepting Incidents..."), Preferences.getPreference(getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), incidentID);
+				CommunicationHandler.acceptIncident(getActivity(),
+						(RequestResponseListener) getActivity(), ProgressDialog
+								.show(getActivity(), "Please wait",
+										"Accepting Incidents..."),
+						Preferences.getPreference(getActivity(),
+								AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM),
+						incidentID);
 			}
 		});
 
-		commentButton = (Button) getActivity().findViewById(R.id.comment_button);
+		commentButton = (Button) getActivity()
+				.findViewById(R.id.comment_button);
 		commentButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 
-				new AlertDialog.Builder(getActivity()).setTitle("Comments").setMessage("Choose a button below").setPositiveButton("Add Comment", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						// custom dialog
-						final Dialog dialogAdd = new Dialog(getActivity());
-						dialogAdd.setContentView(R.layout.add_comment);
-						String concated = (String) (title.getText().length() > 13 ? title.getText().subSequence(0, 10) + "..." : title.getText());
-						dialogAdd.setTitle("Comment on " + concated);
+				new AlertDialog.Builder(getActivity())
+						.setTitle("Comments")
+						.setMessage("Choose a button below")
+						.setPositiveButton("Add Comment",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// custom dialog
+										final Dialog dialogAdd = new Dialog(
+												getActivity());
+										dialogAdd
+												.setContentView(R.layout.add_comment);
+										String concated = (String) (title
+												.getText().length() > 13 ? title
+												.getText().subSequence(0, 10)
+												+ "..." : title.getText());
+										dialogAdd.setTitle("Comment on "
+												+ concated);
 
-						Button sendButton = (Button) dialogAdd.findViewById(R.id.comment_send);
-						// if button is clicked, close the custom dialog
-						sendButton.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								EditText message = (EditText) dialogAdd.findViewById(R.id.comment_message);
-								MainActivity.action = Action.ADD_COMMENT;
-								CommunicationHandler.addComment(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Sending your comment..."), Preferences.getPreference(FragmentIncident.this.getActivity(), AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM), incidentID, message.getText().toString());
-								dialogAdd.dismiss();
-							}
-						});
+										Button sendButton = (Button) dialogAdd
+												.findViewById(R.id.comment_send);
+										// if button is clicked, close the
+										// custom dialog
+										sendButton
+												.setOnClickListener(new OnClickListener() {
+													@Override
+													public void onClick(View v) {
+														EditText message = (EditText) dialogAdd
+																.findViewById(R.id.comment_message);
+														MainActivity.action = Action.ADD_COMMENT;
+														CommunicationHandler
+																.addComment(
+																		FragmentIncident.this
+																				.getActivity(),
+																		(RequestResponseListener) getActivity(),
+																		ProgressDialog
+																				.show(getActivity(),
+																						"Please wait",
+																						"Sending your comment..."),
+																		Preferences
+																				.getPreference(
+																						FragmentIncident.this
+																								.getActivity(),
+																						AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM),
+																		incidentID,
+																		message.getText()
+																				.toString());
+														dialogAdd.dismiss();
+													}
+												});
 
-						Button cancelButton = (Button) dialogAdd.findViewById(R.id.comment_cancel);
-						cancelButton.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								dialogAdd.dismiss();
-							}
-						});
-						dialogAdd.show();
-					}
-				}).setNegativeButton("View Comment", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						MainActivity.action = Action.GET_COMMENTS;
-						CommunicationHandler.getComments(getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Retrieving comments..."), incidentID);
-					}
-				}).setIcon(android.R.drawable.ic_dialog_alert).show();
+										Button cancelButton = (Button) dialogAdd
+												.findViewById(R.id.comment_cancel);
+										cancelButton
+												.setOnClickListener(new OnClickListener() {
+													@Override
+													public void onClick(View v) {
+														dialogAdd.dismiss();
+													}
+												});
+										dialogAdd.show();
+									}
+								})
+						.setNegativeButton("View Comment",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										MainActivity.action = Action.GET_COMMENTS;
+										CommunicationHandler
+												.getComments(
+														getActivity(),
+														(RequestResponseListener) getActivity(),
+														ProgressDialog
+																.show(getActivity(),
+																		"Please wait",
+																		"Retrieving comments..."),
+														incidentID);
+									}
+								}).setIcon(android.R.drawable.ic_dialog_alert)
+						.show();
 
 				/*
 				
@@ -188,14 +255,18 @@ public class FragmentIncident extends Fragment {
 			@Override
 			public void onClick(View v) {
 				AppConstants.Config.KEY_START_TIME = System.currentTimeMillis();
-				((MainActivity) getActivity()).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+				((MainActivity) getActivity()).prevFrag
+						.add(getFragmentManager().findFragmentById(
+								R.id.content_frame));
 				Fragment fragment = new FragmentJobCard();
 				FragmentManager frgManager = getFragmentManager();
-				frgManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+				frgManager.beginTransaction()
+						.replace(R.id.content_frame, fragment).commit();
 			}
 		});
 
-		declineButton = (Button) getActivity().findViewById(R.id.button_decline);
+		declineButton = (Button) getActivity()
+				.findViewById(R.id.button_decline);
 		declineButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -204,8 +275,24 @@ public class FragmentIncident extends Fragment {
 				cdd.show();
 			}
 		});
+
+		assignButton = (Button) getActivity().findViewById(R.id.assign_job);
+		assignButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				MainActivity.action = Action.GET_ALL_USERS;
+				CommunicationHandler.getAllUsers(FragmentIncident.this
+						.getActivity(),
+						(RequestResponseListener) getActivity(), ProgressDialog
+								.show(getActivity(), "Please wait",
+										"Getting Users..."));
+			}
+		});
+
 		Bundle bundle = this.getArguments();
-		HashMap<String, String> item = (HashMap<String, String>) bundle.getSerializable("HashMap");
+		HashMap<String, String> item = (HashMap<String, String>) bundle
+				.getSerializable("HashMap");
 		updateFields(item);
 	}
 
@@ -227,17 +314,27 @@ public class FragmentIncident extends Fragment {
 				break;
 			}
 
-			if (item.get("accepted") != null) {
-				boolean accepted = item.get("accepted").equals("true") ? true : false;
+			if ("Manager".equals(MainActivity.employeeDesignation) || "Foreman".equals(MainActivity.employeeDesignation)) {
+				acceptButton.setVisibility(View.GONE);
+				declineButton.setVisibility(View.GONE);
+
+				assignButton.setVisibility(View.VISIBLE);
+			} else if (item.get("accepted") != null) {
+				boolean accepted = item.get("accepted").equals("true") ? true
+						: false;
 				if (accepted) {
 					acceptButton.setVisibility(View.GONE);
 					declineButton.setVisibility(View.GONE);
 					commentButton.setVisibility(View.VISIBLE);
 					jobCardButton.setVisibility(View.VISIBLE);
 					List<DrawerItem> dataList = new ArrayList<DrawerItem>();
-					dataList.add(new DrawerItem("Add Comment", R.drawable.ic_action_add_comment, "accepted"));
-					dataList.add(new DrawerItem("View Comments", R.drawable.ic_action_view_comments, "accepted"));
-//					((MainActivity) getActivity()).addMoreToDrawer(item.get("description"), dataList);
+					dataList.add(new DrawerItem("Add Comment",
+							R.drawable.ic_action_add_comment, "accepted"));
+					dataList.add(new DrawerItem("View Comments",
+							R.drawable.ic_action_view_comments, "accepted"));
+					// ((MainActivity)
+					// getActivity()).addMoreToDrawer(item.get("description"),
+					// dataList);
 				} else {
 
 					// List<DrawerItem> dataList = new ArrayList<DrawerItem>();
@@ -255,8 +352,8 @@ public class FragmentIncident extends Fragment {
 			}
 			statusText.setText("Status : " + item.get("status"));
 			typeText.setText("Type : " + item.get("type"));
-			referenceText.setText("Reference : "+item.get("refNum"));
-			IDText.setText("ID : "+item.get("id"));
+			referenceText.setText("Reference : " + item.get("refNum"));
+			IDText.setText("ID : " + item.get("id"));
 			title.setText(item.get("description"));
 			reporterName.setText(item.get("reporterName"));
 			reporterSurName.setText(item.get("reporterSurname"));
@@ -277,8 +374,10 @@ public class FragmentIncident extends Fragment {
 			for (int i = 0; i < assigneeSize; i++) {
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("assigneeId", item.get("assigneeId_" + i));
-				map.put("assigneeSuperiorId", item.get("assigneeSuperiorId_" + i));
-				map.put("assigneeEmployeeNum", item.get("assigneeEmployeeNum_" + i));
+				map.put("assigneeSuperiorId",
+						item.get("assigneeSuperiorId_" + i));
+				map.put("assigneeEmployeeNum",
+						item.get("assigneeEmployeeNum_" + i));
 				map.put("assigneeEmail", item.get("assigneeEmail_" + i));
 				map.put("assigneeCellphone", item.get("assigneeCellphone_" + i));
 				map.put("assigneeName", item.get("assigneeName_" + i));
@@ -306,10 +405,13 @@ public class FragmentIncident extends Fragment {
 				for (int i = 0; i < accepteeSize; i++) {
 					HashMap<String, String> map = new HashMap<String, String>();
 					map.put("accepteeId", item.get("accepteeId_" + i));
-					map.put("accepteeSuperiorId", item.get("accepteeSuperiorId_" + i));
-					map.put("accepteeEmployeeNum", item.get("accepteeEmployeeNum_" + i));
+					map.put("accepteeSuperiorId",
+							item.get("accepteeSuperiorId_" + i));
+					map.put("accepteeEmployeeNum",
+							item.get("accepteeEmployeeNum_" + i));
 					map.put("accepteeEmail", item.get("accepteeEmail_" + i));
-					map.put("accepteeCellphone", item.get("accepteeCellphone_" + i));
+					map.put("accepteeCellphone",
+							item.get("accepteeCellphone_" + i));
 					map.put("accepteeName", item.get("accepteeName_" + i));
 					map.put("designation", item.get("designation_" + i));
 					map.put("accepteeSurname", item.get("accepteeSurname_" + i));
@@ -326,11 +428,96 @@ public class FragmentIncident extends Fragment {
 					accepteeLayout.addView(nameTV);
 				}
 			} else {
-				TextView acceptees = (TextView) getActivity().findViewById(id.acceptees_label);
+				TextView acceptees = (TextView) getActivity().findViewById(
+						id.acceptees_label);
 				acceptees.setText("");
 				acceptees.setBackgroundColor(0xffffff);
 			}
 
+		}
+	}
+
+	public void assignUsers(String responce) {
+		
+		JSONObject userProfile = null;
+		allUsersData = null;
+		
+		AssignedAssignees = new JSONArray();
+		String[] allUsersDataDisplay = null;
+
+		// try parse the string to a JSON object
+		try {
+			userProfile = new JSONObject(responce);
+		} catch (JSONException e) {
+			Log.e("JSON Parser", "Error parsing data " + e.toString());
+		}
+
+		if (userProfile != null) {
+			try {
+
+				// Getting JSON Array from URL
+				
+				
+
+				JSONArray userProfileArray = userProfile.getJSONArray("data");
+
+				allUsersData = new String[userProfileArray.length()];
+				allUsersDataDisplay = new String[userProfileArray.length()];
+				selectedAssignees = new boolean[userProfileArray.length()];
+				
+				Log.d("forst size", "data1 size " + allUsersData.length);
+				Log.d("TAG", "userProfile " + userProfile);
+				
+				Log.d("forst size",
+						"userProfileArray size " + userProfileArray.length());
+				for (int i = 0; i < userProfileArray.length(); i++) {
+					JSONObject userProfileObject = userProfileArray
+							.getJSONObject(i);
+					allUsersData[i] = userProfileObject.getString("employeeNum");
+					allUsersDataDisplay[i] = userProfileObject.getString("name") +" "+ userProfileObject.getString("surname");
+				}
+				
+			} catch (Exception e) {
+				Log.d("TAG", "Exception " + e);
+			}
+
+		}		
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				getActivity());
+		// set title
+		alertDialogBuilder.setTitle("Select");
+		// set dialog message
+		alertDialogBuilder
+				.setCancelable(true)
+				.setMultiChoiceItems(allUsersDataDisplay, selectedAssignees,
+						new DialogSelectionClickHandler())
+				.setPositiveButton("Assign",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								MainActivity.action = Action.RE_ASSIGN;
+									CommunicationHandler.reassignincident(FragmentIncident.this
+											.getActivity(),
+											(RequestResponseListener) getActivity(), ProgressDialog
+													.show(getActivity(), "Please wait",
+															"Getting Users..."), MainActivity.employeeNUM, incidentID, AssignedAssignees);
+							}
+						});
+
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		// show it
+		alertDialog.show();
+	}
+
+	public class DialogSelectionClickHandler implements
+			DialogInterface.OnMultiChoiceClickListener {
+		public void onClick(DialogInterface dialog, int clicked,
+				boolean selected) {
+			selectedAssignees[clicked] = selected;
+			AssignedAssignees.put(allUsersData[clicked]);
+			Log.d(getTag(), "AssignedAssignees "+AssignedAssignees.toString());
 		}
 	}
 
@@ -353,9 +540,11 @@ public class FragmentIncident extends Fragment {
 			e.printStackTrace();
 		}
 
-		View dialogView = inflater.inflate(R.layout.incident_comments, null, false);
+		View dialogView = inflater.inflate(R.layout.incident_comments, null,
+				false);
 
-		LinearLayout commentsList = (LinearLayout) dialogView.findViewById(R.id.commentsLayout);
+		LinearLayout commentsList = (LinearLayout) dialogView
+				.findViewById(R.id.commentsLayout);
 
 		// Create custom dialog object
 		final Dialog dialog = new Dialog(getActivity());
@@ -369,19 +558,30 @@ public class FragmentIncident extends Fragment {
 					// comment = (LinearLayout
 					// )inflater.inflate(R.layout.single_comment, container,
 					// false);
-					LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
-					TextView name = (TextView) comment.findViewById(R.id.commentor);
-					TextView time = (TextView) comment.findViewById(R.id.commentDate);
-					TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
+					LinearLayout comment = new Comment(getActivity()).getView(
+							getActivity(), inflater);
+					TextView name = (TextView) comment
+							.findViewById(R.id.commentor);
+					TextView time = (TextView) comment
+							.findViewById(R.id.commentDate);
+					TextView singleComment = (TextView) comment
+							.findViewById(R.id.singleComment);
 
 					try {
-						String strComment = ((JSONObject) data.getJSONObject(i)).getString("comment");
-						String timestamp = ((JSONObject) data.getJSONObject(i)).getString("timestamp");
-						String strName = ((JSONObject) data.getJSONObject(i)).getJSONObject("commentor").getString("name");
-						strName += " " + ((JSONObject) data.getJSONObject(i)).getJSONObject("commentor").getString("surname");
+						String strComment = ((JSONObject) data.getJSONObject(i))
+								.getString("comment");
+						String timestamp = ((JSONObject) data.getJSONObject(i))
+								.getString("timestamp");
+						String strName = ((JSONObject) data.getJSONObject(i))
+								.getJSONObject("commentor").getString("name");
+						strName += " "
+								+ ((JSONObject) data.getJSONObject(i))
+										.getJSONObject("commentor").getString(
+												"surname");
 
 						name.setText(strName);
-						time.setText(timestamp.substring(0, timestamp.indexOf(".")));
+						time.setText(timestamp.substring(0,
+								timestamp.indexOf(".")));
 						singleComment.setText(strComment);
 
 					} catch (JSONException e) {
@@ -392,7 +592,8 @@ public class FragmentIncident extends Fragment {
 					commentsList.addView(comment);
 
 				}
-				final ScrollView scroll = (ScrollView) dialogView.findViewById(R.id.commentsScroll);
+				final ScrollView scroll = (ScrollView) dialogView
+						.findViewById(R.id.commentsScroll);
 
 				scroll.postDelayed(new Runnable() {
 					@Override
@@ -401,10 +602,13 @@ public class FragmentIncident extends Fragment {
 					}
 				}, 1000);
 			} else {
-				LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
+				LinearLayout comment = new Comment(getActivity()).getView(
+						getActivity(), inflater);
 				TextView name = (TextView) comment.findViewById(R.id.commentor);
-				TextView time = (TextView) comment.findViewById(R.id.commentDate);
-				TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
+				TextView time = (TextView) comment
+						.findViewById(R.id.commentDate);
+				TextView singleComment = (TextView) comment
+						.findViewById(R.id.singleComment);
 
 				String strComment = "There are no comments on this incident";
 				Calendar c = Calendar.getInstance();
@@ -421,11 +625,13 @@ public class FragmentIncident extends Fragment {
 
 				commentsList.addView(comment);
 			}
-		}else {
-			LinearLayout comment = new Comment(getActivity()).getView(getActivity(), inflater);
+		} else {
+			LinearLayout comment = new Comment(getActivity()).getView(
+					getActivity(), inflater);
 			TextView name = (TextView) comment.findViewById(R.id.commentor);
 			TextView time = (TextView) comment.findViewById(R.id.commentDate);
-			TextView singleComment = (TextView) comment.findViewById(R.id.singleComment);
+			TextView singleComment = (TextView) comment
+					.findViewById(R.id.singleComment);
 
 			String strComment = "There are no comments on this incident";
 			Calendar c = Calendar.getInstance();

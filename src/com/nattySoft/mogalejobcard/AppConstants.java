@@ -29,7 +29,8 @@ public static class Config {
 		public static final String KEY_VALVE = "valve";
 		public static final String KEY_ADD_CHAT = "add_chat";
 		public static final String KEY_SERVER_URL = "serverurl";
-		public static final String KEY_USER = "user";		
+		public static final String KEY_USER = "user";
+		public static final String KEY_OPENED_INCIDENTS_ASSIGNED_TO_ME = "assignedtome";		
 		
     }
 

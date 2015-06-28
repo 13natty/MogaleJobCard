@@ -160,6 +160,7 @@ public class RegistrationActivity extends Activity implements RequestResponseLis
 																	.getApplicationContext(),
 															AppConstants.PreferenceKeys.KEY_SERVER_URL,
 															AppConstants.Config.HOST);
+													AppConstants.Config.SERVER_URL = AppConstants.Config.HOST + "/Mogale/Controller";
 												}
 											}
 										});
