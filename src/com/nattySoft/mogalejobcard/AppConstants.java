@@ -16,7 +16,7 @@ public class AppConstants {
 
 	public static final String KEY_REGISTERED = "registered";
 	public static final String KEY_REGISTRATION_ID = "registration_id";
-	public static final String KEY_OPENED_INCIDENTS = "opened_incidents";
+	public static final String KEY_MY_INCIDENTS = "my_incidents";
 
 	public static final String KEY_USER_ID = "UserID";
 	public static final String KEY_EMPLOYEE_NUM = "employee_number";
@@ -33,7 +33,7 @@ public class AppConstants {
 	public static final String KEY_SERVER_URL = "serverurl";
 	public static final String KEY_USER = "user";
 	public static final String KEY_OPENED_INCIDENTS_ASSIGNED_TO_ME = "assignedtome";
-
+	public static final String KEY_ALL_OPEN_INCIDENTS = "all_open_incidents";
     }
 
 }

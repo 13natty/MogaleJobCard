@@ -36,7 +36,7 @@ public class CommunicationHandler {
 	private static final String LOG_TAG = CommunicationHandler.class.getSimpleName();
 
 	public enum Action {
-		GET_ALL_USERS, GET_USER, GET_ALL_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG, RE_ASSIGN, GET_INCIDENCES_ASSIGNED_TO_ME;
+		GET_ALL_USERS, GET_USER, GET_ALL_MY_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG, RE_ASSIGN, GET_ESCALATED_INCIDENCES_ASSIGNED_TO_ME, GET_ALL_OPEN_INCIDENCES;
 	}
 
 	public static void registerForPush(final Context context, String deviceId, String employeeNumber, RequestResponseListener listener, ProgressDialog dialog) {
@@ -56,7 +56,7 @@ public class CommunicationHandler {
 		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
 	}
 
-	public static void getOpenIncidents(Context context, RequestResponseListener listener, ProgressDialog dialog) {
+	public static void getMYOpenIncidents(Context context, RequestResponseListener listener, ProgressDialog dialog) {
 
 		JSONObject json = new JSONObject();
 		try {
@@ -412,6 +412,21 @@ public class CommunicationHandler {
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
 		new ConnectionManager().post(context, listener, null, new Pair<String, JSONObject>(SERVER_URL, json));
 		
+	}
+
+	public static void getAllIncidents(Context context, RequestResponseListener listener, ProgressDialog show) {
+	    JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "openincidents.mobi");
+			json.accumulate("employeeNum", Preferences.getPreference(context, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(SERVER_URL, json));
 	}
 
 }

@@ -55,6 +55,8 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
     
     private Activity mActivity;
 
+    private SwipeRefreshLayout swipeContainer;
+
     public static final String IMAGE_RESOURCE_ID = "iconResourceID";
     public static final String ITEM_NAME = "itemName";
 
@@ -67,20 +69,20 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 
 	View view = inflater.inflate(R.layout.fragment_layout_one, container, false);
 
-//	swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-//	// Setup refresh listener which triggers new data loading
-//	swipeContainer.setOnRefreshListener(new OnRefreshListener() {
-//	    @Override
-//	    public void onRefresh() {
-//		// Your code to refresh the list here.
-//		// Make sure you call swipeContainer.setRefreshing(false)
-//		// once the network request has completed successfully.
-//		MainActivity.action = Action.GET_ALL_OPEN_INCIDENCES;
-//		CommunicationHandler.getOpenIncidents(mActivity.getBaseContext(), (MainActivity) mActivity, ProgressDialog.show(mActivity, "Please wait", "Retrieving Open Incidents..."));
-//	    }
-//	});
-//	// Configure the refreshing colors
-//	swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+	swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+	// Setup refresh listener which triggers new data loading
+	swipeContainer.setOnRefreshListener(new OnRefreshListener() {
+	    @Override
+	    public void onRefresh() {
+		// Your code to refresh the list here.
+		// Make sure you call swipeContainer.setRefreshing(false)
+		// once the network request has completed successfully.
+		MainActivity.action = Action.GET_ALL_MY_OPEN_INCIDENCES;
+		CommunicationHandler.getMYOpenIncidents(mActivity.getBaseContext(), (MainActivity) mActivity, ProgressDialog.show(mActivity, "Please wait", "Retrieving All My Incidents..."));
+	    }
+	});
+	// Configure the refreshing colors
+	swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
 
 	menuList = (ListView) view.findViewById(R.id.Incidents_listView);
 	ivIcon = (ImageView) view.findViewById(R.id.frag1_icon);
@@ -88,7 +90,7 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 
 	tvItemName.setText(getArguments().getString(ITEM_NAME));
 	ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
-	String responce = Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS);
+	String responce = Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_MY_INCIDENTS);
 	if (responce != null)
 	    setMenus(responce, (IncidentClickedListener) this);
 	return view;
@@ -269,6 +271,9 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 	Bundle args = new Bundle();
 	args.putSerializable("HashMap", item);
 	((MainActivity) mActivity).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+	// Disable the  drawer carat, and enable the back button
+	((MainActivity) mActivity).mDrawerToggle.setDrawerIndicatorEnabled(false);
+	((MainActivity) mActivity).getActionBar().setDisplayHomeAsUpEnabled(true);
 	Fragment fragment = new FragmentIncident();
 	fragment.setArguments(args);
 	FragmentManager frgManager = getFragmentManager();

@@ -96,8 +96,8 @@ public class DialogClass extends Dialog implements android.view.View.OnClickList
 			break;
 		case R.id.btn_ok:
 			dismiss();
-			MainActivity.action = Action.GET_ALL_OPEN_INCIDENCES;
-			CommunicationHandler.getOpenIncidents(main, main, ProgressDialog.show(main, "Please wait", "Retrieving Open Incidents..."));
+			MainActivity.action = Action.GET_ALL_MY_OPEN_INCIDENCES;
+			CommunicationHandler.getMYOpenIncidents(main, main, ProgressDialog.show(main, "Please wait", "Retrieving All My Incidents..."));
 		case R.id.btn_no:
 			dismiss();
 			break;

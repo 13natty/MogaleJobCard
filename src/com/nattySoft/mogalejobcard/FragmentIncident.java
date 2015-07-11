@@ -90,6 +90,7 @@ public class FragmentIncident extends Fragment {
 	this.inflater = inflater;
 	View view = inflater.inflate(R.layout.fragment_layout_incident, container, false);
 	assigneeListView = (ListView) view.findViewById(R.id.assignees_listView);
+	setHasOptionsMenu(true);
 	// ivIcon = (ImageView) view.findViewById(R.id.frag3_icon);
 	// tvItemName = (TextView) view.findViewById(R.id.frag3_text);
 	//
@@ -362,8 +363,9 @@ public class FragmentIncident extends Fragment {
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // TODO Auto-generated method stub
-        super.onCreateOptionsMenu(menu, inflater);
+	menu.clear();
+	inflater.inflate(R.menu.incident, menu);
+//        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public void assignUsers(String responce) {
@@ -416,6 +418,10 @@ public class FragmentIncident extends Fragment {
 	    public void onClick(DialogInterface dialog, int whichButton) {
 		MainActivity.action = Action.RE_ASSIGN;
 		CommunicationHandler.reassignincident(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), ProgressDialog.show(getActivity(), "Please wait", "Getting Users..."), MainActivity.employeeNUM, incidentID, AssignedAssignees);
+	    }
+	}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	    public void onClick(DialogInterface dialog, int whichButton) {
+		dialog.dismiss();
 	    }
 	});
 
@@ -584,6 +590,29 @@ public class FragmentIncident extends Fragment {
 		progress = (ImageView) row.findViewById(R.id.assignee_progress);
 		// ID = (TextView) row.findViewById(R.id.id_text);
 		remove = (ImageButton) row.findViewById(R.id.remove_button);
+		remove.setOnClickListener(new OnClickListener() {
+
+		    @Override
+		    public void onClick(View v) {
+			//Ask the user if they want to quit
+		        new AlertDialog.Builder(mActivity)
+		        .setIcon(android.R.drawable.ic_dialog_alert)
+		        .setTitle("Are you sure you want to remove assignee ?")
+		        .setMessage("Remove")
+		        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+		            @Override
+		            public void onClick(DialogInterface dialog, int which) {
+
+		                //Stop the activity
+//		                YourClass.this.finish();    
+		            }
+
+		        })
+		        .setNegativeButton("No", null)
+		        .show();
+		    }
+		});
 
 	    } else {
 

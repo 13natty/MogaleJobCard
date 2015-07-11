@@ -58,8 +58,7 @@ public class FragmentThree extends Fragment implements IncidentClickedListener {
 	View view = inflater.inflate(R.layout.fragment_layout_three, container,
 		false);
 
-	swipeContainer = (SwipeRefreshLayout) view
-		.findViewById(R.id.swipe_container);
+	swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 	// Setup refresh listener which triggers new data loading
 	swipeContainer.setOnRefreshListener(new OnRefreshListener() {
 	    @Override
@@ -67,19 +66,12 @@ public class FragmentThree extends Fragment implements IncidentClickedListener {
 		// Your code to refresh the list here.
 		// Make sure you call swipeContainer.setRefreshing(false)
 		// once the network request has completed successfully.
-		MainActivity.action = Action.GET_ALL_OPEN_INCIDENCES;
-		CommunicationHandler.getOpenIncidents(mActivity
-			.getBaseContext(), (MainActivity) mActivity,
-			ProgressDialog.show(mActivity, "Please wait",
-				"Retrieving Open Incidents..."));
+		MainActivity.action = Action.GET_ESCALATED_INCIDENCES_ASSIGNED_TO_ME;
+		CommunicationHandler.getIncidentsAssignedTome(mActivity.getBaseContext(), (MainActivity) mActivity,ProgressDialog.show(mActivity, "Please wait","Retrieving Escaleted Incidents..."));
 	    }
 	});
 	// Configure the refreshing colors
-	swipeContainer.setColorSchemeResources(
-		android.R.color.holo_blue_bright,
-		android.R.color.holo_green_light,
-		android.R.color.holo_orange_light,
-		android.R.color.holo_red_light);
+	swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
 
 	// ivIcon = (ImageView) view.findViewById(R.id.frag3_icon);
 	tvItemName = (TextView) view.findViewById(R.id.frag3_text);
@@ -141,8 +133,7 @@ public class FragmentThree extends Fragment implements IncidentClickedListener {
 	mActivity = activity;
     }
 
-    public void populateEscalations(String responce,
-	    IncidentClickedListener incidentClickedListener) {
+    public void populateEscalations(String responce, IncidentClickedListener incidentClickedListener) {
 
 	Log.d(getTag(), "populateEscalations " + responce);
 
