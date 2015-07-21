@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.drawable;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -202,9 +203,24 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	}
 
     }
+    
+    @Override
+    protected void onStart() {
+	GCMBroadcastReceiver bcr = new GCMBroadcastReceiver();
+	bcr.setListener(this);
+        super.onStart();
+    }
 
     private Boolean hasTelephony;
 
+    public final static int INCIDENT_SENT = 1;
+    public final static int INCIDENT_RECEIVED_ON_SERVER = 2;
+    public final static int INCIDENT_RECEIVED_ON_DEVICE = 3;
+    public final static int INCIDENT_READ_BY_USER = 4;
+    public final static int INCIDENT_ACCEPTED_BY_USER = 5;
+    public final static int INCIDENT_DECLINED_BY_USER = 6;
+    public final static int INCIDENT_JOB_CARD_RECEIVED = 7;
+    
     public boolean hasTelephony() {
 	if (hasTelephony == null) {
 	    TelephonyManager tm = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -265,14 +281,14 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	// the
 	// list
 	if ("Manager".equals(employeeDesignation) || "Foreman".equals(employeeDesignation)) {
-	    dataList.add(new DrawerItem("All Open Incidents ", R.drawable.ic_action_chat));
+	    dataList.add(new DrawerItem("   All Open Incidents ", R.drawable.all_incidents));
 	}
-	dataList.add(new DrawerItem("My Incidents", R.drawable.ic_action_incident));
+	dataList.add(new DrawerItem("   "+employeeName+"'s Incidents", R.drawable.close_envelope));
 	if ("Manager".equals(employeeDesignation) || "Foreman".equals(employeeDesignation)) {
-	    dataList.add(new DrawerItem("My Escalations ", R.drawable.ic_action_chat));
+	    dataList.add(new DrawerItem("   My Escalations ", R.drawable.justice_hammer));
 	}
-	dataList.add(new DrawerItem("Chat", R.drawable.ic_action_chat));
-	dataList.add(new DrawerItem("Settings", R.drawable.ic_action_chat));
+	dataList.add(new DrawerItem("   Chat", R.drawable.chat_oval_speech_bubble));
+	dataList.add(new DrawerItem("   Settings", R.drawable.settings));
 	// dataList.add(new DrawerItem("Games", R.drawable.ic_action_gamepad));
 	// dataList.add(new DrawerItem("Lables", R.drawable.ic_action_labels));
 
@@ -417,8 +433,11 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	return true;
     }
 
-    public void SelectItem(int possition) {
+    public Fragment SelectItem(int possition) {
 
+	if (!"Manager".equals(employeeDesignation) && !"Foreman".equals(employeeDesignation)) {
+	    return SelectItemArtisan(possition);
+	}
 	Fragment fragment = null;
 	Bundle args = new Bundle();
 	switch (possition) {
@@ -466,7 +485,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	        }
 	    });
 	    builder.show();
-	    return;
+	    return null;
 	// case 2:
 	// fragment = new FragmentThree();
 	// args.putString(FragmentThree.ITEM_NAME,
@@ -572,7 +591,57 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 	prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
 	prevPos = possition;
+	return fragment;
+    }
 
+    private Fragment SelectItemArtisan(int possition) {
+	Fragment fragment = null;
+	Bundle args = new Bundle();
+	switch (possition) {
+	case 0://my open incidents
+	    fragment = new FragmentOne();
+	    if (incidentCount > 0) {
+		incidentCount = 0;
+		setCount(incidentCount);
+	    }
+	    args.putString(FragmentOne.ITEM_NAME, dataList.get(possition).getItemName());
+	    args.putInt(FragmentOne.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
+	    break;
+	case 1://chat
+	    fragment = new FragmentTwo();
+	    args.putString(FragmentTwo.ITEM_NAME, dataList.get(possition).getItemName());
+	    args.putInt(FragmentTwo.IMAGE_RESOURCE_ID, dataList.get(possition).getImgResID());
+	    break;
+	case 2://settings
+	    CharSequence settingsOptions[] = new CharSequence[] {"Change Host IP", "OS version" + version};
+
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setTitle("Settings");
+	    builder.setItems(settingsOptions, new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            menuItemClicked(dialog, which);
+	        }
+	    });
+	    builder.show();
+	    return null;
+	
+	default:
+	    break;
+	}
+
+	fragment.setArguments(args);
+	FragmentManager frgManager = getFragmentManager();
+	frgManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
+	mDrawerList.setItemChecked(possition, true);
+	setTitle(dataList.get(possition).getItemName());
+	mDrawerLayout.closeDrawer(mDrawerList);
+
+	prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
+	prevPos = possition;
+	return fragment;
+	
     }
 
     protected void menuItemClicked(DialogInterface dialog, int which) {
@@ -655,13 +724,13 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	// Sync the toggle state after onRestoreInstanceState has occurred.
 	if (mDrawerToggle != null)
 	    mDrawerToggle.syncState();
-	GCMBroadcastReceiver.pushListener = this;
+	GCMBroadcastReceiver bcr = new GCMBroadcastReceiver();
+	bcr.setListener(this);
     }
 
     @Override
     protected void onResume() {
 	super.onResume();
-
 	Bundle intent_extras = getIntent().getExtras();
 	if (intent_extras != null && intent_extras.containsKey("action")) {
 	    if (intent_extras.get("action") == "newIncident") {
@@ -683,6 +752,28 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	// The action bar home/up action should open or close the drawer.
 	// ActionBarDrawerToggle will take care of this.
 	int id = item.getItemId();
+	if("Search Incident".equals(item.getTitle())){
+	    AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+	    alert.setTitle("Search Incident");
+	    alert.setIcon(drawable.ic_menu_search);
+	    // Set an EditText view to get user input 
+	    final EditText input = new EditText(MainActivity.this);
+	    alert.setView(input);
+	    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	    public void onClick(DialogInterface dialog, int whichButton) {
+	        String result = input.getText().toString();
+	            //do what you want with your result
+	        	action = Action.GET_ALL_OPEN_INCIDENCES;
+	        	CommunicationHandler.searchIncident(getBaseContext(), MainActivity.this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving All Open Incidents..."), result);
+	            }
+	        });
+	    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	             // Canceled.
+	            }
+	        });
+	    alert.show();
+	}
 	if (id == android.R.id.home && !mDrawerToggle.isDrawerIndicatorEnabled()) {
 	    mDrawerToggle.setDrawerIndicatorEnabled(true);
 	    onBackPressed();
@@ -764,17 +855,50 @@ public class MainActivity extends Activity implements RequestResponseListener, P
     public void hasResponse(String responce) {
 	Log.d(TAG, " response " + responce);
 	Log.d(TAG, " action " + action);
+		    
 	if (action == Action.GET_USER) {
 	    if (!responce.equalsIgnoreCase("Did not work!")) {
 		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_USER, responce);
 
 		extractUserInfo(responce);
 	    }
-	} else if (action == Action.RE_ASSIGN) {
-	    Log.d(TAG, "responce " + responce);
+	} else if (action == Action.VIEW_LOGS) {
+	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+	    if (frag instanceof FragmentIncident) {
+		((FragmentIncident) frag).viewLogs(responce);
+	    }
+	    Log.d("VIEW_LOGS ", "responce "+responce);
+	}else if (action == Action.INCIDENT_PROGRESS) {
+//	    action = Action.GET_ALL_MY_OPEN_INCIDENCES;
+//	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+	    Log.d("progress ", "responce "+responce);
+	}else if (action == Action.CLOSE_INCIDENT) {
 	    action = Action.GET_ALL_MY_OPEN_INCIDENCES;
-	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving All My Incidents..."));
-	} else if (action == Action.GET_ALL_USERS) {
+	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
+	}else if (action == Action.RE_ASSIGN) {
+	    Log.d(TAG, "responce " + responce);
+	    action = Action.RE_ASSIGNED;
+	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Incident has been re assigned..."));
+	} else if (action == Action.RE_ASSIGNED) {
+	    if (!responce.equalsIgnoreCase("Did not work!"))
+		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_MY_INCIDENTS, responce);
+	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+	    if (frag instanceof FragmentIncident) {
+		((FragmentIncident) frag).updateAssignees();
+	    }
+	} else if (action == Action.ASSIGNEE_REMOVED) {
+	    Log.d(TAG, "responce " + responce);
+	    if (!responce.equalsIgnoreCase("Did not work!"))
+		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_MY_INCIDENTS, responce);
+	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+	    if (frag instanceof FragmentIncident) {
+		((FragmentIncident) frag).updateAssignees();
+	    }
+	}else if (action == Action.REMOVE_ASSIGNEE) {
+	    Log.d(TAG, "ASSIGNEE_REMOVED " + responce);
+	    action = Action.ASSIGNEE_REMOVED;
+	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Assignee has been removed..."));
+	}else if (action == Action.GET_ALL_USERS) {
 	    Log.d(TAG, "responce " + responce);
 	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 	    if (frag instanceof FragmentIncident) {
@@ -783,16 +907,24 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	}else if(action == Action.GET_ALL_OPEN_INCIDENCES){
 	    if (!responce.equalsIgnoreCase("Did not work!"))
 		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_ALL_OPEN_INCIDENTS, responce);
-	    SelectItem(0);
-	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-	    if (frag instanceof FragmentAllOpen) {
-		((FragmentAllOpen) frag).setMenus(responce);
-	    }
 	    
-	}else if (action == Action.GET_ALL_MY_OPEN_INCIDENCES) {
+	    SelectItem(0);	    
+	    
+	}else if (action == Action.GET_ALL_MY_OPEN_INCIDENCES || action == Action.INCIDENT_ACCEPTED  || action == Action.INCIDENT_DECLINED) {
 	    if (!responce.equalsIgnoreCase("Did not work!"))
 		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_MY_INCIDENTS, responce);
-	    SelectItem(1);
+	    if ("Manager".equals(employeeDesignation) || "Foreman".equals(employeeDesignation)) 
+		SelectItem(1);
+	    else{
+		SelectItem(0);
+		if(action == Action.INCIDENT_ACCEPTED){
+		    MainActivity.action = Action.INCIDENT_PROGRESS;
+		    CommunicationHandler.incidentProgressStatus(this, this, FragmentIncident.incidentID, ""+INCIDENT_ACCEPTED_BY_USER, employeeNUM);
+		}else if(action == Action.INCIDENT_DECLINED){
+		    MainActivity.action = Action.INCIDENT_PROGRESS;
+		    CommunicationHandler.incidentProgressStatus(this, this, FragmentIncident.incidentID, ""+INCIDENT_DECLINED_BY_USER, employeeNUM);
+		}
+	    }
 	} else if (action == Action.GET_ESCALATED_INCIDENCES_ASSIGNED_TO_ME) {
 	    if (!responce.equalsIgnoreCase("Did not work!"))
 		Preferences.savePreference(this, AppConstants.PreferenceKeys.KEY_OPENED_INCIDENTS_ASSIGNED_TO_ME, responce);
@@ -833,11 +965,11 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		}
 	    }
 	} else if (action == Action.DECLINE_INCIDENT) {
-	    action = Action.GET_ALL_MY_OPEN_INCIDENCES;
+	    action = Action.INCIDENT_DECLINED;
 	    CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 	} else if (action == Action.ACCEPT_INCIDENT) {
 	    if (responce.contains("success")) {
-		action = Action.GET_ALL_MY_OPEN_INCIDENCES;
+		action = Action.INCIDENT_ACCEPTED;
 		CommunicationHandler.getMYOpenIncidents(this, this, ProgressDialog.show(MainActivity.this, "Please wait", "Retrieving Open Incidents..."));
 	    }
 	} else if (action == Action.GET_COMMENTS) {
@@ -846,26 +978,37 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	    if (frag instanceof FragmentIncident) {
 		((FragmentIncident) frag).showComments(responce);
 	    }
-	} else if (action == Action.SAVE_JOB_CARD) {
-	    String jobCardId = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
-	    if (jobCardId == null) {
-		String id = null;
-		try {
-		    JSONObject ob = new JSONObject(responce);
-		    id = ob.getString("jobCardId");
-		} catch (JSONException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
-		Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID, id);
-	    }
-	    // action = Action.INCIDENT_STATUS;
-	    // CommunicationHandler.updateIncident(this, this,
-	    // ProgressDialog.show(MainActivity.this, "Please wait",
-	    // "Updating incident..."), incidentStatus);
+	} else if(action == Action.GET_JOB_CARD){
 	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-	    DialogClass cdd = new DialogClass(this, "", "", "JOB CARD SAVED");
-	    cdd.show();
+	    if (frag instanceof FragmentIncident) {
+		((FragmentIncident) frag).showJobCard(responce);
+	    }
+	}else if (action == Action.SAVE_JOB_CARD) {
+	    if(!responce.isEmpty()){
+        	    String jobCardId = Preferences.getPreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID);
+        	    if (jobCardId == null) {
+        		String id = null;
+        		
+        		try {
+        		    JSONObject ob = new JSONObject(responce);
+        		    id = ob.getString("jobCardId");
+        		} catch (JSONException e) {
+        		    // TODO Auto-generated catch block
+        		    e.printStackTrace();
+        		}
+        		Preferences.savePreference(getBaseContext(), AppConstants.PreferenceKeys.KEY_JOB_CARD_ID + FragmentIncident.incidentID, id);
+        		
+        		MainActivity.action = Action.INCIDENT_PROGRESS;
+        		CommunicationHandler.incidentProgressStatus(this, this, FragmentIncident.incidentID, ""+INCIDENT_JOB_CARD_RECEIVED, employeeNUM);
+        	    }
+        	    // action = Action.INCIDENT_STATUS;
+        	    // CommunicationHandler.updateIncident(this, this,
+        	    // ProgressDialog.show(MainActivity.this, "Please wait",
+        	    // "Updating incident..."), incidentStatus);
+        	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+        	    DialogClass cdd = new DialogClass(this, "", "", "JOB CARD SAVED");
+        	    cdd.show();
+	    }
 	} else if (action == Action.UPDATE_JOB_CARD) {
 	    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 	    DialogClass cdd = new DialogClass(this, "", "", "JOB CARD UPDATED");
@@ -917,8 +1060,36 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 	if (extras.containsKey("type")) {
 
 	    if (isAppRunning(context)) {
-
-		if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
+//		    NEW_APK_UPDATE(5, "New APK Available"),
+//		    INCIDENT_SERVER_RECEIVED(6, "Incident received by server"),
+//		    INCIDENT_DEVICE_RECEIVED(7, "Incident received on device"),
+//		    INCIDENT_DEVICE_READ(8, "Incident has been read on device"),
+//		    INCIDENT_JOBCARD_RECEIVED(9, "Incident job card received");
+		if (extras.getString("type").equalsIgnoreCase(""+6)){//Incident received by server
+			
+		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+		    if (frag instanceof FragmentIncident) {
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_SERVER);				
+		    }
+		}else if(extras.getString("type").equalsIgnoreCase(""+7)){//Incident received on device
+			
+		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+		    if (frag instanceof FragmentIncident) {
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_DEVICE);				
+		    }
+		}else if(extras.getString("type").equalsIgnoreCase(""+8)){//Incident has been read on device
+                    			
+		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+		    if (frag instanceof FragmentIncident) {
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_READ_BY_USER);				
+		    }
+		}else if(extras.getString("type").equalsIgnoreCase(""+9)){//Incident job card received
+                    	
+		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+		    if (frag instanceof FragmentIncident) {
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_JOB_CARD_RECEIVED);				
+		    }                    
+		}else if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
 		    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		    String message = extras.getString("body");
 		    Notification notification = new Notification(R.drawable.mogale_icon_push, message, System.currentTimeMillis());
@@ -962,7 +1133,19 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		    notificationManager.notify(0, notification);
 
 		} else if (extras.getString("type").equalsIgnoreCase(CHAT_MESSAGE)) {
-		    if (!extras.getString("senderEmployNum").equals(MainActivity.employeeNUM)) {
+		    if (extras.getString("senderEmployNum") != null && !extras.getString("senderEmployNum").equals(employeeNUM)) {
+			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
+			if (frag instanceof FragmentTwo) {
+			    ((FragmentTwo) frag).sendChatMessage(extras.getString("senderName"), extras.getString("body"), extras.getString("timestamp"));
+			} else {
+			    if (FragmentTwo.chatArrayAdapter != null) {
+				FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
+			    } else {
+				FragmentTwo.chatArrayAdapter = new ChatArrayAdapter(this.getApplicationContext(), R.layout.single_chat_message);
+				FragmentTwo.chatArrayAdapter.add(new ChatMessage(false, extras.getString("body"), extras.getString("timestamp"), extras.getString("senderName")));
+			    }
+			}
+		    }else {
 			Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 			if (frag instanceof FragmentTwo) {
 			    ((FragmentTwo) frag).sendChatMessage(extras.getString("senderName"), extras.getString("body"), extras.getString("timestamp"));
@@ -978,10 +1161,12 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 
 		} else if (extras.getString("type").equalsIgnoreCase(INCIDENT_ACCEPT)) {
 		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
-		    if (frag instanceof FragmentIncident) {
-			String incidentId_local = ((FragmentIncident) frag).incidentID;
-			DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("body"));
-			cdd.show();
+		    if(extras.getString("body") != null){
+			if (frag instanceof FragmentIncident) {
+			    String incidentId_local = ((FragmentIncident) frag).incidentID;
+			    DialogClass cdd = new DialogClass(this, incidentId_local, extras.getString("incidentId"), extras.getString("body"));
+			    cdd.show();
+			}
 		    }
 
 		} else if (extras.getString("type").equalsIgnoreCase(UPDATE_APP)) {
@@ -1104,7 +1289,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
     // Defined in Activity class, so override
     @Override
     public void onBackPressed() {
-	if (prevFrag != null && prevFrag.size() > 1) {
+	if (mDrawerLayout != null && prevFrag != null && prevFrag.size() > 1) {
 	    if (!mDrawerLayout.isDrawerOpen(mDrawerList)) {
 		if (getFragmentManager().findFragmentById(R.id.content_frame) instanceof PipeLineInfo) {
 		    ((PipeLineInfo) getFragmentManager().findFragmentById(R.id.content_frame)).saveForm();
@@ -1130,7 +1315,7 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 		setTitle(dataList.get(prevPos).getItemName());
 		mDrawerLayout.closeDrawer(mDrawerList);
 	    }
-	} else if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+	} else if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mDrawerList)) {
 	    mDrawerList.setItemChecked(prevPos, true);
 	    setTitle(dataList.get(prevPos).getItemName());
 	    mDrawerLayout.closeDrawer(mDrawerList);

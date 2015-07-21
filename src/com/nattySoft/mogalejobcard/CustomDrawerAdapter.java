@@ -54,14 +54,14 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 			view = inflater.inflate(layoutResID, parent, false);
 			drawerHolder.ItemName = (TextView) view
 					.findViewById(R.id.drawer_itemName);
-			drawerHolder.count = (TextView) view
-					.findViewById(R.id.incident_count_text);
+//			drawerHolder.count = (TextView) view
+//					.findViewById(R.id.incident_count_text);
 			drawerHolder.icon = (ImageView) view.findViewById(R.id.drawer_icon);
 			
-			drawerHolder.countImg = (ImageView) view.findViewById(R.id.incident_count);
+//			drawerHolder.countImg = (ImageView) view.findViewById(R.id.incident_count);
 
-			drawerHolder.spinner = (Spinner) view
-					.findViewById(R.id.drawerSpinner);
+//			drawerHolder.spinner = (Spinner) view
+//					.findViewById(R.id.drawerSpinner);
 
 			drawerHolder.title = (TextView) view.findViewById(R.id.drawerTitle);
 
@@ -69,8 +69,8 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 					.findViewById(R.id.headerLayout);
 			drawerHolder.itemLayout = (LinearLayout) view
 					.findViewById(R.id.itemLayout);
-			drawerHolder.spinnerLayout = (LinearLayout) view
-					.findViewById(R.id.spinnerLayout);
+//			drawerHolder.spinnerLayout = (LinearLayout) view
+//					.findViewById(R.id.spinnerLayout);
 
 			view.setTag(drawerHolder);
 
@@ -84,7 +84,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 		if (dItem.isSpinner()) {
 			drawerHolder.headerLayout.setVisibility(LinearLayout.INVISIBLE);
 			drawerHolder.itemLayout.setVisibility(LinearLayout.INVISIBLE);
-			drawerHolder.spinnerLayout.setVisibility(LinearLayout.VISIBLE);
+//			drawerHolder.spinnerLayout.setVisibility(LinearLayout.VISIBLE);
 
 			List<SpinnerItem> userList = new ArrayList<SpinnerItem>();
 
@@ -96,42 +96,42 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 			CustomSpinnerAdapter adapter = new CustomSpinnerAdapter(context,
 					R.layout.custom_spinner_item, userList);
 
-			drawerHolder.spinner.setAdapter(adapter);
+//			drawerHolder.spinner.setAdapter(adapter);
 
-			drawerHolder.spinner
-					.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-						@Override
-						public void onItemSelected(AdapterView<?> arg0,
-								View arg1, int arg2, long arg3) {
-							// TODO Auto-generated method stub
-							Toast.makeText(context, "User Changed",
-									Toast.LENGTH_SHORT).show();
-						}
-
-						@Override
-						public void onNothingSelected(AdapterView<?> arg0) {
-							// TODO Auto-generated method stub
-
-						}
-					});
+//			drawerHolder.spinner
+//					.setOnItemSelectedListener(new OnItemSelectedListener() {
+//
+//						@Override
+//						public void onItemSelected(AdapterView<?> arg0,
+//								View arg1, int arg2, long arg3) {
+//							// TODO Auto-generated method stub
+//							Toast.makeText(context, "User Changed",
+//									Toast.LENGTH_SHORT).show();
+//						}
+//
+//						@Override
+//						public void onNothingSelected(AdapterView<?> arg0) {
+//							// TODO Auto-generated method stub
+//
+//						}
+//					});
 
 		} else if (dItem.getTitle() != null) {
 			drawerHolder.headerLayout.setVisibility(LinearLayout.VISIBLE);
 			drawerHolder.itemLayout.setVisibility(LinearLayout.INVISIBLE);
-			drawerHolder.spinnerLayout.setVisibility(LinearLayout.INVISIBLE);
+//			drawerHolder.spinnerLayout.setVisibility(LinearLayout.INVISIBLE);
 			drawerHolder.title.setText(dItem.getTitle());
 			Log.d("Getview","Passed4");
 		} else {
 			
 			drawerHolder.headerLayout.setVisibility(LinearLayout.INVISIBLE);
-			drawerHolder.spinnerLayout.setVisibility(LinearLayout.INVISIBLE);
+//			drawerHolder.spinnerLayout.setVisibility(LinearLayout.INVISIBLE);
 			drawerHolder.itemLayout.setVisibility(LinearLayout.VISIBLE);
 
 			drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(
 					dItem.getImgResID()));
 			drawerHolder.ItemName.setText(dItem.getItemName());
-			drawerHolder.count.setText(dItem.getCount());
+//			drawerHolder.count.setText(dItem.getCount());
 //			drawerHolder.countImg.setImageDrawable(view.getResources().getDrawable(
 //					dItem.getImgCountBG()));
 			Log.d("Getview","Passed5");
@@ -140,10 +140,10 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 	}
 
 	private static class DrawerItemHolder {
-		TextView ItemName, title, count;
+		TextView ItemName, title;//, count;
 		ImageView icon;
-		ImageView countImg;
-		LinearLayout headerLayout, itemLayout, spinnerLayout;
-		Spinner spinner;
+//		ImageView countImg;
+		LinearLayout headerLayout, itemLayout;//, spinnerLayout;
+//		Spinner spinner;
 	}
 }

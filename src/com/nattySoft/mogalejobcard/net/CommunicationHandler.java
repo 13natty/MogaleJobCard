@@ -32,11 +32,10 @@ import com.nattySoft.mogalejobcard.net.ConnectionManager;
 
 public class CommunicationHandler {
 
-	private static final String SERVER_URL = AppConstants.Config.SERVER_URL;
 	private static final String LOG_TAG = CommunicationHandler.class.getSimpleName();
 
 	public enum Action {
-		GET_ALL_USERS, GET_USER, GET_ALL_MY_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG, RE_ASSIGN, GET_ESCALATED_INCIDENCES_ASSIGNED_TO_ME, GET_ALL_OPEN_INCIDENCES;
+	    INCIDENT_PROGRESS, GET_ALL_USERS, GET_USER, ASSIGNEE_REMOVED, GET_ALL_MY_OPEN_INCIDENCES, REGISTER, ACCEPT_INCIDENT, DECLINE_INCIDENT, ADD_COMMENT, GET_COMMENTS, SEND_CHAT, UPDATE_JOB_CARD, SAVE_JOB_CARD, INCIDENT_STATUS, GET_ALL_OPEN_INCIDENCES_BG, CLOSE_INCIDENT, RE_ASSIGN, RE_ASSIGNED, REMOVE_ASSIGNEE, GET_ESCALATED_INCIDENCES_ASSIGNED_TO_ME, GET_ALL_OPEN_INCIDENCES, VIEW_LOGS, INCIDENT_ACCEPTED, INCIDENT_DECLINED, GET_JOB_CARD;
 	}
 
 	public static void registerForPush(final Context context, String deviceId, String employeeNumber, RequestResponseListener listener, ProgressDialog dialog) {
@@ -50,10 +49,10 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "json.toString() " + json.toString());
 
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 
 	public static void getMYOpenIncidents(Context context, RequestResponseListener listener, ProgressDialog dialog) {
@@ -67,9 +66,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 	
 	public static void getIncidentsAssignedTome(Context context, RequestResponseListener listener, ProgressDialog dialog) {
@@ -83,9 +82,25 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
+	}
+	
+	public static void searchIncident(Context context, RequestResponseListener listener, ProgressDialog dialog, String searchParam) {
+
+		JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "searchforincident.mobi");
+			json.accumulate("searchParam", searchParam);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 	
 	public static void getAllUsers(Context context, RequestResponseListener listener, ProgressDialog dialog) {
@@ -98,9 +113,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 	
 	public static void reassignincident(Context context, RequestResponseListener listener, ProgressDialog dialog, String employeeNum, String incidentId, JSONArray assignees) {
@@ -116,9 +131,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 
 	public static void registerUser(Context context, RequestResponseListener listener, ProgressDialog dialog, String employeeNumber) {
@@ -139,9 +154,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -158,9 +173,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -176,9 +191,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -194,7 +209,6 @@ public class CommunicationHandler {
 				json.accumulate("id", jobCardId);
 			}
 			
-			json.accumulate("jobDuration", AppConstants.Config.KEY_JOB_TIME);
 			json.accumulate("incidentId", FragmentIncident.incidentID);
 			json.accumulate("employeeNum", MainActivity.employeeNUM);
 			json.accumulate("status", incidentStatus);
@@ -299,17 +313,20 @@ public class CommunicationHandler {
 			String valveJSONSTR = Preferences.getPreference(activity, AppConstants.PreferenceKeys.KEY_VALVE + FragmentIncident.incidentID);
 			if (valveJSONSTR != null) {
 				JSONObject valveJSON = new JSONObject(valveJSONSTR);
-
-				if (isValid(valveJSON.getString("openTime")))
-					json.accumulate("openTime", valveJSON.getString("openTime"));
-				if (isValid(valveJSON.getString("closeTime")))
-					json.accumulate("closeTime", valveJSON.getString("closeTime"));
-				if (isValid(valveJSON.getString("leftSide")))
-					json.accumulate("leftSide", valveJSON.getString("leftSide"));
-				if (isValid(valveJSON.getString("streetName")))
-					json.accumulate("streetName", valveJSON.getString("streetName"));
-				if (isValid(valveJSON.getString("valveRepairType")))
-					json.accumulate("valveRepairType", valveJSON.getString("valveRepairType"));
+				JSONArray valves = valveJSON.getJSONArray("valves");
+//				for (int i = 0; i < valves.length(); i++) {
+//				    if (isValid(""+valveJSON.getLong("openTime")))
+//					json.accumulate("openTime", valveJSON.getLong("openTime"));
+//				if (isValid(""+valveJSON.getLong("closeTime")))
+//					json.accumulate("closeTime", valveJSON.getLong("closeTime"));
+//				if (isValid(""+valveJSON.getBoolean("leftSide")))
+//					json.accumulate("leftSide", valveJSON.getBoolean("leftSide"));
+//				if (isValid(valveJSON.getString("streetName")))
+//					json.accumulate("streetName", valveJSON.getString("streetName"));
+//				if (isValid(""+valveJSON.getInt("valveRepairType")))
+//					json.accumulate("valveRepairType", valveJSON.getInt("valveRepairType"));
+//				}
+				json.accumulate("valves", valves);
 			}
 
 		} catch (JSONException e) {
@@ -317,9 +334,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -341,9 +358,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(activity, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -358,9 +375,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -376,9 +393,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 
 	}
 
@@ -393,9 +410,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, dialog, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 
 	public static void getUser(Context context, RequestResponseListener listener) {
@@ -408,9 +425,9 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, null, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, null, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 		
 	}
 
@@ -424,9 +441,73 @@ public class CommunicationHandler {
 			e.printStackTrace();
 		}
 
-		Log.d(LOG_TAG, "SERVER_URL " + SERVER_URL);
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
 		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
-		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(SERVER_URL, json));
+		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
+	}
+	
+	public static void closeIncident(Context context, RequestResponseListener listener, ProgressDialog show, String incidentId, String employeeNumber) {
+	    JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "closeincident.mobi");
+			json.accumulate("incidentId", incidentId);
+			json.accumulate("employeeNum", employeeNumber);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
+	}
+
+	public static void incidentProgressStatus(Activity activity, RequestResponseListener listener, String incidentID, String pingID, String employeeNum) {
+	    JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "pingincident.mobi");
+			json.accumulate("incidentId", incidentID);
+			json.accumulate("pingId", pingID);
+			json.accumulate("employeeNum", employeeNum);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(activity, listener, null, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
+	}
+
+	public static void getincidentlogs(Activity context, RequestResponseListener listener, ProgressDialog show, String incidentID) {
+	    JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "getincidentlogs.mobi");
+			json.accumulate("incidentId", incidentID);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
+	}
+	
+	public static void getincidentjobcard(Activity context, RequestResponseListener listener, ProgressDialog show, String incidentID, String employeeNumber) {
+	    JSONObject json = new JSONObject();
+		try {
+			json.accumulate("nav", "getincidentjobcard.mobi");
+			json.accumulate("employeeNum", employeeNumber);
+			json.accumulate("incidentId", incidentID);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(LOG_TAG, "AppConstants.Config.SERVER_URL " + AppConstants.Config.SERVER_URL);
+		Log.d(LOG_TAG, "nameValuePairs.toString() " + json.toString());
+		new ConnectionManager().post(context, listener, show, new Pair<String, JSONObject>(AppConstants.Config.SERVER_URL, json));
 	}
 
 }

@@ -11,10 +11,12 @@ import com.nattySoft.mogalejobcard.R;
 import com.nattySoft.mogalejobcard.AppConstants;
 import com.nattySoft.mogalejobcard.MainActivity;
 import com.nattySoft.mogalejobcard.listener.IncidentClickedListener;
+import com.nattySoft.mogalejobcard.listener.RequestResponseListener;
 import com.nattySoft.mogalejobcard.util.Preferences;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler;
 import com.nattySoft.mogalejobcard.net.CommunicationHandler.Action;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -23,6 +25,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -49,10 +52,9 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
     ArrayList<HashMap<String, String>> incidentslist = new ArrayList<HashMap<String, String>>();
     ArrayList<HashMap<String, String>> incidentsBigList = new ArrayList<HashMap<String, String>>();
     int[] icons = { R.drawable.no_water_50, R.drawable.water_meter_50, R.drawable.burst_pipe_50, R.drawable.water_pump_50, R.drawable.resevoir, R.drawable.water_tower_50 };
-    ImageView ivIcon;
-    TextView tvItemName;
+    //ImageView ivIcon;
+    //TextView tvItemName;
 
-    
     private Activity mActivity;
 
     private SwipeRefreshLayout swipeContainer;
@@ -85,11 +87,11 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 	swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
 
 	menuList = (ListView) view.findViewById(R.id.Incidents_listView);
-	ivIcon = (ImageView) view.findViewById(R.id.frag1_icon);
-	tvItemName = (TextView) view.findViewById(R.id.frag1_text);
+//	ivIcon = (ImageView) view.findViewById(R.id.frag1_icon);
+//	tvItemName = (TextView) view.findViewById(R.id.frag1_text);
 
-	tvItemName.setText(getArguments().getString(ITEM_NAME));
-	ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
+//	tvItemName.setText(getArguments().getString(ITEM_NAME));
+//	ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
 	String responce = Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_MY_INCIDENTS);
 	if (responce != null)
 	    setMenus(responce, (IncidentClickedListener) this);
@@ -187,10 +189,22 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 				bigMap.put("assigneeName_" + j, d.getString("name"));
 				bigMap.put("designation_" + j, d.getString("designation"));
 				bigMap.put("assigneeSurname_" + j, d.getString("surname"));
+				if (!d.isNull("assignedIncidentStatus")) {
+				    int statusID = Integer.parseInt(d.getJSONObject("assignedIncidentStatus").getString("statusId"));
+				    bigMap.put("incidentStatusID_" + j, "" + statusID);
+				    if (statusID < 3) {
+					MainActivity.action = Action.INCIDENT_PROGRESS;
+					CommunicationHandler.incidentProgressStatus(FragmentOne.this.getActivity(), (RequestResponseListener) getActivity(), c.getString("id"), "" + MainActivity.INCIDENT_RECEIVED_ON_DEVICE, d.getString("employeeNum"));
+				    }
+				} else {
+				    bigMap.put("incidentStatusID_" + j, "" + 0);
+				}
 				bigMap.put("active_" + j, d.getString("active"));
 				bigMap.put("password_" + j, d.getString("password"));
 			    }
 			}
+
+			bigMap.put("status", c.getString("status"));
 
 			JSONArray accepteeArr = c.optJSONArray("acceptees");
 			boolean acctepted = false;
@@ -206,6 +220,13 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 				bigMap.put("accepteeName_" + j, d.getString("name"));
 				bigMap.put("designation_" + j, d.getString("designation"));
 				bigMap.put("accepteeSurname_" + j, d.getString("surname"));
+				if (!d.isNull("assignedIncidentStatus")) {
+				    int statusID = Integer.parseInt(d.getJSONObject("assignedIncidentStatus").getString("statusId"));
+				    bigMap.put("incidentStatusID_" + j, "" + statusID);
+				} else {
+				    bigMap.put("incidentStatusID_" + j, "" + 0);
+				}
+
 				bigMap.put("active_" + j, d.getString("active"));
 				bigMap.put("password_" + j, d.getString("password"));
 				if (Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM) != null) {
@@ -271,7 +292,7 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 	Bundle args = new Bundle();
 	args.putSerializable("HashMap", item);
 	((MainActivity) mActivity).prevFrag.add(getFragmentManager().findFragmentById(R.id.content_frame));
-	// Disable the  drawer carat, and enable the back button
+	// Disable the drawer carat, and enable the back button
 	((MainActivity) mActivity).mDrawerToggle.setDrawerIndicatorEnabled(false);
 	((MainActivity) mActivity).getActionBar().setDisplayHomeAsUpEnabled(true);
 	Fragment fragment = new FragmentIncident();
@@ -306,32 +327,27 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 
 	    ViewHolder mViewHolder = null;
 	    HashMap<String, String> song = null;
+	    song = new HashMap<String, String>();
+	    mViewHolder = new ViewHolder();
 
-	    if (convertView == null) {
+	    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    row = inflater.inflate(R.layout.incident_intro_item, parent, false);
+	    RelativeLayout mainContainer = (RelativeLayout) row.findViewById(R.id.incident_main_container);
+	    severityImage = (ImageView) row.findViewById(R.id.severity_imageView);
+	    desc = (TextView) row.findViewById(R.id.title_text);
+	    dateText = (TextView) row.findViewById(R.id.date_text);
+	    // ID = (TextView) row.findViewById(R.id.id_text);
+	    accepted = (ImageView) row.findViewById(R.id.acceptedimage);
 
-		song = new HashMap<String, String>();
-		mViewHolder = new ViewHolder();
-
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		row = inflater.inflate(R.layout.incident_intro_item, parent, false);
-		// myImage = (ImageView) row.findViewById(R.id.type_imageView);
-		severityImage = (ImageView) row.findViewById(R.id.severity_imageView);
-		desc = (TextView) row.findViewById(R.id.title_text);
-		dateText = (TextView) row.findViewById(R.id.date_text);
-		// ID = (TextView) row.findViewById(R.id.id_text);
-		accepted = (ImageView) row.findViewById(R.id.acceptedimage);
-
-		if (productlist.get(position).get("accepted") != null) {
-		    if (productlist.get(position).get("accepted").equals("true")) {
-			accepted.setImageResource(R.drawable.ic_action_good);
-		    }
+	    if (productlist.get(position).get("accepted") != null) {
+		if (productlist.get(position).get("accepted").equals("true")) {
+		    accepted.setImageResource(R.drawable.ic_action_good);
 		}
-	    } else {
-
-		mViewHolder = (ViewHolder) convertView.getTag();
-
 	    }
-
+	    String status = productlist.get(position).get("status");
+	    if("complete".equals(productlist.get(position).get("status"))){
+		mainContainer.setBackgroundColor(Color.parseColor("#abee35"));
+	    }
 	    int category = 0;
 	    Log.d("getView", "pos " + position);
 	    switch (productlist.get(position).get("type")) {

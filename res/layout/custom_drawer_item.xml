@@ -3,25 +3,24 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <LinearLayout
-        android:id="@+id/spinnerLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:orientation="vertical" >
+<!--     <LinearLayout -->
+<!--         android:id="@+id/spinnerLayout" -->
+<!--         android:layout_width="fill_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:layout_marginTop="0dp" -->
+<!--         android:orientation="vertical" > -->
 
-        <Spinner
-            android:id="@+id/drawerSpinner"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-    </LinearLayout>
+<!--         <Spinner -->
+<!--             android:id="@+id/drawerSpinner" -->
+<!--             android:layout_width="fill_parent" -->
+<!--             android:layout_height="0dp" -->
+<!--             android:layout_weight="1" /> -->
+<!--     </LinearLayout> -->
 
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:orientation="vertical" >
 
         <TextView
@@ -57,41 +56,40 @@
                 android:id="@+id/drawer_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp" />
 
             <TextView
                 android:id="@+id/drawer_itemName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="5dp" >
+<!--             <RelativeLayout -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:layout_marginStart="10dp" -->
+<!--                 android:layout_marginTop="5dp" > -->
 
-                <ImageView
-                    android:id="@+id/incident_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+<!--                 <ImageView -->
+<!--                     android:id="@+id/incident_count" -->
+<!--                     android:layout_width="wrap_content" -->
+<!--                     android:layout_height="wrap_content" /> -->
 
-                <TextView
-                    android:id="@+id/incident_count_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-            </RelativeLayout>
+<!--                 <TextView -->
+<!--                     android:id="@+id/incident_count_text" -->
+<!--                     android:layout_width="wrap_content" -->
+<!--                     android:layout_height="wrap_content" -->
+<!--                     android:textAppearance="?android:attr/textAppearanceSmall" /> -->
+<!--             </RelativeLayout> -->
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginBottom="0dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="0dp"
             android:background="#DADADC" >
         </View>
     </LinearLayout>

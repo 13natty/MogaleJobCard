@@ -36,7 +36,7 @@ import android.widget.Toast;
 public class FragmentThree extends Fragment implements IncidentClickedListener {
 
     // ImageView ivIcon;
-    TextView tvItemName;
+//    TextView tvItemName;
 
     private ArrayList<HashMap<String, String>> escalationsList = new ArrayList<HashMap<String, String>>();
     public static final String IMAGE_RESOURCE_ID = "iconResourceID";
@@ -74,9 +74,9 @@ public class FragmentThree extends Fragment implements IncidentClickedListener {
 	swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
 
 	// ivIcon = (ImageView) view.findViewById(R.id.frag3_icon);
-	tvItemName = (TextView) view.findViewById(R.id.frag3_text);
+//	tvItemName = (TextView) view.findViewById(R.id.frag3_text);
 
-	tvItemName.setText(getArguments().getString(ITEM_NAME));
+//	tvItemName.setText(getArguments().getString(ITEM_NAME));
 	// ivIcon.setImageDrawable(view.getResources().getDrawable(
 	// getArguments().getInt(IMAGE_RESOURCE_ID)));
 

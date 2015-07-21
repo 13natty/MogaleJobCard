@@ -23,8 +23,8 @@ import android.widget.TextView;
 
 public class FragmentTwo extends Fragment {
 
-	ImageView ivIcon;
-	TextView tvItemName;
+//	ImageView ivIcon;
+//	TextView tvItemName;
 
 	public static ChatArrayAdapter chatArrayAdapter;
 	private ListView listView;
@@ -56,11 +56,11 @@ public class FragmentTwo extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		ivIcon = (ImageView) view.findViewById(R.id.frag2_icon);
-		tvItemName = (TextView) view.findViewById(R.id.frag2_text);
+//		ivIcon = (ImageView) view.findViewById(R.id.frag2_icon);
+//		tvItemName = (TextView) view.findViewById(R.id.frag2_text);
 
-		tvItemName.setText(getArguments().getString(ITEM_NAME));
-		ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
+//		tvItemName.setText(getArguments().getString(ITEM_NAME));
+//		ivIcon.setImageDrawable(view.getResources().getDrawable(getArguments().getInt(IMAGE_RESOURCE_ID)));
 
 		buttonSend = (Button) view.findViewById(R.id.buttonSend);
 

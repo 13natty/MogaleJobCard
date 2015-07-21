@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" 
       xmlns:app="http://schemas.android.com/apk/res-auto">
-      <item android:id="@+id/action_change_host"
-          android:title="@string/action_change_host"
+      <item android:id="@+id/action_search_incident"
+          android:title="@string/action_search_incident"
           app:showAsAction="never"  />
       <item android:id="@+id/action_version"
           android:title="@string/action_os_ver" 

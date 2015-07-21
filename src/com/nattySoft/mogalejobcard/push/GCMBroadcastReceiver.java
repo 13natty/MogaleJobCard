@@ -49,9 +49,9 @@ public final class GCMBroadcastReceiver extends WakefulBroadcastReceiver {
 	private static final String INCIDENT_UPDATE = "2";
 	private static final String CHAT_MESSAGE = "3";
 	private static final String INCIDENT_ACCEPT = "4";
-	public static PushListener pushListener = null;
+	private static PushListener pushListener = null;
 
-	public static void setListener(PushListener pushListener) {
+	public void setListener(PushListener pushListener) {
 		GCMBroadcastReceiver.pushListener = pushListener;
 	}
 

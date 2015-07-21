@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="#FFFFFF" >
+    android:background="#f1eeed" >
 
     <ImageView
         android:id="@+id/profile_imageView"
@@ -38,6 +38,6 @@
         android:layout_marginTop="10dp"
         android:layout_below="@+id/name_text"
         android:layout_alignLeft="@+id/name_text"
-        android:src="@drawable/history_clock_button_16"/>
+        android:src="@drawable/not_delivered"/>
 
 </RelativeLayout>
