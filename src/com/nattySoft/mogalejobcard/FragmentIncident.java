@@ -344,9 +344,9 @@ public class FragmentIncident extends Fragment {
 
 	    String addrString = null;
 	    if (item.get("street").length() > 0)
-		addrString += "" + item.get("street");
+		addrString = "" + item.get("street");
 	    if (item.get("township").length() > 0)
-		addrString = ", " + item.get("township");
+		addrString += ", " + item.get("township");
 	    if (item.get("building").length() > 0)
 		addrString += ", " + item.get("building");
 	    if (item.get("stand").length() > 0)
@@ -478,21 +478,25 @@ public class FragmentIncident extends Fragment {
 		    allUsersData[i] = userProfileObject.getString("employeeNum");
 		    allUsersDataDisplay[i] = userProfileObject.getString("name") + " " + userProfileObject.getString("surname");
 
-//		    if (assigneeAList.contains(userProfileObject)) {
-//			selectedAssignees[i] = true;
-//		    } else if (accepteeAList.contains(userProfileObject)) {
-//			selectedAssignees[i] = true;
-//		    }
-		    
-//		    for (int j = 0; j < assigneeListView.getChildCount(); j++) {
-//			Log.d("assigneeListView", ""+assigneeListView);
-//			
-//			 assigneeAdapeter assignee = (assigneeAdapeter)assigneeListView.getAdapter().getItem(j);
-//			 Log.d("assignee.employeenumber "+assignee.employeenumber, "userProfileObject.getString(\"employeeNum\") "+userProfileObject.getString("employeeNum"));
-////			 if(assignee.employeenumber.equals(userProfileObject.getString("employeeNum")))
-//			     
-//			     //selectedAssignees[i] = true;
-//		     }
+		    // if (assigneeAList.contains(userProfileObject)) {
+		    // selectedAssignees[i] = true;
+		    // } else if (accepteeAList.contains(userProfileObject)) {
+		    // selectedAssignees[i] = true;
+		    // }
+
+		    // for (int j = 0; j < assigneeListView.getChildCount();
+		    // j++) {
+		    // Log.d("assigneeListView", ""+assigneeListView);
+		    //
+		    // assigneeAdapeter assignee =
+		    // (assigneeAdapeter)assigneeListView.getAdapter().getItem(j);
+		    // Log.d("assignee.employeenumber "+assignee.employeenumber,
+		    // "userProfileObject.getString(\"employeeNum\") "+userProfileObject.getString("employeeNum"));
+		    // //
+		    // if(assignee.employeenumber.equals(userProfileObject.getString("employeeNum")))
+		    //
+		    // //selectedAssignees[i] = true;
+		    // }
 		    // for (int j = 0; j < assigneeListView.getChildCount();
 		    // j++) {
 		    // assigneeAdapeter assignee = (assigneeAdapeter)
@@ -500,8 +504,7 @@ public class FragmentIncident extends Fragment {
 		    // if(assignee.employeenumber
 		    // }
 
-
-		   // selectedAssignees[i] = 
+		    // selectedAssignees[i] =
 		}
 
 	    } catch (Exception e) {
@@ -654,8 +657,8 @@ public class FragmentIncident extends Fragment {
     class assigneeAdapeter extends ArrayAdapter<String> {
 
 	Context context;
-	private ArrayList<HashMap<String, String>> accepteelist;
-	private ArrayList<HashMap<String, String>> assigneelist;
+	List<HashMap<String, String>> combined = new ArrayList<HashMap<String, String>>();
+
 	private View row;
 	// private ImageView myImage;
 	private ImageView profileImage;
@@ -668,8 +671,10 @@ public class FragmentIncident extends Fragment {
 	public assigneeAdapeter(Context context, ArrayList<HashMap<String, String>> assigneeList, ArrayList<HashMap<String, String>> accepteeList) {
 	    super(context, R.layout.assignee_item);
 	    this.context = context;
-	    this.assigneelist = assigneeList;
-	    this.accepteelist = accepteeList;
+	    if (assigneeList != null)
+		combined.addAll(assigneeList);
+	    if (accepteeList != null)
+		combined.addAll(accepteeList);
 	}
 
 	@Override
@@ -741,8 +746,8 @@ public class FragmentIncident extends Fragment {
 	    //
 	    // }
 
-	    if (accepteelist != null && accepteelist.size() > 0) {
-		int progressStatus = Integer.parseInt(accepteelist.get(position).get("incidentStatusID"));
+	    if (combined != null && combined.size() > 0) {
+		int progressStatus = Integer.parseInt(combined.get(position).get("incidentStatusID"));
 		switch (progressStatus) {
 		case 0:
 		    progress.setImageResource(R.drawable.not_delivered);
@@ -775,72 +780,37 @@ public class FragmentIncident extends Fragment {
 		case MainActivity.INCIDENT_JOB_CARD_RECEIVED:
 		    progress.setImageResource(R.drawable.job_card_done);
 		    incident_progressID = MainActivity.INCIDENT_JOB_CARD_RECEIVED;
-		    row.setBackgroundColor(0x4fedfb);
+		    // row.setBackgroundColor(0x4fedfb);
 		    break;
 		default:
 		    break;
 		}
-		employeenumber = accepteelist.get(position).get("accepteeEmployeeNum");
+		try {
+		    if (combined.get(position).get("accepteeEmployeeNum") != null)
+			employeenumber = combined.get(position).get("accepteeEmployeeNum");
+		    else
+			employeenumber = combined.get(position).get("assigneeEmployeeNum");
+		} catch (Exception ex) {
+		    employeenumber = combined.get(position).get("assigneeEmployeeNum");
+		}
 		if (MainActivity.employeeNUM.equals(employeenumber)) {
 		    name.setText("Me");
 		} else {
-		    name.setText(accepteelist.get(position).get("accepteeName") + " " + accepteelist.get(position).get("accepteeSurname"));
+		    try {
+			if (combined.get(position).get("accepteeName") != null)
+			    name.setText(combined.get(position).get("accepteeName") + " " + combined.get(position).get("accepteeSurname"));
+			else
+			    name.setText(combined.get(position).get("assigneeName") + " " + combined.get(position).get("assigneeSurname"));
+		    } catch (Exception ex) {
+			name.setText(combined.get(position).get("assigneeName") + " " + combined.get(position).get("assigneeSurname"));
+		    }
 		}
 
 		if (progressStatus < MainActivity.INCIDENT_READ_BY_USER) {
 		    MainActivity.action = Action.INCIDENT_PROGRESS;
-		    CommunicationHandler.incidentProgressStatus(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), incidentID, "" + MainActivity.INCIDENT_READ_BY_USER, accepteelist.get(position).get("accepteeEmployeeNum"));
+		    CommunicationHandler.incidentProgressStatus(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), incidentID, "" + MainActivity.INCIDENT_READ_BY_USER, this.employeenumber);
 		}
 
-	    } else if (assigneelist != null && assigneelist.size() > 0) {
-		int progressStatus = Integer.parseInt(assigneelist.get(position).get("incidentStatusID"));
-		switch (progressStatus) {
-		case 0:
-		    progress.setImageResource(R.drawable.not_delivered);
-		    incident_progressID = 0;
-		    break;
-		case MainActivity.INCIDENT_SENT:
-		    progress.setImageResource(R.drawable.not_delivered);
-		    incident_progressID = MainActivity.INCIDENT_SENT;
-		    break;
-		case MainActivity.INCIDENT_RECEIVED_ON_SERVER:
-		    progress.setImageResource(R.drawable.check_symbol_16);
-		    incident_progressID = MainActivity.INCIDENT_RECEIVED_ON_SERVER;
-		    break;
-		case MainActivity.INCIDENT_RECEIVED_ON_DEVICE:
-		    progress.setImageResource(R.drawable.tick_indicator_16);
-		    incident_progressID = MainActivity.INCIDENT_RECEIVED_ON_DEVICE;
-		    break;
-		case MainActivity.INCIDENT_READ_BY_USER:
-		    progress.setImageResource(R.drawable.double_tick_indicator_received);
-		    incident_progressID = MainActivity.INCIDENT_READ_BY_USER;
-		    break;
-		case MainActivity.INCIDENT_ACCEPTED_BY_USER:
-		    progress.setImageResource(R.drawable.incident_accepted);
-		    incident_progressID = MainActivity.INCIDENT_ACCEPTED_BY_USER;
-		    break;
-		case MainActivity.INCIDENT_DECLINED_BY_USER:
-		    progress.setImageResource(R.drawable.declined);
-		    incident_progressID = MainActivity.INCIDENT_DECLINED_BY_USER;
-		    break;
-		case MainActivity.INCIDENT_JOB_CARD_RECEIVED:
-		    progress.setImageResource(R.drawable.job_card_done);
-		    incident_progressID = MainActivity.INCIDENT_JOB_CARD_RECEIVED;
-		    row.setBackgroundColor(0x4fedfb);
-		    break;
-		default:
-		    break;
-		}
-		employeenumber = assigneelist.get(position).get("assigneeEmployeeNum");
-		if (MainActivity.employeeNUM.equals(employeenumber)) {
-		    name.setText("Me");
-		} else {
-		    name.setText(assigneelist.get(position).get("assigneeName") + " " + assigneelist.get(position).get("assigneeSurname"));
-		}
-		if (progressStatus < MainActivity.INCIDENT_READ_BY_USER) {
-		    MainActivity.action = Action.INCIDENT_PROGRESS;
-		    CommunicationHandler.incidentProgressStatus(FragmentIncident.this.getActivity(), (RequestResponseListener) getActivity(), incidentID, "" + MainActivity.INCIDENT_READ_BY_USER, assigneelist.get(position).get("assigneeEmployeeNum"));
-		}
 	    }
 
 	    switch (MainActivity.employeeDesignation) {
@@ -862,29 +832,15 @@ public class FragmentIncident extends Fragment {
 
 	@Override
 	public int getCount() {
-	    int count = super.getCount();
-	    if (accepteelist != null && accepteelist.size() > 0) {
-		int listSize = accepteelist.size();
+	    int totalCount = 0;
+	    if (combined != null && combined.size() > 0) {
 
-		int productlistC = accepteelist.size();
-		Log.d("inside getCount", "productlist.size() " + listSize);
-		Log.d("inside getCount", "superC " + count);
-		Log.d("inside getCount", "productlistC " + productlistC);
-		if (count < 1) {
-		    return productlistC;
-		}
-	    } else if (assigneelist != null && assigneelist.size() > 0) {
-		int listSize = assigneelist.size();
-
-		int productlistC = assigneelist.size();
-		Log.d("inside getCount", "productlist.size() " + listSize);
-		Log.d("inside getCount", "superC " + count);
-		Log.d("inside getCount", "productlistC " + productlistC);
-		if (count < 1) {
-		    return productlistC;
-		}
+		int productlistC = combined.size();
+		totalCount += productlistC;
 	    }
-	    return count;
+	    Log.d(getTag(), "totalCount " + totalCount);
+
+	    return totalCount;
 	}
     }
 
@@ -1249,51 +1205,53 @@ public class FragmentIncident extends Fragment {
 	}
     }
 
-    public void updateProgressIcon(int type) {
-
+    public void updateProgressIcon(int type, Bundle extras) {
+	String from = extras.getString("from");
 	for (int i = 0; i < assigneeListView.getChildCount(); i++) {
 	    int count = assigneeListView.getAdapter().getCount();
 	    if (count > 0) {
 		try {
 		    assigneeAdapeter assignee = (assigneeAdapeter) assigneeListView.getAdapter().getItem(i);
 
-		    switch (type) {
-		    case 0:
-			assignee.progress.setImageResource(R.drawable.not_delivered);
-			assignee.incident_progressID = 0;
-			break;
-		    case MainActivity.INCIDENT_SENT:
-			assignee.progress.setImageResource(R.drawable.not_delivered);
-			assignee.incident_progressID = 1;
-			break;
-		    case MainActivity.INCIDENT_RECEIVED_ON_SERVER:
-			assignee.progress.setImageResource(R.drawable.not_delivered);
-			assignee.incident_progressID = 2;
-			break;
-		    case MainActivity.INCIDENT_RECEIVED_ON_DEVICE:
-			assignee.progress.setImageResource(R.drawable.tick_indicator_16);
-			assignee.incident_progressID = 3;
-			break;
-		    case MainActivity.INCIDENT_READ_BY_USER:
-			assignee.progress.setImageResource(R.drawable.double_tick_indicator_received);
-			assignee.incident_progressID = 4;
-			break;
-		    case MainActivity.INCIDENT_ACCEPTED_BY_USER:
-			assignee.progress.setImageResource(R.drawable.incident_accepted);
-			assignee.incident_progressID = 5;
-			break;
-		    case MainActivity.INCIDENT_DECLINED_BY_USER:
-			assignee.progress.setImageResource(R.drawable.declined);
-			assignee.incident_progressID = 6;
-			break;
-		    case MainActivity.INCIDENT_JOB_CARD_RECEIVED:
-			assignee.progress.setImageResource(R.drawable.job_card_done);
-			assignee.incident_progressID = 7;
-			assignee.row.setBackgroundColor(0x4fedfb);
-			break;
+		    if (from.equals(assignee.employeenumber)) {
+			switch (type) {
+			case 0:
+			    assignee.progress.setImageResource(R.drawable.not_delivered);
+			    assignee.incident_progressID = 0;
+			    break;
+			case MainActivity.INCIDENT_SENT:
+			    assignee.progress.setImageResource(R.drawable.not_delivered);
+			    assignee.incident_progressID = 1;
+			    break;
+			case MainActivity.INCIDENT_RECEIVED_ON_SERVER:
+			    assignee.progress.setImageResource(R.drawable.not_delivered);
+			    assignee.incident_progressID = 2;
+			    break;
+			case MainActivity.INCIDENT_RECEIVED_ON_DEVICE:
+			    assignee.progress.setImageResource(R.drawable.tick_indicator_16);
+			    assignee.incident_progressID = 3;
+			    break;
+			case MainActivity.INCIDENT_READ_BY_USER:
+			    assignee.progress.setImageResource(R.drawable.double_tick_indicator_received);
+			    assignee.incident_progressID = 4;
+			    break;
+			case MainActivity.INCIDENT_ACCEPTED_BY_USER:
+			    assignee.progress.setImageResource(R.drawable.incident_accepted);
+			    assignee.incident_progressID = 5;
+			    break;
+			case MainActivity.INCIDENT_DECLINED_BY_USER:
+			    assignee.progress.setImageResource(R.drawable.declined);
+			    assignee.incident_progressID = 6;
+			    break;
+			case MainActivity.INCIDENT_JOB_CARD_RECEIVED:
+			    assignee.progress.setImageResource(R.drawable.job_card_done);
+			    assignee.incident_progressID = 7;
+			    // assignee.row.setBackgroundColor(0x4fedfb);
+			    break;
 
-		    default:
-			break;
+			default:
+			    break;
+			}
 		    }
 		} catch (Exception ex) {
 
@@ -1328,7 +1286,7 @@ public class FragmentIncident extends Fragment {
 
 	// try parse the string to a JSON object
 	try {
-	    if (data.length() > 0) {
+	    if (data != null && data.length() > 0) {
 		jobCard = data.getJSONObject(0);
 
 		TextView existingMeterNumber = (TextView) view.findViewById(R.id.existing_meter_number);
@@ -1607,10 +1565,10 @@ public class FragmentIncident extends Fragment {
 		    hydrantPos.setText("Unknown");
 		    break;
 		case "1":
-		    hydrantPos.setText("Hydrant above groun");
+		    hydrantPos.setText("Hydrant above ground");
 		    break;
 		case "2":
-		    hydrantPos.setText("Hydrant below groun");
+		    hydrantPos.setText("Hydrant below ground");
 		    break;
 
 		default:
@@ -1679,7 +1637,8 @@ public class FragmentIncident extends Fragment {
 
 			valvesData += "Valve side :	" + (valves.getJSONObject(i).optBoolean("leftSide") == true ? "Left" : "Right") + "\n";
 			valvesData += "Street name :	" + valves.getJSONObject(i).optString("streetName") + "\n";
-			switch (valves.getJSONObject(i).optInt("valveRepairType")) {
+			int repair = valves.getJSONObject(i).optInt("valveRepairType");
+			switch (repair) {
 			case 0:
 			    valvesData += "Valve repair type : 	Unknown.\n";
 			    break;

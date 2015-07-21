@@ -1069,25 +1069,25 @@ public class MainActivity extends Activity implements RequestResponseListener, P
 			
 		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 		    if (frag instanceof FragmentIncident) {
-			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_SERVER);				
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_SERVER, extras);				
 		    }
 		}else if(extras.getString("type").equalsIgnoreCase(""+7)){//Incident received on device
 			
 		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 		    if (frag instanceof FragmentIncident) {
-			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_DEVICE);				
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_RECEIVED_ON_DEVICE, extras);				
 		    }
 		}else if(extras.getString("type").equalsIgnoreCase(""+8)){//Incident has been read on device
                     			
 		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 		    if (frag instanceof FragmentIncident) {
-			((FragmentIncident) frag).updateProgressIcon(INCIDENT_READ_BY_USER);				
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_READ_BY_USER, extras);				
 		    }
 		}else if(extras.getString("type").equalsIgnoreCase(""+9)){//Incident job card received
                     	
 		    Fragment frag = getFragmentManager().findFragmentById(R.id.content_frame);
 		    if (frag instanceof FragmentIncident) {
-			((FragmentIncident) frag).updateProgressIcon(INCIDENT_JOB_CARD_RECEIVED);				
+			((FragmentIncident) frag).updateProgressIcon(INCIDENT_JOB_CARD_RECEIVED, extras);				
 		    }                    
 		}else if (extras.getString("type").equalsIgnoreCase(REGISTRATION_SUCCESS)) {
 		    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
