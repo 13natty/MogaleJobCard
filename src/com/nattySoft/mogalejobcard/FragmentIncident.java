@@ -369,16 +369,16 @@ public class FragmentIncident extends Fragment {
 		map.put("assigneeEmail", item.get("assigneeEmail_" + i));
 		map.put("assigneeCellphone", item.get("assigneeCellphone_" + i));
 		map.put("assigneeName", item.get("assigneeName_" + i));
-		map.put("designation", item.get("designation_" + i));
+		map.put("assigneeDesignation", item.get("assigneeDesignation_" + i));
 		map.put("assigneeSurname", item.get("assigneeSurname_" + i));
-		if (item.containsKey("incidentStatusID_" + i)) {
-		    int statusID = Integer.parseInt(item.get("incidentStatusID_" + i));
-		    map.put("incidentStatusID", "" + statusID);
+		if (item.containsKey("assigneeIncidentStatusID_" + i)) {
+		    int statusID = Integer.parseInt(item.get("assigneeIncidentStatusID_" + i));
+		    map.put("assigneeIncidentStatusID", "" + statusID);
 		} else {
-		    map.put("incidentStatusID", "" + 0);
+		    map.put("assigneeIncidentStatusID", "" + 0);
 		}
-		map.put("active", item.get("active_" + i));
-		map.put("password", item.get("password_" + i));
+		map.put("assigneeActive", item.get("assigneeActive_" + i));
+		map.put("assigneePassword", item.get("assigneePassword_" + i));
 
 		assigneeAList.add(map);
 	    }
@@ -396,16 +396,16 @@ public class FragmentIncident extends Fragment {
 		    map.put("accepteeEmail", item.get("accepteeEmail_" + i));
 		    map.put("accepteeCellphone", item.get("accepteeCellphone_" + i));
 		    map.put("accepteeName", item.get("accepteeName_" + i));
-		    map.put("designation", item.get("designation_" + i));
-		    map.put("accepteeSurname", item.get("accepteeSurname_" + i));
-		    if (item.containsKey("incidentStatusID_" + i)) {
-			int statusID = Integer.parseInt(item.get("incidentStatusID_" + i));
-			map.put("incidentStatusID", "" + statusID);
+		    map.put("accepteeDesignation", item.get("accepteeDesignation_" + i));
+		    map.put("accepteeSurname", item.get("accepteeAccepteeSurname_" + i));
+		    if (item.containsKey("accepteeIncidentStatusID_" + i)) {
+			int statusID = Integer.parseInt(item.get("accepteeIncidentStatusID_" + i));
+			map.put("accepteeIncidentStatusID", "" + statusID);
 		    } else {
-			map.put("incidentStatusID", "" + 0);
+			map.put("accepteeIncidentStatusID", "" + 0);
 		    }
-		    map.put("active", item.get("active_" + i));
-		    map.put("password", item.get("password_" + i));
+		    map.put("accepteeActive", item.get("accepteeActive_" + i));
+		    map.put("accepteePassword", item.get("accepteePassword_" + i));
 
 		    accepteeAList.add(map);
 		    TextView nameTV = new TextView(this.getActivity());
@@ -437,7 +437,19 @@ public class FragmentIncident extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	menu.clear();
-	inflater.inflate(R.menu.incident, menu);
+	switch (MainActivity.employeeDesignation) {
+	case "Manager":
+	    inflater.inflate(R.menu.incident, menu);
+	    break;
+	case "Foreman":
+	    inflater.inflate(R.menu.incident, menu);
+	    break;
+
+	default:
+	    inflater.inflate(R.menu.artisan_incident_menu, menu);
+	    break;
+	}
+	
 	// super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -667,6 +679,7 @@ public class FragmentIncident extends Fragment {
 	private int incident_progressID;
 	private ImageView remove;
 	private String employeenumber;
+	private String employeeDesignation;
 
 	public assigneeAdapeter(Context context, ArrayList<HashMap<String, String>> assigneeList, ArrayList<HashMap<String, String>> accepteeList) {
 	    super(context, R.layout.assignee_item);
@@ -747,7 +760,12 @@ public class FragmentIncident extends Fragment {
 	    // }
 
 	    if (combined != null && combined.size() > 0) {
-		int progressStatus = Integer.parseInt(combined.get(position).get("incidentStatusID"));
+		int progressStatus = 0;
+		try{
+		    progressStatus = Integer.parseInt(combined.get(position).get("accepteeIncidentStatusID"));
+		}catch(Exception e){
+		    progressStatus = Integer.parseInt(combined.get(position).get("assigneeIncidentStatusID"));
+		}
 		switch (progressStatus) {
 		case 0:
 		    progress.setImageResource(R.drawable.not_delivered);
@@ -788,7 +806,7 @@ public class FragmentIncident extends Fragment {
 		try {
 		    if (combined.get(position).get("accepteeEmployeeNum") != null)
 			employeenumber = combined.get(position).get("accepteeEmployeeNum");
-		    else
+		    if (combined.get(position).get("assigneeEmployeeNum") != null)
 			employeenumber = combined.get(position).get("assigneeEmployeeNum");
 		} catch (Exception ex) {
 		    employeenumber = combined.get(position).get("assigneeEmployeeNum");
@@ -797,13 +815,21 @@ public class FragmentIncident extends Fragment {
 		    name.setText("Me");
 		} else {
 		    try {
-			if (combined.get(position).get("accepteeName") != null)
-			    name.setText(combined.get(position).get("accepteeName") + " " + combined.get(position).get("accepteeSurname"));
-			else
-			    name.setText(combined.get(position).get("assigneeName") + " " + combined.get(position).get("assigneeSurname"));
+			if (combined.get(position).get("accepteeName") != null){
+			    name.setText(combined.get(position).get("accepteeName") + " " + combined.get(position).get("accepteeSurname"));			    
+			}
+			if (combined.get(position).get("assigneeName") != null){
+			    name.setText(combined.get(position).get("assigneeName") + " " + combined.get(position).get("assigneeSurname"));			    
+			}
 		    } catch (Exception ex) {
 			name.setText(combined.get(position).get("assigneeName") + " " + combined.get(position).get("assigneeSurname"));
 		    }
+		}
+		if (combined.get(position).get("accepteeDesignation") != null){
+		    employeeDesignation = combined.get(position).get("accepteeDesignation");			    
+		}
+		if (combined.get(position).get("assigneeDesignation") != null){
+		    employeeDesignation = combined.get(position).get("assigneeDesignation");			    
 		}
 
 		if (progressStatus < MainActivity.INCIDENT_READ_BY_USER) {
@@ -813,7 +839,7 @@ public class FragmentIncident extends Fragment {
 
 	    }
 
-	    switch (MainActivity.employeeDesignation) {
+	    switch (employeeDesignation) {
 	    case "Manager":
 		profileImage.setImageResource(R.drawable.manager);
 		break;

@@ -185,22 +185,21 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 				bigMap.put("assigneeEmployeeNum_" + j, d.getString("employeeNum"));
 				bigMap.put("assigneeEmail_" + j, d.getString("email"));
 				bigMap.put("assigneeCellphone_" + j, d.getString("cellphone"));
-				String name = d.getString("name");
 				bigMap.put("assigneeName_" + j, d.getString("name"));
-				bigMap.put("designation_" + j, d.getString("designation"));
+				bigMap.put("assigneeDesignation_" + j, d.getString("designation"));
 				bigMap.put("assigneeSurname_" + j, d.getString("surname"));
 				if (!d.isNull("assignedIncidentStatus")) {
 				    int statusID = Integer.parseInt(d.getJSONObject("assignedIncidentStatus").getString("statusId"));
-				    bigMap.put("incidentStatusID_" + j, "" + statusID);
+				    bigMap.put("assigneeIncidentStatusID_" + j, "" + statusID);
 				    if (statusID < 3) {
 					MainActivity.action = Action.INCIDENT_PROGRESS;
 					CommunicationHandler.incidentProgressStatus(FragmentOne.this.getActivity(), (RequestResponseListener) getActivity(), c.getString("id"), "" + MainActivity.INCIDENT_RECEIVED_ON_DEVICE, d.getString("employeeNum"));
 				    }
 				} else {
-				    bigMap.put("incidentStatusID_" + j, "" + 0);
+				    bigMap.put("assigneeIncidentStatusID_" + j, "" + 0);
 				}
-				bigMap.put("active_" + j, d.getString("active"));
-				bigMap.put("password_" + j, d.getString("password"));
+				bigMap.put("assigneeActive_" + j, d.getString("active"));
+				bigMap.put("assigneePassword_" + j, d.getString("password"));
 			    }
 			}
 
@@ -218,17 +217,17 @@ public class FragmentOne extends Fragment implements IncidentClickedListener, On
 				bigMap.put("accepteeEmail_" + j, d.getString("email"));
 				bigMap.put("accepteeCellphone_" + j, d.getString("cellphone"));
 				bigMap.put("accepteeName_" + j, d.getString("name"));
-				bigMap.put("designation_" + j, d.getString("designation"));
+				bigMap.put("accepteeDesignation_" + j, d.getString("designation"));
 				bigMap.put("accepteeSurname_" + j, d.getString("surname"));
 				if (!d.isNull("assignedIncidentStatus")) {
 				    int statusID = Integer.parseInt(d.getJSONObject("assignedIncidentStatus").getString("statusId"));
-				    bigMap.put("incidentStatusID_" + j, "" + statusID);
+				    bigMap.put("assigneeIncidentStatusID_" + j, "" + statusID);
 				} else {
-				    bigMap.put("incidentStatusID_" + j, "" + 0);
+				    bigMap.put("assigneeIncidentStatusID_" + j, "" + 0);
 				}
 
-				bigMap.put("active_" + j, d.getString("active"));
-				bigMap.put("password_" + j, d.getString("password"));
+				bigMap.put("assigneeActive_" + j, d.getString("active"));
+				bigMap.put("assigneePassword_" + j, d.getString("password"));
 				if (Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM) != null) {
 				    if (Preferences.getPreference(mActivity, AppConstants.PreferenceKeys.KEY_EMPLOYEE_NUM).equals(d.optString("employeeNum"))) {
 					acctepted = true;
